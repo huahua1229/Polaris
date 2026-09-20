@@ -45,6 +45,16 @@ transition:opacity .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1);pointer
 .charm-bubble::after{content:"";position:absolute;bottom:-6px;right:18px;border:6px solid transparent;border-top-color:#fff;}
 .charm-bubble.show{opacity:1;transform:translateY(0) scale(1);}
 </style>
+
+<style>
+.mini-tag.tag-clickable{cursor:pointer;}
+.mini-tag.tag-clickable:hover{background:rgba(255,107,157,.35);transform:translateY(-2px);}
+.interest-toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%) translateY(12px);
+background:rgba(70,30,80,.92);color:#fff;padding:11px 22px;border-radius:22px;font-size:13px;line-height:1.6;
+opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:300;pointer-events:none;max-width:82%;
+box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
+.interest-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
 </head>
 <body>
     <div id="splash"><div class="splash-inner">
@@ -708,7 +718,10 @@ transition:opacity .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1);pointer
             }
 
             /* 右栏公共列表 */
-            var tags = p.interests.split(',').map(function (t) { return '<span class="mini-tag">' + esc(t.trim()) + '</span>'; }).join('');
+            var tags = p.interests.split(',').map(function (t) {
+                var txt = t.trim();
+                return '<span class="mini-tag tag-clickable" data-tag="' + esc(txt) + '">' + esc(txt) + '</span>';
+            }).join('');
             var hi = document.getElementById('homeInterests');
             if (hi) hi.innerHTML = tags;
             var rst = document.getElementById('resumeSkillsTags');
@@ -1440,6 +1453,36 @@ transition:opacity .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1);pointer
     bubble.classList.add('show');
     clearTimeout(bt);
     bt=setTimeout(function(){ bubble.classList.remove('show'); }, 2400);
+  });
+})();
+</script>
+<div class="interest-toast" id="interestToast"></div>
+<script>
+(function(){
+  var INTRO = [
+    { key: '打游戏',   desc: '🎮 最喜欢开放世界和剧情向游戏，放松必备~' },
+    { key: '爬山',     desc: '⛰️ 周末最爱去爬山，山顶的风最舒服~' },
+    { key: '看海',     desc: '🌊 看海能让人安静下来，烦恼都被带走~' },
+    { key: '听音乐',   desc: '🎵 钢琴和纯音乐循环播放中，写代码必备~' },
+    { key: '大模型',   desc: '🤖 正在学习大模型应用开发，这是我的专业方向~' },
+    { key: '数据挖掘', desc: '📊 泰迪杯数据挖掘赛就是我的作品哦~' }
+  ];
+  var toast = document.getElementById('interestToast');
+  var tt = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    clearTimeout(tt);
+    tt = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('.tag-clickable');
+    if(!el) return;
+    var tag = el.getAttribute('data-tag') || '';
+    var hit = INTRO.filter(function(it){ return tag.indexOf(it.key) >= 0; })[0];
+    showToast(hit ? hit.desc : ('关于「' + tag.replace(/^\S+\s/, '') + '」，下次告诉你~'));
   });
 })();
 </script>

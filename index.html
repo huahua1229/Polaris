@@ -55,6 +55,13 @@ opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:300;pointer-ev
 box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
 .interest-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
+
+<style>
+.mini-tag.skill-jump{cursor:pointer;}
+.mini-tag.skill-jump:hover{background:rgba(255,107,157,.35);transform:translateY(-2px);}
+#resumeSkills .skill-row.hl{animation:skillFlash 1.4s ease;}
+@keyframes skillFlash{0%,100%{background:transparent;}30%{background:rgba(255,158,199,.35);border-radius:10px;}}
+</style>
 </head>
 <body>
     <div id="splash"><div class="splash-inner">
@@ -574,8 +581,8 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
         function renderSkills(sel, list) {
             var el = document.querySelector(sel);
             if (!el) return;
-            el.innerHTML = list.map(function (s) {
-                return '<div class="skill-row"><div class="skill-head"><span class="skill-name"><b>' + esc(s.name) + '</b>' +
+            el.innerHTML = list.map(function (s, i) {
+                return '<div class="skill-row" data-skill-idx="' + i + '"><div class="skill-head"><span class="skill-name"><b>' + esc(s.name) + '</b>' +
                     (s.sub ? ' · ' + esc(s.sub) : '') + '</span><span class="skill-pct">' + (parseInt(s.pct) || 0) + '%</span></div>' +
                     '<div class="skill-track"><div class="skill-fill" data-pct="' + (parseInt(s.pct) || 0) + '"></div></div></div>';
             }).join('');
@@ -725,7 +732,7 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
             var hi = document.getElementById('homeInterests');
             if (hi) hi.innerHTML = tags;
             var rst = document.getElementById('resumeSkillsTags');
-            if (rst) rst.innerHTML = c.skills.map(function (s) { return '<span class="mini-tag">' + esc(s.name) + '</span>'; }).join('');
+            if (rst) rst.innerHTML = c.skills.map(function (s, i) { return '<span class="mini-tag skill-jump" data-idx="' + i + '">' + esc(s.name) + '</span>'; }).join('');
             var tdir = document.getElementById('projectTechDirs');
             if (tdir) tdir.innerHTML = c.projects.reduce(function (acc, x) {
                 x.tags.split(',').forEach(function (t) { t = t.trim(); if (t && acc.indexOf(t) < 0) acc.push(t); });
@@ -1483,6 +1490,21 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
     var tag = el.getAttribute('data-tag') || '';
     var hit = INTRO.filter(function(it){ return tag.indexOf(it.key) >= 0; })[0];
     showToast(hit ? hit.desc : ('关于「' + tag.replace(/^\S+\s/, '') + '」，下次告诉你~'));
+  });
+})();
+</script>
+<script>
+(function(){
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('.skill-jump');
+    if(!el) return;
+    var idx = el.getAttribute('data-idx');
+    var target = document.querySelector('#resumeSkills .skill-row[data-skill-idx="' + idx + '"]');
+    if(!target) return;
+    target.scrollIntoView({ behavior:'smooth', block:'center' });
+    target.classList.remove('hl');
+    void target.offsetWidth;
+    target.classList.add('hl');
   });
 })();
 </script>

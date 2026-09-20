@@ -36,21 +36,14 @@ animation:charmFloat 3.6s ease-in-out infinite;}
 @media print{.page-charm{display:none !important;}}
 </style>
 
+
 <style>
-.charm-modal{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;
-background:rgba(50,15,55,.45);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;}
-.charm-modal.show{opacity:1;pointer-events:auto;}
-.charm-modal-card{position:relative;background:linear-gradient(160deg,#ffffff 0%,#ffeaf4 100%);
-border-radius:22px;padding:26px 26px 22px;max-width:330px;width:86%;text-align:center;
-transform:scale(.75) translateY(14px);transition:transform .35s cubic-bezier(.34,1.56,.64,1);
-box-shadow:0 20px 60px rgba(196,77,255,.45);border:2px solid rgba(255,158,199,.5);}
-.charm-modal.show .charm-modal-card{transform:scale(1) translateY(0);}
-.charm-modal-img{width:190px;height:190px;object-fit:contain;border-radius:18px;}
-.charm-modal-title{font-family:'ZCOOL KuaiLe',cursive;color:#c44dff;font-size:22px;margin:14px 0 4px;letter-spacing:2px;}
-.charm-modal-sub{color:#a08bb0;font-size:13px;line-height:1.7;}
-.charm-modal-close{position:absolute;top:10px;right:14px;width:28px;height:28px;line-height:26px;border-radius:50%;
-text-align:center;font-size:16px;color:#c44dff;cursor:pointer;background:rgba(255,158,199,.18);}
-.charm-modal-close:hover{background:rgba(255,158,199,.4);}
+.charm-bubble{position:absolute;bottom:calc(100% + 10px);right:0;white-space:nowrap;
+background:rgba(255,255,255,.97);color:#777;padding:7px 14px;border-radius:13px;font-size:12px;line-height:1.5;
+box-shadow:0 4px 12px rgba(255,107,157,.32);opacity:0;transform:translateY(8px) scale(.9);
+transition:opacity .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none;z-index:110;}
+.charm-bubble::after{content:"";position:absolute;bottom:-6px;right:18px;border:6px solid transparent;border-top-color:#fff;}
+.charm-bubble.show{opacity:1;transform:translateY(0) scale(1);}
 </style>
 </head>
 <body>
@@ -1414,25 +1407,20 @@ text-align:center;font-size:16px;color:#c44dff;cursor:pointer;background:rgba(25
   setTimeout(hide, 4500);
 })();
 </script>
-<div class="page-charm" aria-hidden="true"><img src="static/avatar.png" alt=""></div>
-<div class="charm-modal" id="charmModal">
-  <div class="charm-modal-card">
-    <div class="charm-modal-close" id="charmModalClose">✕</div>
-    <img class="charm-modal-img" src="static/erii_3d_chibi_transparent.png" alt="小绘">
-    <div class="charm-modal-title">小绘 ♡</div>
-    <div class="charm-modal-sub">我是小绘，Polaris 小站的专属向导~<br>有什么想了解的都可以看看哦~</div>
-  </div>
-</div>
+<div class="page-charm" aria-hidden="true"><img src="static/avatar.png" alt=""><div class="charm-bubble" id="charmBubble">有什么想了解的都可以看看~</div></div>
 <script>
 (function(){
   var charm=document.querySelector('.page-charm');
-  var modal=document.getElementById('charmModal');
-  var close=document.getElementById('charmModalClose');
-  if(!charm||!modal) return;
-  charm.addEventListener('click',function(){ modal.classList.add('show'); });
-  close.addEventListener('click',function(){ modal.classList.remove('show'); });
-  modal.addEventListener('click',function(e){ if(e.target===modal) modal.classList.remove('show'); });
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape') modal.classList.remove('show'); });
+  var bubble=document.getElementById('charmBubble');
+  if(!charm||!bubble) return;
+  var bt=null;
+  charm.addEventListener('click',function(){
+    bubble.classList.remove('show');
+    void bubble.offsetWidth;
+    bubble.classList.add('show');
+    clearTimeout(bt);
+    bt=setTimeout(function(){ bubble.classList.remove('show'); }, 2400);
+  });
 })();
 </script>
 </body>

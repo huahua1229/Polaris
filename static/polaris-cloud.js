@@ -13,13 +13,14 @@
      口令由服务端函数校验（前端不保存口令明文，仅会话内暂存）
    ============================================================ */
 window.POLARIS_CLOUD_CONFIG = {
-    fnUrl: ''   // ← 在这里填写你的 Edge Function 地址
+    fnUrl: 'https://ldprlyzawsgwjtgdwexz.supabase.co/functions/v1/super-function',
+    anonKey: 'sb_publishable_vVhLivALBiNuxHUVRzfDmg_uDzYXlnr'
 };
 
 window.PolarisCloud = (function () {
     'use strict';
 
-    var cfg = window.POLARIS_CLOUD_CONFIG || { fnUrl: '' };
+    var cfg = window.POLARIS_CLOUD_CONFIG || { fnUrl: 'https://ldprlyzawsgwjtgdwexz.supabase.co/functions/v1/super-function' };
 
     function enabled() {
         return typeof cfg.fnUrl === 'string' && cfg.fnUrl.length > 8;
@@ -34,9 +35,14 @@ window.PolarisCloud = (function () {
         for (var k in payload) {
             if (Object.prototype.hasOwnProperty.call(payload, k)) body[k] = payload[k];
         }
+        var headers = { 'Content-Type': 'application/json' };
+        if (cfg.anonKey) {
+            headers['apikey'] = cfg.anonKey;
+            headers['Authorization'] = 'Bearer ' + cfg.anonKey;
+        }
         return fetch(cfg.fnUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify(body),
             signal: ctrl ? ctrl.signal : undefined
         }).then(function (resp) {

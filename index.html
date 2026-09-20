@@ -499,6 +499,12 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
                     <button type="button" class="af-add" id="addProject">＋ 添加项目</button>
                 </div>
                 <div class="af-hint">分类取值：frontend / ai / ui / course（多分类用空格，如 frontend course）；标签用逗号分隔；图标可填任意 emoji 或文字。</div>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">简历页「项目经验」</div>
+                    <div id="adminResumeProjects"></div>
+                    <button type="button" class="af-add" id="addResumeProject">＋ 添加项目</button>
+                </div>
             </div>
             <!-- 经历荣誉 -->
             <div class="admin-tabpage" data-page="life" style="display:none;">
@@ -793,6 +799,12 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
                 { f: 'p_stars', label: '收藏', key: 'stars' },
                 { f: 'p_desc', label: '简介', key: 'desc' }
             ],
+            resumeProject: [
+                { f: 'rp_title', label: '名称', key: 'title' },
+                { f: 'rp_ico', label: '图标', key: 'ico' },
+                { f: 'rp_tags', label: '标签(逗号)', key: 'tags' },
+                { f: 'rp_desc', label: '简介', key: 'desc' }
+            ],
             timeline: [
                 { f: 't_time', label: '时间', key: 'time' },
                 { f: 't_role', label: '事件', key: 'role' },
@@ -880,6 +892,7 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
             /* 列表 */
             buildList('adminSkills', c.skills, 'skills');
             buildList('adminProjects', c.projects, 'projects');
+            buildList('adminResumeProjects', c.resumeProjects || [], 'resumeProject');
             buildList('adminTimeline', c.timeline, 'timeline');
             buildList('adminEducation', c.education, 'education');
             buildList('adminExp', c.experience, 'exp');
@@ -905,6 +918,9 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
             });
             c.projects = collectItems('adminProjects', [['p_title', 'title'], ['p_ico', 'ico'], ['p_tags', 'tags'], ['p_cat', 'cat'], ['p_catLabel', 'catLabel'], ['p_stars', 'stars'], ['p_desc', 'desc']], function (o) {
                 o.stars = parseInt(o.stars) || 0; return o;
+            });
+            c.resumeProjects = collectItems('adminResumeProjects', [['rp_title', 'title'], ['rp_ico', 'ico'], ['rp_tags', 'tags'], ['rp_desc', 'desc']], function (o) {
+                return { title: o.title, ico: o.ico, tags: o.tags, desc: o.desc };
             });
             c.timeline = collectItems('adminTimeline', [['t_time', 'time'], ['t_role', 'role'], ['t_desc', 'desc']]);
             c.education = collectItems('adminEducation', [['e_time', 'time'], ['e_role', 'role'], ['e_sub', 'sub'], ['e_desc', 'desc']]);
@@ -1036,6 +1052,7 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
         /* 添加按钮 */
         bindAdd('addSkill', 'adminSkills', 'skills');
         bindAdd('addProject', 'adminProjects', 'projects');
+        bindAdd('addResumeProject', 'adminResumeProjects', 'resumeProject');
         bindAdd('addTimeline', 'adminTimeline', 'timeline');
         bindAdd('addEducation', 'adminEducation', 'education');
         bindAdd('addExp', 'adminExp', 'exp');

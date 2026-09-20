@@ -26,7 +26,7 @@ background:linear-gradient(90deg,#ff6b9d,#c44dff);animation:splashSlide 1.1s eas
 </style>
 
 <style>
-.page-charm{position:fixed;bottom:96px;right:20px;z-index:90;width:54px;height:54px;pointer-events:none;
+.page-charm{position:fixed;bottom:96px;right:20px;z-index:90;width:54px;height:54px;cursor:pointer;
 border-radius:50%;border:3px solid #ff9ec7;
 box-shadow:0 0 0 3px rgba(196,77,255,.30),0 6px 16px rgba(196,77,255,.40);
 animation:charmFloat 3.6s ease-in-out infinite;}
@@ -34,6 +34,23 @@ animation:charmFloat 3.6s ease-in-out infinite;}
 @keyframes charmFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 @media (prefers-reduced-motion:reduce){.page-charm{animation:none !important;}}
 @media print{.page-charm{display:none !important;}}
+</style>
+
+<style>
+.charm-modal{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;
+background:rgba(50,15,55,.45);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;}
+.charm-modal.show{opacity:1;pointer-events:auto;}
+.charm-modal-card{position:relative;background:linear-gradient(160deg,#ffffff 0%,#ffeaf4 100%);
+border-radius:22px;padding:26px 26px 22px;max-width:330px;width:86%;text-align:center;
+transform:scale(.75) translateY(14px);transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+box-shadow:0 20px 60px rgba(196,77,255,.45);border:2px solid rgba(255,158,199,.5);}
+.charm-modal.show .charm-modal-card{transform:scale(1) translateY(0);}
+.charm-modal-img{width:190px;height:190px;object-fit:contain;border-radius:18px;}
+.charm-modal-title{font-family:'ZCOOL KuaiLe',cursive;color:#c44dff;font-size:22px;margin:14px 0 4px;letter-spacing:2px;}
+.charm-modal-sub{color:#a08bb0;font-size:13px;line-height:1.7;}
+.charm-modal-close{position:absolute;top:10px;right:14px;width:28px;height:28px;line-height:26px;border-radius:50%;
+text-align:center;font-size:16px;color:#c44dff;cursor:pointer;background:rgba(255,158,199,.18);}
+.charm-modal-close:hover{background:rgba(255,158,199,.4);}
 </style>
 </head>
 <body>
@@ -1398,5 +1415,25 @@ animation:charmFloat 3.6s ease-in-out infinite;}
 })();
 </script>
 <div class="page-charm" aria-hidden="true"><img src="static/avatar.png" alt=""></div>
+<div class="charm-modal" id="charmModal">
+  <div class="charm-modal-card">
+    <div class="charm-modal-close" id="charmModalClose">✕</div>
+    <img class="charm-modal-img" src="static/erii_3d_chibi_transparent.png" alt="小绘">
+    <div class="charm-modal-title">小绘 ♡</div>
+    <div class="charm-modal-sub">我是小绘，Polaris 小站的专属向导~<br>有什么想了解的都可以看看哦~</div>
+  </div>
+</div>
+<script>
+(function(){
+  var charm=document.querySelector('.page-charm');
+  var modal=document.getElementById('charmModal');
+  var close=document.getElementById('charmModalClose');
+  if(!charm||!modal) return;
+  charm.addEventListener('click',function(){ modal.classList.add('show'); });
+  close.addEventListener('click',function(){ modal.classList.remove('show'); });
+  modal.addEventListener('click',function(e){ if(e.target===modal) modal.classList.remove('show'); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') modal.classList.remove('show'); });
+})();
+</script>
 </body>
 </html>

@@ -1413,8 +1413,28 @@ transition:opacity .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1);pointer
   var charm=document.querySelector('.page-charm');
   var bubble=document.getElementById('charmBubble');
   if(!charm||!bubble) return;
+  var LINES=[
+    '有什么想了解的都可以看看~',
+    '你好呀~我是小绘♡',
+    '今天也要开开心心哦~',
+    '悄悄说：背景音乐超好听的♪',
+    '看留言板的时候记得留句话呀~',
+    '工作学习累了就看看窗外吧~',
+    '嘿嘿，你又点我啦~',
+    '小站的内容随时可以找作者更新哦~',
+    '记得喝水休息一下~',
+    '嘻嘻，被你发现啦~'
+  ];
+  var last=-1;
+  function pickLine(){
+    var n=Math.floor(Math.random()*LINES.length);
+    while(n===last) n=Math.floor(Math.random()*LINES.length);
+    last=n;
+    return LINES[n];
+  }
   var bt=null;
   charm.addEventListener('click',function(){
+    bubble.textContent=pickLine();
     bubble.classList.remove('show');
     void bubble.offsetWidth;
     bubble.classList.add('show');

@@ -566,16 +566,19 @@ body.dark ::placeholder{color:#888;}
 
     <!-- ===== 底部常驻播放条（全局唯一，切换视图不断音） ===== -->
 <button class="player-fab" id="playerFab" type="button" title="背景音乐">
-        <img src="static/duck_icon_transparent.png" alt="音乐">
+        <img src="static/duck_icon_transparent.png" alt="音乐" id="fabDuck">
+        <img src="static/avatar.png" alt="封面" id="fabCover" style="display:none;">
         <span class="fab-badge" id="fabBadge">♪</span>
     </button>
     <div class="player-bar" id="playerBar">
-        <div class="player-cover"><img src="static/duck_icon_transparent.png" alt="专辑封面"></div>
+        <div class="player-cover"><img src="static/avatar.png" alt="专辑封面" id="barCover"></div>
         <div class="player-info">
-            <div class="player-title">花之舞 · 钢琴版</div>
-            <div class="player-artist">DJ Okawari (MayPiano remix)</div>
+            <div class="player-title" id="barTitle">花之舞 · 钢琴版</div>
+            <div class="player-artist" id="barArtist">DJ Okawari</div>
         </div>
+        <button class="player-prev" id="playerPrev" aria-label="上一首">⏮</button>
         <button class="player-play" id="playerPlay" aria-label="播放/暂停">▶</button>
+        <button class="player-next" id="playerNext" aria-label="下一首">⏭</button>
         <div class="player-progress-wrap">
             <span class="player-time" id="playerCur">0:00</span>
             <div class="player-progress" id="playerProgress"><i id="playerFill"></i></div>
@@ -586,7 +589,7 @@ body.dark ::placeholder{color:#888;}
             <div class="player-vol-bar" id="playerVolBar"><i id="playerVolFill"></i></div>
         </div>
     </div>
-    <audio id="bgMusic" loop preload="none"><source src="static/flower_dance_piano.mp3" type="audio/mpeg"></audio>
+    <audio id="bgMusic" preload="metadata"></audio>
 
     <!-- ===== 作者口令验证 ===== -->
     <div class="admin-auth" id="adminAuth" hidden>
@@ -1907,13 +1910,89 @@ body.dark ::placeholder{color:#888;}
   var bar = document.getElementById('playerBar');
   var audio = document.getElementById('bgMusic');
   var playBtn = document.getElementById('playerPlay');
+  var prevBtn = document.getElementById('playerPrev');
+  var nextBtn = document.getElementById('playerNext');
+  var duckImg = document.getElementById('fabDuck');
+  var coverImg = document.getElementById('fabCover');
+  var barCover = document.getElementById('barCover');
+  var barTitle = document.getElementById('barTitle');
+  var barArtist = document.getElementById('barArtist');
+  var progress = document.getElementById('playerProgress');
+  var fill = document.getElementById('playerFill');
+  var curEl = document.getElementById('playerCur');
+  var durEl = document.getElementById('playerDur');
+  var volBar = document.getElementById('playerVolBar');
+  var volFill = document.getElementById('playerVolFill');
+  var volIcon = document.getElementById('playerVolIcon');
+
+  var playlist = [
+    { title: '花之舞 · 钢琴版', artist: 'DJ Okawari', src: 'static/flower_dance_piano.mp3', cover: 'static/avatar.png' },
+    { title: '潮鳴り', artist: 'CLANNAD OST', src: 'static/music2.mp3', cover: 'static/avatar.png' },
+    { title: '孤独な巡礼', artist: 'Fate OST', src: 'static/music3.mp3', cover: 'static/avatar.png' },
+    { title: '鳥の詩', artist: 'AIR OST', src: 'static/music4.mp3', cover: 'static/avatar.png' },
+    { title: '青空', artist: 'AIR OST', src: 'static/music5.mp3', cover: 'static/avatar.png' },
+    { title: '町、時の流れ、人', artist: 'CLANNAD OST', src: 'static/music6.mp3', cover: 'static/avatar.png' },
+    { title: 'Songs and Days', artist: 'Key Sounds', src: 'static/music7.mp3', cover: 'static/avatar.png' },
+    { title: '東雲', artist: 'ZONE', src: 'static/music8.mp3', cover: 'static/avatar.png' }
+  ];
+  var idx = 0;
+
+  function loadTrack(i){
+    idx = (i + playlist.length) % playlist.length;
+    var t = playlist[idx];
+    audio.src = t.src;
+    barTitle.textContent = t.title;
+    barArtist.textContent = t.artist;
+    barCover.src = t.cover;
+    coverImg.src = t.cover;
+  }
+  function fmt(s){ if(!s||isNaN(s)) return '0:00'; var m=Math.floor(s/60), sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
+  function play(){ audio.play().catch(function(){}); }
+  function pause(){ audio.pause(); }
+  function next(){ loadTrack(idx+1); play(); }
+  function prev(){ loadTrack(idx-1); play(); }
+
   fab.addEventListener('click', function(){
     if (bar.classList.contains('open')) { bar.classList.remove('open'); }
-    else { bar.classList.add('open'); if (audio.paused) playBtn.click(); }
+    else {
+      bar.classList.add('open');
+      if (audio.paused) play();
+    }
   });
-  function sync(){ fab.classList.toggle('playing', !audio.paused); }
-  audio.addEventListener('play', sync);
-  audio.addEventListener('pause', sync);
+  playBtn.addEventListener('click', function(){ audio.paused ? play() : pause(); });
+  nextBtn.addEventListener('click', next);
+  prevBtn.addEventListener('click', prev);
+  audio.addEventListener('ended', next);
+  audio.addEventListener('play', function(){
+    playBtn.textContent = '⏸';
+    fab.classList.add('playing');
+    duckImg.style.display = 'none';
+    coverImg.style.display = '';
+  });
+  audio.addEventListener('pause', function(){
+    playBtn.textContent = '▶';
+    fab.classList.remove('playing');
+    duckImg.style.display = '';
+    coverImg.style.display = 'none';
+  });
+  audio.addEventListener('timeupdate', function(){
+    if(audio.duration){ fill.style.width = (audio.currentTime/audio.duration*100)+'%'; }
+    curEl.textContent = fmt(audio.currentTime);
+    durEl.textContent = fmt(audio.duration);
+  });
+  progress.addEventListener('click', function(e){
+    var r = progress.getBoundingClientRect();
+    audio.currentTime = (e.clientX-r.left)/r.width * audio.duration;
+  });
+  volBar.addEventListener('click', function(e){
+    var r = volBar.getBoundingClientRect();
+    audio.volume = (e.clientX-r.left)/r.width;
+    volFill.style.width = (audio.volume*100)+'%';
+    volIcon.textContent = audio.volume > 0.5 ? '🔊' : (audio.volume > 0 ? '🔉' : '🔇');
+  });
+  audio.volume = 0.7;
+  volFill.style.width = '70%';
+  loadTrack(0);
 })();
 </script>
 <script>

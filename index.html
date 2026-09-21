@@ -1637,13 +1637,16 @@ body.dark ::placeholder{color:#888;}
                             likedIds.push(id);
                         }
                         saveLikedIds(likedIds);
+                        // 即时更新按钮，不重渲染整个列表
+                        var self = this;
+                        self.classList.toggle('liked', !likedNow);
+                        self.innerHTML = (!likedNow ? '❤️' : '🤍') + ' <span class="count">' + Math.max(0, (parseInt(self.querySelector('.count').textContent) || 0) + delta) + '</span>';
                         if (cloudMode()) {
-                            window.PolarisCloud.likeAsync(id, delta).then(renderMessages).catch(function () { renderMessages(); });
+                            window.PolarisCloud.likeAsync(id, delta).catch(function () {});
                         } else {
                             var local = getLocalMessages();
                             var m = local.find(function (x) { return x.id === id; });
                             if (m) { m.likes = Math.max(0, (m.likes || 0) + delta); saveLocalMessages(local); }
-                            renderMessages();
                         }
                     });
                 });

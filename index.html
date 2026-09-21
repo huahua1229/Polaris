@@ -2170,6 +2170,21 @@ body.dark ::placeholder{color:#888;}
   document.getElementById('muUpload').addEventListener('click', uploadMusic);
   document.getElementById('muRefresh').addEventListener('click', listMusic);
   window.listMusic = listMusic;
+
+  /* 相册下拉加载 */
+  var alSel = document.getElementById('al_albumId');
+  if (alSel && window.PolarisCloud && window.PolarisCloud.enabled()) {
+    window.PolarisCloud.call('list_albums', {}).then(function (r) {
+      if (!r || !r.ok) return;
+      alSel.innerHTML = '';
+      (r.albums || []).forEach(function (al) {
+        var opt = document.createElement('option');
+        opt.value = al.id;
+        opt.textContent = al.title + (al.is_public ? '（公开）' : '（私密）');
+        alSel.appendChild(opt);
+      });
+    });
+  }
 })();
 </script>
 <script>

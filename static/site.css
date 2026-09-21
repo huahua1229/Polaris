@@ -49,6 +49,13 @@ body {
     background: linear-gradient(180deg, rgba(255, 240, 245, 0.30) 0%, rgba(255, 228, 236, 0.42) 100%);
     z-index: 1;
 }
+body.dark .wallpaper-layer {
+    background-image: url('dark_wallpaper_raw.png');
+    opacity: 0.5;
+}
+body.dark .wallpaper-overlay {
+    background: linear-gradient(180deg, rgba(20,16,36,.82) 0%, rgba(40,24,68,.88) 100%);
+}
 #sakuraContainer { position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 .sakura { position: absolute; animation: sakura-fall linear infinite; opacity: 0.7; will-change: transform; }
 @keyframes sakura-fall {
@@ -940,20 +947,7 @@ body {
 .player-fab.bar-open { right: 366px; }
 .player-bar { border-radius: 18px !important; padding: 12px 14px !important; height: auto !important; }
 body.dark .player-bar { background: rgba(40, 32, 52, .92); }
-body.dark {
-  background: #1a1626;
-  color: #e8e0f0;
-  background-image: url('dark_wallpaper_raw.png');
-  background-size: cover;
-  background-position: right center;
-  background-attachment: fixed;
-}
-body.dark::before {
-  content: '';
-  position: fixed; inset: 0;
-  background: linear-gradient(135deg, rgba(20,16,36,.88), rgba(40,24,68,.78));
-  z-index: -1;
-}
+body.dark { background: #1a1626; color: #e8e0f0; }
 body.dark .panel, body.dark .card, body.dark .rail-card { background: #2a2438; color: #e8e0f0; }
 body.dark .nav-item { color: #c8b8d8; }
 body.dark .nav-item.active { background: rgba(255,107,157,.2); color: #fff; }

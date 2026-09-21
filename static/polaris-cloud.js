@@ -30,7 +30,7 @@ window.PolarisCloud = (function () {
         if (!enabled()) return Promise.resolve({ ok: false, error: 'not-configured' });
         var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
         var timer = null;
-        if (ctrl) timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 8000);
+        if (ctrl) timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 15000);
         var body = { action: action };
         for (var k in payload) {
             if (Object.prototype.hasOwnProperty.call(payload, k)) body[k] = payload[k];

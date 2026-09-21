@@ -423,6 +423,10 @@ body.dark ::placeholder{color:#888;}
     <footer class="footer">🌸 感谢您的访问，期待与您相识 🌸</footer>
 
     <!-- ===== 底部常驻播放条（全局唯一，切换视图不断音） ===== -->
+<button class="player-fab" id="playerFab" type="button" title="背景音乐">
+        <img src="static/duck_icon_transparent.png" alt="音乐">
+        <span class="fab-badge" id="fabBadge">♪</span>
+    </button>
     <div class="player-bar" id="playerBar">
         <div class="player-cover"><img src="static/duck_icon_transparent.png" alt="专辑封面"></div>
         <div class="player-info">
@@ -1579,6 +1583,21 @@ body.dark ::placeholder{color:#888;}
     apply(dark);
     try { localStorage.setItem('polaris_dark', dark?'1':'0'); } catch(e){}
   });
+})();
+</script>
+<script>
+(function(){
+  var fab = document.getElementById('playerFab');
+  var bar = document.getElementById('playerBar');
+  var audio = document.getElementById('bgMusic');
+  var playBtn = document.getElementById('playerPlay');
+  fab.addEventListener('click', function(){
+    if (bar.classList.contains('open')) { bar.classList.remove('open'); }
+    else { bar.classList.add('open'); if (audio.paused) playBtn.click(); }
+  });
+  function sync(){ fab.classList.toggle('playing', !audio.paused); }
+  audio.addEventListener('play', sync);
+  audio.addEventListener('pause', sync);
 })();
 </script>
 </body>

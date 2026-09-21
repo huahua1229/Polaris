@@ -1963,11 +1963,11 @@ body.dark ::placeholder{color:#888;}
       fab.classList.add('bar-open');
     }
   });
-  playBtn.addEventListener('click', function(e){
+  playBtn.onclick = function(e){
     e.stopPropagation();
     if (audio.paused) { audio.play().catch(function(){}); }
     else { audio.pause(); }
-  });
+  };
   nextBtn.addEventListener('click', function(e){ e.stopPropagation(); next(); });
   prevBtn.addEventListener('click', function(e){ e.stopPropagation(); prev(); });
   audio.addEventListener('ended', next);

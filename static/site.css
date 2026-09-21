@@ -301,6 +301,7 @@ body {
 }
 .player-artist { font-size: 11px; color: var(--c-faint); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .player-play {
+    position: relative; z-index: 10;
     width: 42px; height: 42px; flex-shrink: 0;
     border-radius: 50%; border: none; cursor: pointer;
     background: var(--grad-main); color: #fff; font-size: 16px;

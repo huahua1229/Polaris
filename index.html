@@ -946,7 +946,7 @@ body.dark ::placeholder{color:#888;}
 
             /* 右栏公共列表 */
             var tags = p.interests.split(',').map(function (t) {
-                var txt = t.trim();
+                var txt = t.trim().replace(/^[\u{1F300}-\u{1F9FF}\u2600-\u27BF\u2B00-\u2BFF\s]+/u, '');
                 return '<span class="mini-tag tag-clickable" data-tag="' + esc(txt) + '">' + esc(txt) + '</span>';
             }).join('');
             var hi = document.getElementById('homeInterests');

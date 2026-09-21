@@ -284,6 +284,43 @@ async function handle(req) {
       return json({ ok: true });
     }
 
+    case 'list_albums': {
+      const { data, error } = await sb.from('albums').select('id,title,description,is_public,cover_url,sort_order').order('sort_order');
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true, albums: data || [] });
+    }
+
+    case 'verify_album_password': {
+      const { data, error } = await sb.from('albums').select('id,password').eq('id', String(body.albumId || '')).single();
+      if (error || !data) return json({ ok: false, error: 'db' });
+      if (data.password === body.password) return json({ ok: true });
+      return json({ ok: false, error: 'wrong' });
+    }
+
+    case 'list_photos': {
+      const { data: album } = await sb.from('albums').select('is_public,password').eq('id', String(body.albumId || '')).single();
+      if (album && !album.is_public && album.password !== body.password) return json({ ok: false, error: 'auth' });
+      const { data, error } = await sb.from('album_photos').select('id,url,caption,sort_order').eq('album_id', String(body.albumId || '')).order('sort_order');
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true, photos: data || [] });
+    }
+
+    case 'add_photo': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('album_photos').insert({ album_id: Number(body.albumId), url: body.url, caption: body.caption || '' });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+
+    case 'delete_photo': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('album_photos').delete().eq('id', String(body.id || ''));
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+
     default:
       return json({ ok: false, error: 'unknown-action' }, 400);
   }

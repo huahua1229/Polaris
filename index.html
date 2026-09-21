@@ -127,6 +127,7 @@ body.dark ::placeholder{color:#888;}
             <a href="#projects" class="nav-item" data-view="projects"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span><span>项目</span></a>
             <a href="#blog" class="nav-item" data-view="blog"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><span>博客</span></a>
             <a href="#guestbook" class="nav-item" data-view="guestbook"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><span>留言</span></a>
+            <a href="#album" class="nav-item" data-view="album"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span><span>相册</span></a>
             <a href="#friends" class="nav-item" data-view="friends"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></span><span>友链</span></a>
             <a href="#submit" class="nav-item" data-view="submit"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg></span><span>投稿</span></a>
             <a href="#review" class="nav-item" data-view="review" id="navReview"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span>审核</span></a>
@@ -528,7 +529,15 @@ body.dark ::placeholder{color:#888;}
         </section>
 
         <!-- ===== 视图：审核（需口令） ===== -->
-        <section id="view-review" class="view">
+        <section id="view-album" class="view">
+    <div class="page-head anim-in">
+        <h1 class="page-title">相册</h1>
+        <p class="c-sub">记录生活中的小美好</p>
+    </div>
+    <div id="albumList" class="album-grid anim-in"></div>
+    <div id="albumPhotos" class="album-photos anim-in" style="display:none;"></div>
+</section>
+<section id="view-review" class="view">
             <main class="main-content" style="max-width:900px;margin:0 auto;">
                 <div class="page-head anim-in">
                     <h1 class="page-title">📊 内容审核</h1>
@@ -1750,8 +1759,8 @@ body.dark ::placeholder{color:#888;}
        ============================================================ */
     (function () {
         'use strict';
-        var ROUTES = { home: '首页', resume: '简历', projects: '项目作品', blog: '学习博客', guestbook: '留言板', friends: '友情链接', submit: '投稿', review: '审核' };
-        var TITLES = { home: 'Polaris 的个人网站', resume: 'Polaris 的简历', projects: 'Polaris 的项目作品', blog: 'Polaris 的学习博客', guestbook: '留言板 - Polaris 的小站', friends: '友情链接 - Polaris 的小站', submit: '投稿 - Polaris 的小站', review: '审核 - Polaris 的小站' };
+        var ROUTES = { home: '首页', resume: '简历', projects: '项目作品', blog: '学习博客', guestbook: '留言板', friends: '友情链接', submit: '投稿', review: '审核', album: '相册' };
+        var TITLES = { home: 'Polaris 的个人网站', resume: 'Polaris 的简历', projects: 'Polaris 的项目作品', blog: 'Polaris 的学习博客', guestbook: '留言板 - Polaris 的小站', friends: '友情链接 - Polaris 的小站', submit: '投稿 - Polaris 的小站', review: '审核 - Polaris 的小站', album: '相册 - Polaris 的小站' };
         var last = '';
 
         function replayAnims(viewEl) {
@@ -1776,7 +1785,7 @@ body.dark ::placeholder{color:#888;}
             }
             syncNav();
             var pg = document.getElementById('topPage');
-            if (pg) pg.textContent = ROUTES[name];
+            if (pg) pg.textContent = ROUTES[name]; if (name === 'album') loadAlbums();
             document.title = TITLES[name];
             window.scrollTo(0, 0);
         }
@@ -1791,6 +1800,70 @@ body.dark ::placeholder{color:#888;}
         }
         window.addEventListener('hashchange', function () { switchView(fromHash()); });
         switchView(fromHash());
+
+        /* ===== 相册 ===== */
+        var albumPw = {};
+        function loadAlbums() {
+            var list = document.getElementById('albumList');
+            var photos = document.getElementById('albumPhotos');
+            if (!list) return;
+            photos.style.display = 'none';
+            list.style.display = '';
+            list.innerHTML = '<p class="c-sub">加载中...</p>';
+            if (!window.PolarisCloud || !window.PolarisCloud.enabled()) { list.innerHTML = '<p class="c-sub">云端未连接</p>'; return; }
+            window.PolarisCloud.call('list_albums', {}).then(function (r) {
+                if (!r || !r.ok) { list.innerHTML = '<p class="c-sub">加载失败</p>'; return; }
+                list.innerHTML = '';
+                (r.albums || []).forEach(function (al) {
+                    var card = document.createElement('div');
+                    card.className = 'album-card';
+                    var cover = al.cover_url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600';
+                    card.innerHTML = '<div class="album-cover" style="background-image:url(\'' + cover + '\')">' +
+                        (al.is_public ? '' : '<span class="album-lock">🔒 私密</span>') + '</div>' +
+                        '<div class="album-info"><h3>' + al.title + '</h3><p>' + (al.description || '') + '</p></div>';
+                    card.onclick = function () { openAlbum(al); };
+                    list.appendChild(card);
+                });
+            });
+        }
+        function openAlbum(al) {
+            var list = document.getElementById('albumList');
+            var photos = document.getElementById('albumPhotos');
+            list.style.display = 'none';
+            photos.style.display = '';
+            if (!al.is_public && !albumPw[al.id]) {
+                photos.innerHTML = '<div class="album-pw-box"><h3>🔒 ' + al.title + '</h3><p class="c-sub">此相册需要密码查看</p>' +
+                    '<input type="password" id="albumPwInput" placeholder="请输入密码">' +
+                    '<button class="primary-btn" id="albumPwBtn" type="button" style="width:100%;">确认</button>' +
+                    '<p class="album-back" id="albumBack">← 返回相册列表</p></div>';
+                document.getElementById('albumPwBtn').onclick = function () {
+                    var pw = document.getElementById('albumPwInput').value;
+                    window.PolarisCloud.call('verify_album_password', {albumId: al.id, password: pw}).then(function (r) {
+                        if (r && r.ok) { albumPw[al.id] = pw; loadPhotos(al); }
+                        else alert('密码错误');
+                    });
+                };
+                document.getElementById('albumBack').onclick = loadAlbums;
+                return;
+            }
+            loadPhotos(al);
+        }
+        function loadPhotos(al) {
+            var photos = document.getElementById('albumPhotos');
+            photos.innerHTML = '<div class="album-back" id="albumBack">← 返回相册列表</div><h2>' + al.title + '</h2><div class="photo-grid" id="photoGrid"></div>';
+            document.getElementById('albumBack').onclick = loadAlbums;
+            window.PolarisCloud.call('list_photos', {albumId: al.id, password: albumPw[al.id] || ''}).then(function (r) {
+                var grid = document.getElementById('photoGrid');
+                if (!r || !r.ok || !r.photos || !r.photos.length) { grid.innerHTML = '<p class="c-sub">暂无照片</p>'; return; }
+                r.photos.forEach(function (ph) {
+                    var item = document.createElement('div');
+                    item.className = 'photo-item';
+                    item.innerHTML = '<img src="' + ph.url + '" loading="lazy"><div class="photo-caption">' + (ph.caption || '') + '</div>';
+                    grid.appendChild(item);
+                });
+            });
+        }
+        window.loadAlbums = loadAlbums;
     })();
     </script>
 

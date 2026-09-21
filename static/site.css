@@ -693,7 +693,7 @@ body.dark .wallpaper-overlay {
 @media print { .view { display: none !important; } .view.active { display: block !important; } }
 
 /* ============ 响应式 ============ */
-@media (max-width: 1180px) {
+@media (max-width: 1366px) {
     .right-rail { display: none; }
     .layout-inner { max-width: 1060px; }
     .project-mini-grid { grid-template-columns: repeat(2, 1fr); }

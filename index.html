@@ -133,7 +133,7 @@ body.dark ::placeholder{color:#888;}
         </nav>
         <div class="nav-footer">
             <button class="admin-entry" id="adminEntry" type="button">⚙ 内容管理</button>
-            <button class="admin-entry" id="themeToggle" type="button" title="切换夜间模式">🌙 夜间模式</button>
+            <button class="admin-entry" id="themeToggle" type="button" title="切换夜间模式"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-2px;margin-right:4px;"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>夜间模式</button>
             <div class="pet-line">✦ 小绘 · 陪你逛小站 ✦</div>
             <div class="copy-line">Polaris © 2026</div>
         </div>
@@ -838,8 +838,8 @@ body.dark ::placeholder{color:#888;}
             if (rs) rs.textContent = p.school;
             var rct = document.getElementById('resumeContactTop');
             if (rct) rct.innerHTML =
-                '<span>📱 ' + esc(p.phone) + '</span><span>📧 ' + esc(p.email) + '</span>' +
-                '<span>📍 ' + esc(p.location) + '</span><span>🎂 ' + esc(p.age) + '</span><span>💼 ' + esc(p.status) + '</span>';
+                '<span>' + esc(p.phone) + '</span><span>' + esc(p.email) + '</span>' +
+                '<span>' + esc(p.location) + '</span><span>' + esc(p.age) + '</span><span>' + esc(p.status) + '</span>';
             var ri = document.getElementById('resumeIntro');
             if (ri) ri.innerHTML = nl2br(c.resumeIntro);
             renderTimeline('#resumeEducation', c.education);
@@ -975,15 +975,15 @@ body.dark ::placeholder{color:#888;}
             if (ra) ra.innerHTML = awards;
             var hc = document.getElementById('homeContact');
             if (hc) hc.innerHTML =
-                '<li><span class="li-dot">📱</span>' + esc(p.phone) + '</li>' +
-                '<li><span class="li-dot">📧</span>' + esc(p.email) + '</li>' +
-                '<li><span class="li-dot">🎂</span>' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
+                '<li>' + esc(p.phone) + '</li>' +
+                '<li>' + esc(p.email) + '</li>' +
+                '<li>' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
             var rc = document.getElementById('resumeContact');
             if (rc) rc.innerHTML =
-                '<li><span class="li-dot">📱</span>' + esc(p.phone) + '</li>' +
-                '<li><span class="li-dot">📧</span>' + esc(p.email) + '</li>' +
-                '<li><span class="li-dot">📍</span>' + esc(p.location) + '</li>' +
-                '<li><span class="li-dot">🎂</span>' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
+                '<li>' + esc(p.phone) + '</li>' +
+                '<li>' + esc(p.email) + '</li>' +
+                '<li>' + esc(p.location) + '</li>' +
+                '<li>' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
         }
 
         window.PolarisRender = { renderAll: renderAll, esc: esc };

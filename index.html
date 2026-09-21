@@ -1660,41 +1660,33 @@ body.dark ::placeholder{color:#888;}
                     '</div>';
                 }).join('');
 
-                document.querySelectorAll('.like-btn').forEach(function (btn) {
-                    btn.addEventListener('click', function () {
-                        var id = this.getAttribute('data-id');
-                        var likedIds = getLikedIds();
-                        var likedNow = likedIds.indexOf(id) >= 0;
-                        var delta = likedNow ? -1 : 1;
-                        if (likedNow) {
-                            likedIds.splice(likedIds.indexOf(id), 1);
-                        } else {
-                            likedIds.push(id);
+                // 事件委托：只绑一次
+                if (!messageList.dataset.delegated) {
+                    messageList.dataset.delegated = '1';
+                    messageList.addEventListener('click', function (e) {
+                        var likeBtn = e.target.closest('.like-btn');
+                        if (likeBtn) {
+                            var id = likeBtn.getAttribute('data-id');
+                            var likedIds = getLikedIds();
+                            var likedNow = likedIds.indexOf(id) >= 0;
+                            var delta = likedNow ? -1 : 1;
+                            if (likedNow) { likedIds.splice(likedIds.indexOf(id), 1); } else { likedIds.push(id); }
+                            saveLikedIds(likedIds);
+                            likeBtn.classList.toggle('liked', !likedNow);
+                            likeBtn.innerHTML = (!likedNow ? '❤️' : '🤍') + ' <span class="count">' + Math.max(0, (parseInt(likeBtn.querySelector('.count').textContent) || 0) + delta) + '</span>';
+                            if (cloudMode()) { window.PolarisCloud.likeAsync(id, delta).catch(function () {}); }
+                            else { var local = getLocalMessages(); var m = local.find(function (x) { return x.id === id; }); if (m) { m.likes = Math.max(0, (m.likes || 0) + delta); saveLocalMessages(local); } }
+                            return;
                         }
-                        saveLikedIds(likedIds);
-                        // 即时更新按钮，不重渲染整个列表
-                        var self = this;
-                        self.classList.toggle('liked', !likedNow);
-                        self.innerHTML = (!likedNow ? '❤️' : '🤍') + ' <span class="count">' + Math.max(0, (parseInt(self.querySelector('.count').textContent) || 0) + delta) + '</span>';
-                        if (cloudMode()) {
-                            window.PolarisCloud.likeAsync(id, delta).catch(function () {});
-                        } else {
-                            var local = getLocalMessages();
-                            var m = local.find(function (x) { return x.id === id; });
-                            if (m) { m.likes = Math.max(0, (m.likes || 0) + delta); saveLocalMessages(local); }
-                        }
-                    });
-                });
-                document.querySelectorAll('.reply-btn').forEach(function (btn) {
-                    btn.addEventListener('click', function () {
-                        var idx = this.getAttribute('data-idx');
-                        var section = document.getElementById('reply-' + idx);
-                        section.classList.toggle('show');
-                        if (section.classList.contains('show')) {
-                            document.getElementById('reply-input-' + idx).focus();
+                        var replyBtn = e.target.closest('.reply-btn');
+                        if (replyBtn) {
+                            var idx = replyBtn.getAttribute('data-idx');
+                            var section = document.getElementById('reply-' + idx);
+                            if (section) { section.classList.toggle('show'); if (section.classList.contains('show')) { var ri = document.getElementById('reply-input-' + idx); if (ri) ri.focus(); } }
                         }
                     });
-                });
+                }
+
                 document.querySelectorAll('.reply-submit').forEach(function (btn) {
                     btn.addEventListener('click', function () {
                         var idx = parseInt(this.getAttribute('data-idx'));

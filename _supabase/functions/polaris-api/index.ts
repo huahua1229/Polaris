@@ -109,12 +109,12 @@ async function handle(req) {
       const email = String(body.email || '').slice(0, 100);
       const type = body.type === 'blog' ? 'blog' : 'project';
       const title = String(body.title || '').slice(0, 100);
-      const desc = String(body.desc || '').slice(0, 500);
+      const summary = String(body.desc || '').slice(0, 500);
       const content = String(body.content || '').slice(0, 5000);
       const tags = String(body.tags || '').slice(0, 100);
       if (!name || !email || !title || !content) return json({ ok: false, error: 'empty' });
       const id = 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      const { error } = await sb.from('posts_queue').insert({ id, name, email, type, title, desc, content, tags });
+      const { error } = await sb.from('posts_queue').insert({ id, name, email, type, title, summary, content, tags });
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true });
     }
@@ -191,7 +191,7 @@ async function handle(req) {
           cat: 'guest', catLabel: '投稿',
           tags: post.tags || '投稿',
           cover: '投稿', grad: 'ffd3a5,fd6585',
-          excerpt: post.desc || (post.content || '').slice(0, 80),
+          excerpt: post.summary || (post.content || '').slice(0, 80),
           content: post.content,
           author: post.name
         });
@@ -200,7 +200,7 @@ async function handle(req) {
         data.projects.unshift({
           title: post.title, ico: '📌', tags: post.tags || '投稿',
           cat: 'guest', catLabel: '投稿', stars: 0,
-          desc: (post.desc || (post.content || '').slice(0, 100)) + '（投稿人：' + post.name + '）'
+          desc: (post.summary || (post.content || '').slice(0, 100)) + '（投稿人：' + post.name + '）'
         });
       }
       await sb.from('site_content').upsert({ id: 1, data, updated_at: new Date().toISOString() }, { onConflict: 'id' });

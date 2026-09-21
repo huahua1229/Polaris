@@ -320,6 +320,26 @@ async function handle(req) {
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true });
     }
+    case 'create_album': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('albums').insert({
+        title: String(body.title || '未命名').slice(0, 50),
+        description: String(body.description || '').slice(0, 200),
+        is_public: body.is_public !== false,
+        password: body.is_public === false ? String(body.password || '') : '',
+      });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+    case 'delete_album': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      await sb.from('album_photos').delete().eq('album_id', String(body.id || ''));
+      const { error } = await sb.from('albums').delete().eq('id', String(body.id || ''));
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
 
     default:
       return json({ ok: false, error: 'unknown-action' }, 400);

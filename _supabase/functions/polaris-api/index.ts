@@ -219,12 +219,12 @@ async function handle(req) {
     case 'submit_friend_request': {
       const name = String(body.name || '').slice(0, 50);
       const url = String(body.url || '').slice(0, 200);
-      const desc = String(body.desc || '').slice(0, 200);
+      const description = String(body.desc || '').slice(0, 200);
       const avatar = String(body.avatar || '').slice(0, 300);
       const email = String(body.email || '').slice(0, 100);
-      if (!name || !url || !desc) return json({ ok: false, error: 'empty' });
+      if (!name || !url || !description) return json({ ok: false, error: 'empty' });
       const id = 'fr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      const { error } = await sb.from('friend_requests').insert({ id, name, url, desc, avatar, email });
+      const { error } = await sb.from('friend_requests').insert({ id, name, url, description, avatar, email });
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true });
     }
@@ -244,7 +244,7 @@ async function handle(req) {
       const { data: cur } = await sb.from('site_content').select('data').eq('id', 1).maybeSingle();
       const data = (cur && cur.data) ? cur.data : {};
       data.friends = Array.isArray(data.friends) ? data.friends : [];
-      data.friends.push({ name: req.name, url: req.url, desc: req.desc, avatar: req.avatar || '' });
+      data.friends.push({ name: req.name, url: req.url, desc: req.description, avatar: req.avatar || '' });
       await sb.from('site_content').upsert({ id: 1, data, updated_at: new Date().toISOString() }, { onConflict: 'id' });
       await sb.from('friend_requests').delete().eq('id', id);
       return json({ ok: true });

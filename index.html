@@ -784,6 +784,7 @@ body.dark ::placeholder{color:#888;}
                         <div class="af-field"><label>密码（私密相册必填）</label><input id="al_new_pw" class="af-input" placeholder="设密码"></div>
                     </div>
                     <button type="button" class="af-add" id="alCreate">＋ 创建相册</button>
+                    <div id="alManage" style="margin-top:16px;"></div>
                 </div>
             </div>
         </div>
@@ -2197,6 +2198,38 @@ body.dark ::placeholder{color:#888;}
     });
   }
   loadAlbumOptions();
+
+  /* 相册管理列表 */
+  function loadAlbumManage() {
+    var box = document.getElementById('alManage');
+    if (!box) return;
+    if (!window.PolarisCloud || !window.PolarisCloud.enabled()) return;
+    window.PolarisCloud.call('list_albums', {}).then(function (r) {
+      if (!r || !r.ok) return;
+      box.innerHTML = '<div class="af-title" style="margin-bottom:8px;">已有相册管理</div>';
+      (r.albums || []).forEach(function (al) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,.5);border-radius:8px;margin-bottom:6px;';
+        row.innerHTML = '<span>' + al.title + (al.is_public ? '（公开）' : '（私密）') + '</span>';
+        var delBtn = document.createElement('button');
+        delBtn.className = 'af-add';
+        delBtn.style.cssText = 'padding:4px 12px;margin:0;';
+        delBtn.textContent = '删除';
+        delBtn.onclick = function () {
+          if (!confirm('确定删除「' + al.title + '」？里面的照片也会一起删除')) return;
+          var adminPw = prompt('请输入管理口令：');
+          if (!adminPw) return;
+          window.PolarisCloud.call('delete_album', {id: al.id, password: adminPw}).then(function (r2) {
+            if (r2 && r2.ok) { alert('已删除'); loadAlbumManage(); loadAlbumOptions(); }
+            else alert('删除失败');
+          });
+        };
+        row.appendChild(delBtn);
+        box.appendChild(row);
+      });
+    });
+  }
+  loadAlbumManage();
 
   /* 创建相册 */
   var alCreate = document.getElementById('alCreate');

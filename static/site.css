@@ -19,8 +19,8 @@
     --glass-border: rgba(255, 182, 193, 0.45);
     --shadow-card: 0 4px 18px rgba(255, 107, 157, 0.12);
     --shadow-hover: 0 10px 30px rgba(255, 107, 157, 0.22);
-    --side-w: 196px;
-    --rail-w: 268px;
+    --side-w: clamp(170px, 14vw, 210px);
+    --rail-w: clamp(220px, 20vw, 280px);
     --top-h: 56px;
     --player-h: 66px;
     --radius: 14px;
@@ -182,7 +182,7 @@ body.dark .wallpaper-overlay {
 
 /* ============ 三栏布局 ============ */
 .layout { position: relative; z-index: 10; padding: calc(var(--top-h) + 20px) 22px 28px; }
-.layout-inner { display: flex; gap: 22px; align-items: flex-start; max-width: 1500px; margin: 0 auto; }
+.layout-inner { display: grid; grid-template-columns: 1fr var(--rail-w); gap: clamp(14px, 2vw, 24px); align-items: flex-start; max-width: 1500px; margin: 0 auto; }
 .main-content { flex: 1; min-width: 0; }
 
 /* ============ 右侧信息栏 ============ */
@@ -695,7 +695,7 @@ body.dark .wallpaper-overlay {
 /* ============ 响应式 ============ */
 @media (max-width: 1366px) {
     .right-rail { display: none; }
-    .layout-inner { max-width: 1060px; }
+    .layout-inner { grid-template-columns: 1fr; max-width: 1060px; }
     .project-mini-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {

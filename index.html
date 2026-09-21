@@ -631,6 +631,7 @@ body.dark ::placeholder{color:#888;}
             <button type="button" class="admin-tab" data-tab="blog">博客</button>
             <button type="button" class="admin-tab" data-tab="data">数据</button>
             <button type="button" class="admin-tab" data-tab="music">音乐</button>
+            <button type="button" class="admin-tab" data-tab="album">相册</button>
         </div>
         <div class="admin-body">
             <!-- 基础 -->
@@ -761,6 +762,18 @@ body.dark ::placeholder{color:#888;}
                     <div class="af-title">当前播放列表</div>
                     <div id="muList" style="display:flex;flex-direction:column;gap:8px;"></div>
                     <button type="button" class="af-add" id="muRefresh" style="margin-top:8px;">🔄 刷新列表</button>
+                </div>
+            </div>
+            <div class="admin-tabpage" data-page="album" style="display:none;">
+                <div class="af-section">
+                    <div class="af-title">上传照片到相册</div>
+                    <div class="af-grid">
+                        <div class="af-field"><label>相册 ID</label><input id="al_albumId" class="af-input" placeholder="1=日常随拍, 2=珍藏回忆"></div>
+                        <div class="af-field"><label>图片 URL 或选择文件</label><input type="file" id="al_file" accept="image/*" class="af-input"></div>
+                        <div class="af-field" style="grid-column:1/-1;"><label>说明文字</label><input id="al_caption" class="af-input" placeholder="这张照片是..."></div>
+                    </div>
+                    <button type="button" class="af-add" id="alUpload">⬆ 上传照片</button>
+                    <div class="af-hint">先在 Supabase Storage 建 public bucket "photos"，上传图片后把 URL 粘贴到相册记录里。或直接选本地文件自动上传。</div>
                 </div>
             </div>
         </div>
@@ -1815,7 +1828,7 @@ body.dark ::placeholder{color:#888;}
             if (!window.PolarisCloud || !window.PolarisCloud.enabled()) { list.innerHTML = '<p class="c-sub">云端未连接</p>'; return; }
             window.PolarisCloud.call('list_albums', {}).then(function (r) {
                 if (!r || !r.ok) { list.innerHTML = '<p class="c-sub">加载失败</p>'; return; }
-                list.innerHTML = '';
+                list.innerHTML = ''; list.style.opacity = 0;
                 (r.albums || []).forEach(function (al) {
                     var card = document.createElement('div');
                     card.className = 'album-card';
@@ -1824,7 +1837,7 @@ body.dark ::placeholder{color:#888;}
                         (al.is_public ? '' : '<span class="album-lock">🔒 私密</span>') + '</div>' +
                         '<div class="album-info"><h3>' + al.title + '</h3><p>' + (al.description || '') + '</p></div>';
                     card.onclick = function () { openAlbum(al); };
-                    list.appendChild(card);
+                    list.appendChild(card); list.style.transition = 'opacity .4s'; list.style.opacity = 1;
                 });
             });
         }

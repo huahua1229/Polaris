@@ -740,10 +740,10 @@ body {
 
 
 /* ============ 视图整体入场（每次切换重播） ============ */
-.view.active > .layout-inner { animation: view-enter 0.5s cubic-bezier(0.22, 0.9, 0.32, 1) both; }
+.view.active > .layout-inner { animation: view-enter 0.45s cubic-bezier(0.22, 0.9, 0.32, 1) both; }
 @keyframes view-enter {
-    from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(14px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ============ 内容管理入口（左导航底部） ============ */

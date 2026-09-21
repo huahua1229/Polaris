@@ -369,8 +369,12 @@ body.dark ::placeholder{color:#888;}
                     <section class="panel guestbook-form anim-in" data-delay="1">
                         <h2 class="panel-title"><span class="t-icon">✍️</span>写下你的留言<span class="t-sub">Guestbook</span></h2>
                         <div class="form-row">
-                            <label class="form-label">你的昵称</label>
-                            <input type="text" class="form-input" id="guestName" placeholder="请输入昵称（不填则为匿名访客）" maxlength="20">
+                            <label class="form-label">QQ 邮箱（必填，仅作者可见，用于联系你）</label>
+                            <input type="email" class="form-input" id="guestEmail" placeholder="例如 123456@qq.com" maxlength="50" autocomplete="email">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">你的昵称（可空，默认显示邮箱前缀）</label>
+                            <input type="text" class="form-input" id="guestName" placeholder="想让大家怎么称呼你" maxlength="20">
                         </div>
                         <div class="form-row">
                             <label class="form-label">留言内容</label>
@@ -576,6 +580,12 @@ body.dark ::placeholder{color:#888;}
                     <div class="af-title">作者口令</div>
                     <input type="password" id="af_pw" class="af-input" placeholder="输入新口令后保存即可更换" autocomplete="new-password">
                     <div class="af-hint">当前口令：<code id="af_pw_current"></code>。修改后请务必牢记新口令。</div>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">留言管理（垃圾留言一键删除）</div>
+                    <div class="af-hint" id="adminMsgTip">加载中...</div>
+                    <div id="adminMsgList" style="display:flex;flex-direction:column;gap:8px;"></div>
+                    <button type="button" class="af-add" id="adminMsgRefresh" style="margin-top:8px;">🔄 刷新留言列表</button>
                 </div>
                 <div class="af-section">
                     <div class="af-title">恢复默认</div>
@@ -933,8 +943,45 @@ body.dark ::placeholder{color:#888;}
             buildList('adminExp', c.experience, 'exp');
             buildList('adminHonors', c.honors, 'honors');
             buildList('adminBlog', c.blogArticles, 'blog');
+            loadAdminMessages();
             var se = document.getElementById('af_selfEval'); if (se) se.value = (c.selfEval || []).join('\n');
         }
+
+        function loadAdminMessages() {
+            var box = document.getElementById('adminMsgList');
+            var tip = document.getElementById('adminMsgTip');
+            if (!box) return;
+            window.PolarisCloud.loadMessagesAsync().then(function (r) {
+                var msgs = (r && r.ok && r.messages) ? r.messages : [];
+                tip.textContent = '共 ' + msgs.length + ' 条留言';
+                if (!msgs.length) { box.innerHTML = '<div style="color:#aaa;font-size:12px;">暂无留言</div>'; return; }
+                box.innerHTML = msgs.map(function (m) {
+                    var who = m.name || (m.email ? m.email.split('@')[0] : '匿名');
+                    var d = new Date(m.time);
+                    var ds = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+                    return '<div class="admin-item" style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 12px;">' +
+                        '<div style="flex:1;min-width:0;">' +
+                          '<div style="font-size:12px;color:#888;">' + escHtml(who) + ' · ' + ds + (m.email ? ' · ' + escHtml(m.email) : '') + '</div>' +
+                          '<div style="font-size:13px;margin-top:4px;word-break:break-word;">' + escHtml(m.message) + '</div>' +
+                        '</div>' +
+                        '<button type="button" class="af-btn danger" data-did="' + escHtml(m.id) + '" style="flex:0 0 auto;">删除</button>' +
+                    '</div>';
+                }).join('');
+                box.querySelectorAll('button[data-did]').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        if (!confirm('确定删除这条留言吗？')) return;
+                        var id = this.getAttribute('data-did');
+                        var pw = (typeof getSessionPw === 'function') ? getSessionPw() : '';
+                        window.PolarisCloud.deleteMessageAsync(id, pw).then(function (r2) {
+                            if (r2 && r2.ok) { alert('已删除'); loadAdminMessages(); renderMessages && renderMessages(); }
+                            else alert('删除失败：口令不对？请在面板里重新验证一次');
+                        });
+                    });
+                });
+            });
+        }
+        var _adminMsgRefresh = document.getElementById('adminMsgRefresh');
+        if (_adminMsgRefresh) _adminMsgRefresh.addEventListener('click', loadAdminMessages);
 
         function saveFromForms(forceC, pwSession) {
             var c = forceC || PolarisSite.load();
@@ -1225,6 +1272,10 @@ body.dark ::placeholder{color:#888;}
         function getInitial(name) { return name ? name.charAt(0).toUpperCase() : '匿'; }
         function genId() { return Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
         function escHtml(str) { var div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
+        function maskEmail(e){
+            var m = String(e||'').match(/^(\w{2})\w*(@.*)$/);
+            return m ? m[1] + '***' + m[2] : e;
+        }
         function getSessionPw() { try { return sessionStorage.getItem('polaris_admin_pw') || ''; } catch (e) { return ''; } }
         function isAuthor() { try { return sessionStorage.getItem('polaris_admin_ok') === '1'; } catch (e) { return false; } }
 
@@ -1286,7 +1337,8 @@ body.dark ::placeholder{color:#888;}
                         '<div class="message-header">' +
                             '<div class="message-author">' +
                                 '<div class="message-avatar">' + getInitial(msg.name) + '</div>' +
-                                '<span class="message-name">' + escHtml(msg.name || '匿名访客') + '</span>' +
+                                '<span class="message-name">' + escHtml(msg.name || (msg.email ? msg.email.split('@')[0] : '匿名访客')) + '</span>' +
+                                (msg.email ? '<span style="font-size:11px;color:#aaa;margin-left:6px;">📧 ' + escHtml(maskEmail(msg.email)) + '</span>' : '') +
                             '</div>' +
                             '<div style="display:flex;align-items:center;gap:8px;">' +
                                 '<span class="message-time">' + formatTime(msg.time) + '</span>' +
@@ -1392,11 +1444,14 @@ body.dark ::placeholder{color:#888;}
             });
         }
 
+        var emailInput = document.getElementById('guestEmail');
         submitBtn.addEventListener('click', function () {
             var name = nameInput.value.trim();
+            var email = emailInput.value.trim();
             var message = msgInput.value.trim();
+            if (!/^\d{5,12}@qq\.com$/.test(email)) { alert('请填写正确的 QQ 邮箱（5-12 位数字@qq.com）~'); emailInput.focus(); return; }
             if (!message) { alert('留言内容不能为空哦~'); msgInput.focus(); return; }
-            var newMsg = { id: genId(), name: name, message: message, time: Date.now(), likes: 0, replies: [] };
+            var newMsg = { id: genId(), name: name, email: email, message: message, time: Date.now(), likes: 0, replies: [] };
             if (cloudMode()) {
                 window.PolarisCloud.addMessageAsync(newMsg).then(function (r) {
                     if (!(r && r.ok)) { alert('留言发布失败，请检查网络后重试~'); return; }

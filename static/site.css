@@ -936,5 +936,6 @@ body {
     border: 2px solid #fff;
 }
 .player-bar.open { transform: translateX(0); opacity: 1; pointer-events: auto; }
+.player-fab.bar-open { right: 366px; }
 .player-bar { border-radius: 18px !important; padding: 12px 14px !important; height: auto !important; }
 body.dark .player-bar { background: rgba(40, 32, 52, .92); }

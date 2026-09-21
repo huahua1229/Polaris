@@ -1936,6 +1936,7 @@ body.dark ::placeholder{color:#888;}
     { title: '東雲', artist: 'ZONE', src: 'static/music8.mp3', cover: 'static/avatar.png' }
   ];
   var idx = 0;
+  var skipping = false;
 
   function loadTrack(i){
     idx = (i + playlist.length) % playlist.length;
@@ -1949,20 +1950,28 @@ body.dark ::placeholder{color:#888;}
   function fmt(s){ if(!s||isNaN(s)) return '0:00'; var m=Math.floor(s/60), sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
   function play(){ audio.play().catch(function(){}); }
   function pause(){ audio.pause(); }
-  function next(){ loadTrack(idx+1); play(); }
+  function next(){ if(skipping) return; skipping=true; loadTrack(idx+1); play(); setTimeout(function(){skipping=false;}, 800); }
   function prev(){ loadTrack(idx-1); play(); }
 
-  fab.addEventListener('click', function(){
-    if (bar.classList.contains('open')) { bar.classList.remove('open'); }
-    else {
+  fab.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (bar.classList.contains('open')) {
+      bar.classList.remove('open');
+      fab.classList.remove('bar-open');
+    } else {
       bar.classList.add('open');
+      fab.classList.add('bar-open');
       if (audio.paused) play();
     }
   });
-  playBtn.addEventListener('click', function(){ audio.paused ? play() : pause(); });
-  nextBtn.addEventListener('click', next);
-  prevBtn.addEventListener('click', prev);
+  playBtn.addEventListener('click', function(e){ e.stopPropagation(); audio.paused ? play() : pause(); });
+  nextBtn.addEventListener('click', function(e){ e.stopPropagation(); next(); });
+  prevBtn.addEventListener('click', function(e){ e.stopPropagation(); prev(); });
   audio.addEventListener('ended', next);
+  audio.addEventListener('error', function(){
+    // 文件不存在自动跳下一首
+    if(!skipping) next();
+  });
   audio.addEventListener('play', function(){
     playBtn.textContent = '⏸';
     fab.classList.add('playing');

@@ -589,7 +589,7 @@ body.dark ::placeholder{color:#888;}
             <div class="player-vol-bar" id="playerVolBar"><i id="playerVolFill"></i></div>
         </div>
     </div>
-    <audio id="bgMusic" preload="metadata"><source src="static/flower_dance_piano.mp3" type="audio/mpeg"></audio>
+    <audio id="bgMusic" loop preload="metadata"><source src="static/flower_dance_piano.mp3" type="audio/mpeg"></audio>
 
     <!-- ===== 作者口令验证 ===== -->
     <div class="admin-auth" id="adminAuth" hidden>
@@ -1910,13 +1910,6 @@ body.dark ::placeholder{color:#888;}
   var bar = document.getElementById('playerBar');
   var audio = document.getElementById('bgMusic');
   var playBtn = document.getElementById('playerPlay');
-  var prevBtn = document.getElementById('playerPrev');
-  var nextBtn = document.getElementById('playerNext');
-  var duckImg = document.getElementById('fabDuck');
-  var coverImg = document.getElementById('fabCover');
-  var barCover = document.getElementById('barCover');
-  var barTitle = document.getElementById('barTitle');
-  var barArtist = document.getElementById('barArtist');
   var progress = document.getElementById('playerProgress');
   var fill = document.getElementById('playerFill');
   var curEl = document.getElementById('playerCur');
@@ -1924,30 +1917,12 @@ body.dark ::placeholder{color:#888;}
   var volBar = document.getElementById('playerVolBar');
   var volFill = document.getElementById('playerVolFill');
   var volIcon = document.getElementById('playerVolIcon');
+  var duckImg = document.getElementById('fabDuck');
+  var coverImg = document.getElementById('fabCover');
 
-  var playlist = [
-    { title: '花之舞 · 钢琴版', artist: 'DJ Okawari', src: 'static/flower_dance_piano.mp3', cover: 'static/avatar.png' }
-  ];
-  var idx = 0;
-  var skipping = false;
-
-  function loadTrack(i){
-    idx = (i + playlist.length) % playlist.length;
-    var t = playlist[idx];
-    audio.src = t.src;
-    barTitle.textContent = t.title;
-    barArtist.textContent = t.artist;
-    barCover.src = t.cover;
-    coverImg.src = t.cover;
-  }
   function fmt(s){ if(!s||isNaN(s)) return '0:00'; var m=Math.floor(s/60), sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
-  function play(){ audio.play().catch(function(){}); }
-  function pause(){ audio.pause(); }
-  function next(){ if(skipping) return; skipping=true; loadTrack(idx+1); play(); setTimeout(function(){skipping=false;}, 800); }
-  function prev(){ loadTrack(idx-1); play(); }
 
-  fab.addEventListener('click', function(e){
-    e.stopPropagation();
+  fab.addEventListener('click', function(){
     if (bar.classList.contains('open')) {
       bar.classList.remove('open');
       fab.classList.remove('bar-open');
@@ -1956,20 +1931,24 @@ body.dark ::placeholder{color:#888;}
       fab.classList.add('bar-open');
     }
   });
-  nextBtn.addEventListener('click', function(e){ e.stopPropagation(); next(); });
-  prevBtn.addEventListener('click', function(e){ e.stopPropagation(); prev(); });
-  audio.addEventListener('ended', function(){ audio.currentTime = 0; audio.play(); });
-  audio.addEventListener('error', function(){
-    console.log('music load error');
+
+  playBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (audio.paused) {
+      audio.play().catch(function(){});
+    } else {
+      audio.pause();
+    }
   });
+
   audio.addEventListener('play', function(){
-    playBtn.textContent = '⏸';
+    playBtn.textContent = '\u23F8';
     fab.classList.add('playing');
     duckImg.style.display = 'none';
     coverImg.style.display = '';
   });
   audio.addEventListener('pause', function(){
-    playBtn.textContent = '▶';
+    playBtn.textContent = '\u25B6';
     fab.classList.remove('playing');
     duckImg.style.display = '';
     coverImg.style.display = 'none';
@@ -1987,11 +1966,10 @@ body.dark ::placeholder{color:#888;}
     var r = volBar.getBoundingClientRect();
     audio.volume = (e.clientX-r.left)/r.width;
     volFill.style.width = (audio.volume*100)+'%';
-    volIcon.textContent = audio.volume > 0.5 ? '🔊' : (audio.volume > 0 ? '🔉' : '🔇');
+    volIcon.textContent = audio.volume > 0.5 ? '\uD83D\uDD0A' : (audio.volume > 0 ? '\uD83D\uDD09' : '\uD83D\uDD07');
   });
   audio.volume = 0.7;
   volFill.style.width = '70%';
-  loadTrack(0);
 })();
 </script>
 <script>

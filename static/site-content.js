@@ -64,10 +64,7 @@ window.PolarisSite = (function () {
             '职业态度：认真负责，追求极致（待补充）',
             '兴趣爱好：🎮 打游戏、⛰️ 爬山、🌊 看海、🎵 听音乐'
         ],
-        friends: [
-            { name: '友人C', url: 'https://www.ihewro.com', desc: '一个很会写博客的前辈，小站设计参考了他', avatar: '' },
-            { name: '示例好友', url: 'https://example.com', desc: '在这里放上你的小伙伴~', avatar: '' }
-        ],
+        friends: [],
         projects: [
             { title: '项目名称 1', ico: '🖥️', tags: 'Vue,TypeScript,前端', cat: 'frontend', catLabel: '前端', stars: 128, desc: '项目简介：这是一个基于 Vue3 + TypeScript 的 Web 应用，实现了 XXX 功能，采用 XXX 架构设计，支持 XXX 特性（内容待补充）。' },
             { title: '项目名称 2', ico: '🧠', tags: 'Python,AI,NLP', cat: 'ai', catLabel: 'Python', stars: 86, desc: '项目简介：基于 Python 的自然语言处理项目，使用 XXX 模型，实现了 XXX 功能，准确率达到 XX%（内容待补充）。' },

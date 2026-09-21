@@ -67,7 +67,7 @@ body {
     -webkit-backdrop-filter: blur(22px);
     border-right: 1.5px solid var(--glass-border);
     display: flex; flex-direction: column;
-    padding: 22px 14px calc(var(--player-h) + 18px);
+    padding: 22px 14px 18px;
     transition: transform 0.3s ease;
 }
 .nav-brand {
@@ -174,7 +174,7 @@ body {
 .mask-layer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 290; }
 
 /* ============ 三栏布局 ============ */
-.layout { position: relative; z-index: 10; padding: calc(var(--top-h) + 20px) 22px calc(var(--player-h) + 24px); }
+.layout { position: relative; z-index: 10; padding: calc(var(--top-h) + 20px) 22px 28px; }
 .layout-inner { display: flex; gap: 22px; align-items: flex-start; max-width: 1500px; margin: 0 auto; }
 .main-content { flex: 1; min-width: 0; }
 
@@ -272,9 +272,11 @@ body {
 
 /* ============ 底部播放条 ============ */
 .player-bar {
-    position: fixed; left: 0; right: 0; bottom: 0; height: var(--player-h);
-    z-index: 280;
-    background: rgba(255, 255, 255, 0.82);
+    position: fixed; right: 18px; top: 76px; width: 340px; max-width: calc(100vw - 32px);
+    z-index: 280; flex-wrap: wrap;
+    transform: translateX(calc(100% + 40px)); opacity: 0; pointer-events: none;
+    transition: transform .35s cubic-bezier(.22,.9,.32,1), opacity .3s;
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
     border-top: 1.5px solid var(--glass-border);
@@ -907,3 +909,24 @@ body {
     width: 100%; height: 100%; object-fit: cover; display: block;
     border-radius: inherit;
 }
+
+/* 右上角音乐悬浮钮 */
+.player-fab {
+    position: fixed; right: 18px; top: 76px; z-index: 285;
+    width: 52px; height: 52px; border-radius: 50%; cursor: pointer;
+    border: 3px solid var(--c-lpink); padding: 0; overflow: hidden;
+    box-shadow: 0 4px 18px rgba(255, 107, 157, .35);
+    background: #fff; transition: transform .2s ease;
+}
+.player-fab:hover { transform: scale(1.08); }
+.player-fab img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.player-fab.playing img { animation: disc-spin 9s linear infinite; }
+.player-fab .fab-badge {
+    position: absolute; right: -2px; bottom: -2px; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--grad-logo); color: #fff;
+    font-size: 10px; display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+}
+.player-bar.open { transform: translateX(0); opacity: 1; pointer-events: auto; }
+.player-bar { border-radius: 18px !important; padding: 12px 14px !important; height: auto !important; }
+body.dark .player-bar { background: rgba(40, 32, 52, .92); }

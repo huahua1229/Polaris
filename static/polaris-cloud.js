@@ -90,6 +90,11 @@ window.PolarisCloud = (function () {
         return call('delete_message', { id: id, password: password || '' });
     }
 
+    function submitPostAsync(post) { return call('submit_post', post, 10000); }
+    function listPostsAsync(password) { return call('list_posts', { password: password || '' }); }
+    function deletePostAsync(id, password) { return call('delete_post', { id: id, password: password || '' }); }
+    function publishPostAsync(id, password) { return call('publish_post', { id: id, password: password || '' }); }
+
     return {
         enabled: enabled,
         call: call,
@@ -102,6 +107,10 @@ window.PolarisCloud = (function () {
         addMessageAsync: addMessageAsync,
         addReplyAsync: addReplyAsync,
         likeAsync: likeAsync,
-        deleteMessageAsync: deleteMessageAsync
+        deleteMessageAsync: deleteMessageAsync,
+        submitPostAsync: submitPostAsync,
+        listPostsAsync: listPostsAsync,
+        deletePostAsync: deletePostAsync,
+        publishPostAsync: publishPostAsync
     };
 })();

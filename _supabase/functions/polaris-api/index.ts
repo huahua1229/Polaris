@@ -1,11 +1,6 @@
 // ============================================================
-// Polaris 小站 · Supabase Edge Function「polaris-api」
-// 部署：Supabase 控制台 → Edge Functions → 新建函数（名称固定 polaris-api）
-// 环境变量：SUPABASE_URL 与 SUPABASE_SERVICE_ROLE_KEY
-//   （SUPABASE_URL 自动注入；SERVICE_ROLE_KEY 需在
-//    Edge Functions → Secrets 中手动添加，值为
-//    Project Settings → API → service_role key）
-// 前端调用地址：https://<项目ref>.functions.supabase.co/polaris-api
+// Polaris 小站 · Supabase Edge Function「super-function」
+// 部署：Supabase 控制台 → Edge Functions → super-function → 编辑代码 → 粘贴本文件 → Deploy
 // ============================================================
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -19,7 +14,6 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-// ---------- 口令哈希（PBKDF2-SHA256，纯 Web Crypto，无第三方依赖） ----------
 async function hashPassword(password, salt) {
   const enc = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
@@ -39,7 +33,6 @@ function safeEqual(a, b) {
   return diff === 0;
 }
 
-// ---------- 口令校验（返回 { ok, hash, salt } 或 { ok:false }） ----------
 async function verifyPw(sb, password) {
   if (!password) return { ok: false };
   const { data: rows, error } = await sb.from('admin_auth').select('password_hash, salt').eq('id', 1).maybeSingle();
@@ -49,9 +42,8 @@ async function verifyPw(sb, password) {
   return { ok: true, hash, salt: rows.salt };
 }
 
-// ---------- 业务路由 ----------
 async function handle(req) {
-  if (req.method === 'OPTIONS') return new Response('ok', { status: 204, headers: corsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders });
   if (req.method !== 'POST') return json({ ok: false, error: 'method' }, 405);
 
   let body;
@@ -73,14 +65,15 @@ async function handle(req) {
       return json({ ok: true, messages: data || [] });
     }
 
-    /* ===== 公开写入（访客留言 / 回复 / 点赞） ===== */
+    /* ===== 公开写入：留言 ===== */
     case 'add_message': {
       const name = String(body.name || '').slice(0, 50);
+      const email = String(body.email || '').slice(0, 100);
       const message = String(body.message || '').slice(0, 2000);
       const time = Number(body.time) || Date.now();
       if (!message) return json({ ok: false, error: 'empty' });
       const id = String(body.id || (time + '_' + Math.random().toString(36).slice(2, 11)));
-      const { error } = await sb.from('guestbook_messages').insert({ id, name, message, time, likes: 0, replies: [] });
+      const { error } = await sb.from('guestbook_messages').insert({ id, name, email, message, time, likes: 0, replies: [] });
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true, id });
     }
@@ -108,6 +101,22 @@ async function handle(req) {
       const { error } = await sb.from('guestbook_messages').update({ likes }).eq('id', id);
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true, likes });
+    }
+
+    /* ===== 公开写入：投稿 ===== */
+    case 'submit_post': {
+      const name = String(body.name || '').slice(0, 50);
+      const email = String(body.email || '').slice(0, 100);
+      const type = body.type === 'blog' ? 'blog' : 'project';
+      const title = String(body.title || '').slice(0, 100);
+      const desc = String(body.desc || '').slice(0, 500);
+      const content = String(body.content || '').slice(0, 5000);
+      const tags = String(body.tags || '').slice(0, 100);
+      if (!name || !email || !title || !content) return json({ ok: false, error: 'empty' });
+      const id = 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      const { error } = await sb.from('posts_queue').insert({ id, name, email, type, title, desc, content, tags });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
     }
 
     /* ===== 作者操作（需口令） ===== */
@@ -148,6 +157,54 @@ async function handle(req) {
       if (!r.ok) return json({ ok: false, error: 'auth' });
       const { error } = await sb.from('guestbook_messages').delete().eq('id', String(body.id || ''));
       if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+
+    /* ===== 投稿审核 ===== */
+    case 'list_posts': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const { data, error } = await sb.from('posts_queue').select('*').order('created_at', { ascending: false });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true, posts: data || [] });
+    }
+    case 'delete_post': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('posts_queue').delete().eq('id', String(body.id || ''));
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+    case 'publish_post': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const id = String(body.id || '');
+      const { data: post, error: e1 } = await sb.from('posts_queue').select('*').eq('id', id).maybeSingle();
+      if (e1 || !post) return json({ ok: false, error: 'not-found' });
+      const { data: cur } = await sb.from('site_content').select('data').eq('id', 1).maybeSingle();
+      const data = (cur && cur.data) ? cur.data : {};
+      if (post.type === 'blog') {
+        data.blogArticles = Array.isArray(data.blogArticles) ? data.blogArticles : [];
+        data.blogArticles.unshift({
+          title: post.title,
+          date: new Date().toISOString().slice(0, 10),
+          cat: 'guest', catLabel: '投稿',
+          tags: post.tags || '投稿',
+          cover: '投稿', grad: 'ffd3a5,fd6585',
+          excerpt: post.desc || (post.content || '').slice(0, 80),
+          content: post.content,
+          author: post.name
+        });
+      } else {
+        data.projects = Array.isArray(data.projects) ? data.projects : [];
+        data.projects.unshift({
+          title: post.title, ico: '📌', tags: post.tags || '投稿',
+          cat: 'guest', catLabel: '投稿', stars: 0,
+          desc: (post.desc || (post.content || '').slice(0, 100)) + '（投稿人：' + post.name + '）'
+        });
+      }
+      await sb.from('site_content').upsert({ id: 1, data, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+      await sb.from('posts_queue').delete().eq('id', id);
       return json({ ok: true });
     }
 

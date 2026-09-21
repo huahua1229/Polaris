@@ -960,5 +960,9 @@ body.dark .admin-tab { color: #c8b8d8; }
 body.dark .admin-tab.active { background: rgba(255,107,157,.3); color: #fff; }
 body.dark .af-title { color: #f0e8f0; }
 body.dark .af-hint { color: #a898b8; }
+body.dark .msg-card, body.dark .guestbook-item, body.dark .article-card, body.dark .project-card { background: rgba(42,36,56,.92) !important; color: #e8e0f0 !important; }
+body.dark .msg-card *, body.dark .article-card *, body.dark .project-card * { color: #e8e0f0; }
+body.dark .msg-name, body.dark .article-title, body.dark .project-title { color: #fff !important; }
+body.dark .msg-meta, body.dark .article-meta, body.dark .article-summary { color: #b8a8c8 !important; }
 body.dark .side-nav { background: rgba(26,22,38,.85); }
 body.dark .top-bar { background: rgba(26,22,38,.9); }

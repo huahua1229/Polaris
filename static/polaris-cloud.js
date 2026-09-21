@@ -28,30 +28,31 @@ window.PolarisCloud = (function () {
 
     function call(action, payload, timeoutMs) {
         if (!enabled()) return Promise.resolve({ ok: false, error: 'not-configured' });
-        var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-        var timer = null;
-        if (ctrl) timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 15000);
         var body = { action: action };
         for (var k in payload) {
             if (Object.prototype.hasOwnProperty.call(payload, k)) body[k] = payload[k];
         }
-        var headers = { 'Content-Type': 'application/json' };
-        if (cfg.anonKey) {
-            headers['apikey'] = cfg.anonKey;
-            headers['Authorization'] = 'Bearer ' + cfg.anonKey;
-        }
-        return fetch(cfg.fnUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(body),
-            signal: ctrl ? ctrl.signal : undefined
-        }).then(function (resp) {
-            return resp.json().catch(function () { return { ok: false, error: 'bad-response' }; });
-        }).then(function (r) {
-            return r && typeof r === 'object' ? r : { ok: false, error: 'bad-response' };
-        }).catch(function () {
-            return { ok: false, error: 'network' };
-        }).finally(function () { if (timer) clearTimeout(timer); });
+        return new Promise(function (resolve) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', cfg.fnUrl, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            if (cfg.anonKey) {
+                xhr.setRequestHeader('apikey', cfg.anonKey);
+                xhr.setRequestHeader('Authorization', 'Bearer ' + cfg.anonKey);
+            }
+            xhr.timeout = timeoutMs || 15000;
+            xhr.onload = function () {
+                try {
+                    var r = JSON.parse(xhr.responseText);
+                    resolve(r && typeof r === 'object' ? r : { ok: false, error: 'bad-response' });
+                } catch (e) {
+                    resolve({ ok: false, error: 'bad-response' });
+                }
+            };
+            xhr.onerror = function () { resolve({ ok: false, error: 'network' }); };
+            xhr.ontimeout = function () { resolve({ ok: false, error: 'timeout' }); };
+            xhr.send(JSON.stringify(body));
+        });
     }
 
     /* ---------- 内容 ---------- */

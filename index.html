@@ -1990,7 +1990,25 @@ body.dark ::placeholder{color:#888;}
   audio.volume = 0.7;
   volFill.style.width = '70%';
 
-  // 从 Supabase 拉音乐列表
+  var playlist = [];
+  var currentIdx = 0;
+  var STORAGE = 'https://ldprlyzawsgwjtgdwexz.supabase.co/storage/v1/object/public/music/';
+
+  function loadTrack(i){
+    if(!playlist.length) return;
+    currentIdx = (i + playlist.length) % playlist.length;
+    var m = playlist[currentIdx];
+    audio.src = STORAGE + m.file_path;
+    barTitle.textContent = m.title;
+    barArtist.textContent = m.artist || '';
+  }
+  function nextTrack(){
+    if(playlist.length > 1) loadTrack(currentIdx + 1);
+    else { audio.currentTime = 0; audio.play(); }
+  }
+
+  audio.addEventListener('ended', nextTrack);
+
   window.loadMusicList = function() {
     return fetch(EDGE_URL, {
       method: 'POST',
@@ -1998,10 +2016,8 @@ body.dark ::placeholder{color:#888;}
       body: JSON.stringify({action:'list_music'})
     }).then(function(r){return r.json();}).then(function(d){
       if(d.ok && d.list && d.list.length){
-        var src = 'https://ldprlyzawsgwjtgdwexz.supabase.co/storage/v1/object/public/music/' + d.list[0].file_path;
-        audio.src = src;
-        barTitle.textContent = d.list[0].title;
-        barArtist.textContent = d.list[0].artist || '';
+        playlist = d.list;
+        loadTrack(0);
       }
     }).catch(function(){});
   };

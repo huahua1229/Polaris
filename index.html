@@ -1926,14 +1926,7 @@ body.dark ::placeholder{color:#888;}
   var volIcon = document.getElementById('playerVolIcon');
 
   var playlist = [
-    { title: '花之舞 · 钢琴版', artist: 'DJ Okawari', src: 'static/flower_dance_piano.mp3', cover: 'static/avatar.png' },
-    { title: '潮鳴り', artist: 'CLANNAD OST', src: 'static/music2.mp3', cover: 'static/avatar.png' },
-    { title: '孤独な巡礼', artist: 'Fate OST', src: 'static/music3.mp3', cover: 'static/avatar.png' },
-    { title: '鳥の詩', artist: 'AIR OST', src: 'static/music4.mp3', cover: 'static/avatar.png' },
-    { title: '青空', artist: 'AIR OST', src: 'static/music5.mp3', cover: 'static/avatar.png' },
-    { title: '町、時の流れ、人', artist: 'CLANNAD OST', src: 'static/music6.mp3', cover: 'static/avatar.png' },
-    { title: 'Songs and Days', artist: 'Key Sounds', src: 'static/music7.mp3', cover: 'static/avatar.png' },
-    { title: '東雲', artist: 'ZONE', src: 'static/music8.mp3', cover: 'static/avatar.png' }
+    { title: '花之舞 · 钢琴版', artist: 'DJ Okawari', src: 'static/flower_dance_piano.mp3', cover: 'static/avatar.png' }
   ];
   var idx = 0;
   var skipping = false;
@@ -1965,10 +1958,9 @@ body.dark ::placeholder{color:#888;}
   });
   nextBtn.addEventListener('click', function(e){ e.stopPropagation(); next(); });
   prevBtn.addEventListener('click', function(e){ e.stopPropagation(); prev(); });
-  audio.addEventListener('ended', next);
+  audio.addEventListener('ended', function(){ audio.currentTime = 0; audio.play(); });
   audio.addEventListener('error', function(){
-    // 文件不存在自动跳下一首
-    if(!skipping) next();
+    console.log('music load error');
   });
   audio.addEventListener('play', function(){
     playBtn.textContent = '⏸';

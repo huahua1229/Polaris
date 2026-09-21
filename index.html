@@ -838,8 +838,8 @@ body.dark ::placeholder{color:#888;}
             if (rs) rs.textContent = p.school;
             var rct = document.getElementById('resumeContactTop');
             if (rct) rct.innerHTML =
-                '<span>' + esc(p.phone) + '</span><span>' + esc(p.email) + '</span>' +
-                '<span>' + esc(p.location) + '</span><span>' + esc(p.age) + '</span><span>' + esc(p.status) + '</span>';
+                '<span>电话：' + esc(p.phone) + '</span><span>邮箱：' + esc(p.email) + '</span>' +
+                '<span>城市：' + esc(p.location) + '</span><span>年龄：' + esc(p.age) + '</span><span>身份：' + esc(p.status) + '</span>';
             var ri = document.getElementById('resumeIntro');
             if (ri) ri.innerHTML = nl2br(c.resumeIntro);
             renderTimeline('#resumeEducation', c.education);
@@ -975,15 +975,15 @@ body.dark ::placeholder{color:#888;}
             if (ra) ra.innerHTML = awards;
             var hc = document.getElementById('homeContact');
             if (hc) hc.innerHTML =
-                '<li>' + esc(p.phone) + '</li>' +
-                '<li>' + esc(p.email) + '</li>' +
-                '<li>' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
+                '<li>电话：' + esc(p.phone) + '</li>' +
+                '<li>邮箱：' + esc(p.email) + '</li>' +
+                '<li>年龄：' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
             var rc = document.getElementById('resumeContact');
             if (rc) rc.innerHTML =
-                '<li>' + esc(p.phone) + '</li>' +
-                '<li>' + esc(p.email) + '</li>' +
-                '<li>' + esc(p.location) + '</li>' +
-                '<li>' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
+                '<li>电话：' + esc(p.phone) + '</li>' +
+                '<li>邮箱：' + esc(p.email) + '</li>' +
+                '<li>城市：' + esc(p.location) + '</li>' +
+                '<li>年龄：' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
         }
 
         window.PolarisRender = { renderAll: renderAll, esc: esc };

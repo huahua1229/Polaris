@@ -112,9 +112,12 @@ async function handle(req) {
       const summary = String(body.desc || '').slice(0, 500);
       const content = String(body.content || '').slice(0, 5000);
       const tags = String(body.tags || '').slice(0, 100);
+      const attachment_path = String(body.attachment_path || '').slice(0, 300);
+      const attachment_name = String(body.attachment_name || '').slice(0, 200);
+      const attachment_size = Number(body.attachment_size || 0);
       if (!name || !email || !title || !content) return json({ ok: false, error: 'empty' });
       const id = 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      const { error } = await sb.from('posts_queue').insert({ id, name, email, type, title, summary, content, tags });
+      const { error } = await sb.from('posts_queue').insert({ id, name, email, type, title, summary, content, tags, attachment_path, attachment_name, attachment_size });
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true });
     }
@@ -193,14 +196,18 @@ async function handle(req) {
           cover: '投稿', grad: 'ffd3a5,fd6585',
           excerpt: post.summary || (post.content || '').slice(0, 80),
           content: post.content,
-          author: post.name
+          author: post.name,
+          attachment: post.attachment_path ? { name: post.attachment_name, path: post.attachment_path, size: post.attachment_size } : null
         });
       } else {
         data.projects = Array.isArray(data.projects) ? data.projects : [];
+        var pDesc = (post.summary || (post.content || '').slice(0, 100)) + '（投稿人：' + post.name + '）';
+        if (post.attachment_name) pDesc += ' [附件: ' + post.attachment_name + ']';
         data.projects.unshift({
           title: post.title, ico: '📌', tags: post.tags || '投稿',
           cat: 'guest', catLabel: '投稿', stars: 0,
-          desc: (post.summary || (post.content || '').slice(0, 100)) + '（投稿人：' + post.name + '）'
+          desc: pDesc,
+          attachment: post.attachment_path ? { name: post.attachment_name, path: post.attachment_path, size: post.attachment_size } : null
         });
       }
       await sb.from('site_content').upsert({ id: 1, data, updated_at: new Date().toISOString() }, { onConflict: 'id' });

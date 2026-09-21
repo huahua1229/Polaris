@@ -90,7 +90,29 @@ window.PolarisCloud = (function () {
         return call('delete_message', { id: id, password: password || '' });
     }
 
-    function submitPostAsync(post) { return call('submit_post', post, 10000); }
+    function uploadAttachmentAsync(file, onProgress) {
+        if (!enabled()) return Promise.resolve({ ok: false, error: 'not-configured' });
+        var supabaseUrl = cfg.fnUrl.split('/functions/')[0];
+        var ext = file.name.split('.').pop();
+        var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80);
+        var path = 'submissions/' + Date.now() + '_' + safeName;
+        var headers = {
+            'apikey': cfg.anonKey,
+            'Authorization': 'Bearer ' + cfg.anonKey,
+            'Content-Type': 'application/octet-stream',
+            'x-upsert': 'true'
+        };
+        return fetch(supabaseUrl + '/storage/v1/object/' + path, {
+            method: 'POST',
+            headers: headers,
+            body: file
+        }).then(function (resp) {
+            if (!resp.ok) return resp.text().then(function (txt) { return { ok: false, error: 'upload-failed: ' + txt.slice(0, 200) }; });
+            return { ok: true, path: path, name: file.name, size: file.size };
+        }).catch(function () { return { ok: false, error: 'network' }; });
+    }
+
+    function submitPostAsync(post) { return call('submit_post', post, 15000); }
     function listPostsAsync(password) { return call('list_posts', { password: password || '' }); }
     function deletePostAsync(id, password) { return call('delete_post', { id: id, password: password || '' }); }
     function publishPostAsync(id, password) { return call('publish_post', { id: id, password: password || '' }); }
@@ -108,6 +130,7 @@ window.PolarisCloud = (function () {
         addReplyAsync: addReplyAsync,
         likeAsync: likeAsync,
         deleteMessageAsync: deleteMessageAsync,
+        uploadAttachmentAsync: uploadAttachmentAsync,
         submitPostAsync: submitPostAsync,
         listPostsAsync: listPostsAsync,
         deletePostAsync: deletePostAsync,

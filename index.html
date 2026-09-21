@@ -86,6 +86,18 @@ body.dark ::placeholder{color:#888;}
 .reader-meta{font-size:13px;color:#c9b8d9;margin-bottom:30px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.12);}
 .reader-body{font-size:16px;line-height:1.95;color:#e8e6f0;white-space:pre-wrap;word-break:break-word;}
 </style>
+
+<style>
+.friends-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.friend-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-border);text-decoration:none;color:var(--c-ink);transition:all .25s ease;}
+.friend-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:var(--c-lpink);}
+.friend-av{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--c-lpink);}
+.friend-av img{width:100%;height:100%;object-fit:cover;}
+.friend-av-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--grad-main);color:#fff;font-family:'ZCOOL KuaiLe',cursive;}
+.friend-info{min-width:0;}
+.friend-name{font-weight:700;font-size:15px;margin-bottom:3px;}
+.friend-desc{font-size:12.5px;color:var(--c-sub);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+</style>
 </head>
 <body>
     <div id="splash"><div class="splash-inner">
@@ -115,6 +127,7 @@ body.dark ::placeholder{color:#888;}
             <a href="#projects" class="nav-item" data-view="projects"><span class="nav-icon">🚀</span><span>项目</span></a>
             <a href="#blog" class="nav-item" data-view="blog"><span class="nav-icon">📝</span><span>博客</span></a>
             <a href="#guestbook" class="nav-item" data-view="guestbook"><span class="nav-icon">💌</span><span>留言</span></a>
+            <a href="#friends" class="nav-item" data-view="friends"><span class="nav-icon">🔗</span><span>友链</span></a>
         </nav>
         <div class="nav-footer">
             <button class="admin-entry" id="adminEntry" type="button">⚙ 内容管理</button>
@@ -422,6 +435,28 @@ body.dark ::placeholder{color:#888;}
                 </aside>
             </div>
         </section>
+
+        <!-- ===== 视图：友链 ===== -->
+        <section id="view-friends" class="view">
+            <main class="main-content" style="max-width:1000px;margin:0 auto;">
+                <div class="page-head anim-in">
+                    <h1 class="page-title">🔗 友情链接</h1>
+                    <span class="page-subtitle">这里是我的小伙伴们，一起在网络上发光发热~</span>
+                </div>
+                <section class="panel anim-in" data-delay="1">
+                    <h2 class="panel-title"><span class="t-icon">✨</span>朋友们<span class="t-sub">Friends</span></h2>
+                    <div class="friends-grid" id="friendsList"></div>
+                </section>
+                <section class="panel anim-in" data-delay="2">
+                    <h2 class="panel-title"><span class="t-icon">📮</span>申请友链<span class="t-sub">Join us</span></h2>
+                    <p style="font-size:14px;line-height:2;color:var(--c-ink);">
+                        如果你也有个人小站，欢迎和我交换友链~ 请在<a href="#guestbook" style="color:var(--c-pink);">留言板</a>留下：<br>
+                        ① 站名 &nbsp;② 网址 &nbsp;③ 一句话介绍 &nbsp;④ 你的头像链接（可选）<br>
+                        我看到后会尽快加上来，也希望你能在自己的站上挂上我的链接~
+                    </p>
+                </section>
+            </main>
+        </section>
     </div>
 
     <footer class="footer">🌸 感谢您的访问，期待与您相识 🌸</footer>
@@ -550,6 +585,11 @@ body.dark ::placeholder{color:#888;}
                     <div class="af-title">荣誉证书（首页 / 简历共用，图片放在 static 目录）</div>
                     <div id="adminHonors"></div>
                     <button type="button" class="af-add" id="addHonor">＋ 添加荣誉</button>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">友情链接（友链页展示）</div>
+                    <div id="adminFriends"></div>
+                    <button type="button" class="af-add" id="addFriend">＋ 添加友链</button>
                 </div>
                 <div class="af-section">
                     <div class="af-title">自我评价（每行一条）</div>
@@ -742,6 +782,20 @@ body.dark ::placeholder{color:#888;}
                 document.getElementById('readerOverlay').classList.add('show');
                 document.body.style.overflow = 'hidden';
             });
+            /* 友链 */
+            var fl = document.getElementById('friendsList');
+            if (fl) {
+                var friends = c.friends || [];
+                fl.innerHTML = friends.length ? friends.map(function (f) {
+                    var av = f.avatar
+                        ? '<img src="' + esc(f.avatar) + '" alt="">'
+                        : '<span class="friend-av-fallback">' + esc((f.name||'友').charAt(0)) + '</span>';
+                    return '<a class="friend-card" href="' + esc(f.url||'#') + '" target="_blank" rel="noopener">' +
+                        '<div class="friend-av">' + av + '</div>' +
+                        '<div class="friend-info"><div class="friend-name">' + esc(f.name) + '</div>' +
+                        '<div class="friend-desc">' + esc(f.desc||'') + '</div></div></a>';
+                }).join('') : '<div style="color:#aaa;text-align:center;padding:30px;">还没有小伙伴，快来做第一个~</div>';
+            }
             var catEl = document.getElementById('blogCats');
             if (catEl) {
                 var seen = {};
@@ -826,6 +880,12 @@ body.dark ::placeholder{color:#888;}
         function escAttr(s) { return esc(s).replace(/"/g, '&quot;'); }
 
         var ROW_FIELDS = {
+            friends: [
+                { f: 'f_name', label: '站名', key: 'name' },
+                { f: 'f_url', label: '网址', key: 'url' },
+                { f: 'f_desc', label: '一句话介绍', key: 'desc' },
+                { f: 'f_avatar', label: '头像链接（可空，空则用站名首字）', key: 'avatar' }
+            ],
             skills: [
                 { f: 's_name', label: '名称', key: 'name' },
                 { f: 's_sub', label: '备注', key: 'sub' },
@@ -942,6 +1002,7 @@ body.dark ::placeholder{color:#888;}
             buildList('adminEducation', c.education, 'education');
             buildList('adminExp', c.experience, 'exp');
             buildList('adminHonors', c.honors, 'honors');
+            buildList('adminFriends', c.friends || [], 'friends');
             buildList('adminBlog', c.blogArticles, 'blog');
             loadAdminMessages();
             var se = document.getElementById('af_selfEval'); if (se) se.value = (c.selfEval || []).join('\n');
@@ -1008,6 +1069,7 @@ body.dark ::placeholder{color:#888;}
             c.education = collectItems('adminEducation', [['e_time', 'time'], ['e_role', 'role'], ['e_sub', 'sub'], ['e_desc', 'desc']]);
             c.experience = collectItems('adminExp', [['x_company', 'company'], ['x_time', 'time'], ['x_role', 'role'], ['x_desc', 'desc']]);
             c.honors = collectItems('adminHonors', [['h_name', 'name'], ['h_tag', 'tag'], ['h_img', 'img']]);
+            c.friends = collectItems('adminFriends', [['f_name', 'name'], ['f_url', 'url'], ['f_desc', 'desc'], ['f_avatar', 'avatar']]);
             c.blogArticles = collectItems('adminBlog', [['b_title', 'title'], ['b_date', 'date'], ['b_cat', 'cat'], ['b_catLabel', 'catLabel'], ['b_tags', 'tags'], ['b_cover', 'cover'], ['b_grad', 'grad'], ['b_excerpt', 'excerpt'], ['b_content', 'content']]);
             if (PolarisSite.cloudEnabled && PolarisSite.cloudEnabled()) {
                 PolarisSite.saveAsync(c, pwSession || '').then(function (r) {
@@ -1139,6 +1201,7 @@ body.dark ::placeholder{color:#888;}
         bindAdd('addEducation', 'adminEducation', 'education');
         bindAdd('addExp', 'adminExp', 'exp');
         bindAdd('addHonor', 'adminHonors', 'honors');
+        bindAdd('addFriend', 'adminFriends', 'friends');
         bindAdd('addBlog', 'adminBlog', 'blog');
 
         /* 保存 */
@@ -1482,8 +1545,8 @@ body.dark ::placeholder{color:#888;}
        ============================================================ */
     (function () {
         'use strict';
-        var ROUTES = { home: '首页', resume: '简历', projects: '项目作品', blog: '学习博客', guestbook: '留言板' };
-        var TITLES = { home: 'Polaris 的个人网站', resume: 'Polaris 的简历', projects: 'Polaris 的项目作品', blog: 'Polaris 的学习博客', guestbook: '留言板 - Polaris 的小站' };
+        var ROUTES = { home: '首页', resume: '简历', projects: '项目作品', blog: '学习博客', guestbook: '留言板', friends: '友情链接' };
+        var TITLES = { home: 'Polaris 的个人网站', resume: 'Polaris 的简历', projects: 'Polaris 的项目作品', blog: 'Polaris 的学习博客', guestbook: '留言板 - Polaris 的小站', friends: '友情链接 - Polaris 的小站' };
         var last = '';
 
         function replayAnims(viewEl) {

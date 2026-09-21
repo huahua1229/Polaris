@@ -775,6 +775,16 @@ body.dark ::placeholder{color:#888;}
                     <button type="button" class="af-add" id="alUpload">⬆ 上传照片</button>
                     <div class="af-hint">照片会上传到 Supabase Storage 的 photos bucket。先在 Storage 建 public bucket "photos"。</div>
                 </div>
+                <div class="af-section">
+                    <div class="af-title">创建新相册</div>
+                    <div class="af-grid">
+                        <div class="af-field"><label>相册名称</label><input id="al_new_title" class="af-input" placeholder="如：旅行日记"></div>
+                        <div class="af-field"><label>描述</label><input id="al_new_desc" class="af-input" placeholder="这个相册记录..."></div>
+                        <div class="af-field"><label>类型</label><select id="al_new_type" class="af-input"><option value="1">公开</option><option value="0">私密</option></select></div>
+                        <div class="af-field"><label>密码（私密相册必填）</label><input id="al_new_pw" class="af-input" placeholder="设密码"></div>
+                    </div>
+                    <button type="button" class="af-add" id="alCreate">＋ 创建相册</button>
+                </div>
             </div>
         </div>
         <div class="admin-foot">

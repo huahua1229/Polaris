@@ -947,10 +947,12 @@ body.dark .wallpaper-overlay {
 .player-fab.bar-open { right: 366px; }
 .player-bar { border-radius: 18px !important; padding: 12px 14px !important; height: auto !important; }
 body.dark .player-bar { background: rgba(40, 32, 52, .92); }
-body.dark { background: #1a1626; color: #e8e0f0; }
-body.dark .panel, body.dark .card, body.dark .rail-card { background: #2a2438; color: #e8e0f0; }
-body.dark .nav-item { color: #c8b8d8; }
-body.dark .nav-item.active { background: rgba(255,107,157,.2); color: #fff; }
-body.dark .page-title, body.dark .panel-title, body.dark h1, body.dark h2, body.dark h3 { color: #fff; }
-body.dark .c-sub, body.dark .c-faint { color: #a898b8; }
-body.dark .af-input, body.dark .af-textarea { background: #33294a; color: #e8e0f0; border-color: #4a3a6a; }
+body.dark { background: #1a1626; color: #f0e8f5; }
+body.dark .panel, body.dark .card, body.dark .rail-card { background: rgba(42,36,56,.92); color: #f0e8f0; }
+body.dark .nav-item { color: #e0d0f0 !important; }
+body.dark .nav-item.active { background: rgba(255,107,157,.3); color: #fff !important; }
+body.dark .page-title, body.dark .panel-title, body.dark h1, body.dark h2, body.dark h3 { color: #fff !important; }
+body.dark .c-sub, body.dark .c-faint { color: #c8b8d8 !important; }
+body.dark .af-input, body.dark .af-textarea { background: #33294a; color: #f0e8f0; border-color: #4a3a6a; }
+body.dark .side-nav { background: rgba(26,22,38,.85); }
+body.dark .top-bar { background: rgba(26,22,38,.9); }

@@ -51,10 +51,10 @@ body {
 }
 body.dark .wallpaper-layer {
     background-image: url('dark_wallpaper_raw.png');
-    opacity: 0.5;
+    opacity: 0.35;
 }
 body.dark .wallpaper-overlay {
-    background: linear-gradient(180deg, rgba(20,16,36,.82) 0%, rgba(40,24,68,.88) 100%);
+    background: linear-gradient(180deg, rgba(20,16,36,.55) 0%, rgba(40,24,68,.65) 100%);
 }
 #sakuraContainer { position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 .sakura { position: absolute; animation: sakura-fall linear infinite; opacity: 0.7; will-change: transform; }

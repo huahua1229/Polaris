@@ -257,6 +257,33 @@ async function handle(req) {
       return json({ ok: true });
     }
 
+    /* ===== 音乐库 ===== */
+    case 'list_music': {
+      const { data, error } = await sb.from('music').select('*').order('sort_order', { ascending: true });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true, list: data || [] });
+    }
+    case 'add_music': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('music').insert({
+        title: String(body.title || '未命名').slice(0, 100),
+        artist: String(body.artist || '').slice(0, 50),
+        file_path: String(body.file_path || '').slice(0, 300),
+        cover: String(body.cover || '').slice(0, 300),
+        sort_order: Number(body.sort_order || 0),
+      });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+    case 'delete_music': {
+      const r = await verifyPw(sb, body.password);
+      if (!r.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('music').delete().eq('id', String(body.id || ''));
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+
     default:
       return json({ ok: false, error: 'unknown-action' }, 400);
   }

@@ -754,7 +754,7 @@ body {
 }
 .admin-mask.show { opacity: 1; visibility: visible; }
 .admin-panel {
-    position: fixed; top: 0; right: -460px; bottom: 0; width: 440px; max-width: 92vw;
+    position: fixed; top: 0; right: -700px; bottom: 0; width: 680px; max-width: 94vw;
     background: rgba(255, 250, 252, 0.97); backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     box-shadow: -12px 0 40px rgba(120, 40, 100, 0.25);

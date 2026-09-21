@@ -577,7 +577,7 @@ body.dark ::placeholder{color:#888;}
             <div class="player-artist" id="barArtist">DJ Okawari</div>
         </div>
         <button class="player-prev" id="playerPrev" aria-label="上一首">⏮</button>
-        <button class="player-play" id="playerPlay" aria-label="播放/暂停" onclick="var a=document.getElementById('bgMusic');if(a.paused){a.play();}else{a.pause();}">▶</button>
+        <button class="player-play" id="playerPlay" aria-label="播放/暂停" onclick="var a=document.getElementById('bgMusic');if(a.paused){a.play();this.textContent='⏸';}else{a.pause();this.textContent='▶';}">▶</button>
         <button class="player-next" id="playerNext" aria-label="下一首">⏭</button>
         <div class="player-progress-wrap">
             <span class="player-time" id="playerCur">0:00</span>

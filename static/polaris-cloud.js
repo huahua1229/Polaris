@@ -46,7 +46,7 @@ window.PolarisCloud = (function () {
                 xhr.setRequestHeader('apikey', cfg.anonKey);
                 xhr.setRequestHeader('Authorization', 'Bearer ' + cfg.anonKey);
             }
-            xhr.timeout = timeoutMs || 10000;
+            xhr.timeout = timeoutMs || 20000;
             xhr.onload = function () {
                 try {
                     var r = JSON.parse(xhr.responseText);

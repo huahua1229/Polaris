@@ -960,7 +960,7 @@ window.PolarisAuth = (function(){
   function errText(c){
     return ({'exists':'该 QQ 邮箱已注册，请直接登录','not-found':'账号不存在，请先注册','bad-pw':'密码错误',
       'weak':'密码至少需要 6 位','bad-email':'请填写正确的 QQ 邮箱（数字@qq.com）','bad-nick':'请填写昵称',
-      'auth':'请先登录','empty':'信息没有填写完整','network':'网络异常，请稍后重试','timeout':'请求超时，请检查网络','db':'服务器繁忙，请稍后重试'})[c] || '操作失败，请稍后重试';
+      'auth':'请先登录','empty':'信息没有填写完整','network':'连接失败，请检查网络或用系统浏览器打开','timeout':'响应较慢，请重试或切换网络','db':'服务器繁忙，请稍后重试'})[c] || '操作失败，请稍后重试';
   }
 
   /* ---------- 弹窗 DOM ---------- */

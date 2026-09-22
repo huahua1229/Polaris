@@ -1008,6 +1008,17 @@ body.dark .album-info p { color: #b8aec8 !important; }
 body.dark .c-sub, body.dark .c-faint { color: #ccc0e2 !important; }
 body.dark .honor-item .h-tag, body.dark .honor-item .h-name { color: #d6cce8 !important; }
 
+/* 夜间模式：全站其余次要文字与各视图正文统一提亮 */
+body.dark .rail-list li, body.dark .rail-honor, body.dark .self-eval, body.dark .para { color: #d8cee8 !important; }
+body.dark .mini-project .mp-desc, body.dark .project-card .pc-desc, body.dark .article-excerpt { color: #c8bce0 !important; }
+body.dark .resume-contact, body.dark .edu-detail, body.dark .work-line .w-desc { color: #d0c6e2 !important; }
+body.dark .reply-content { color: #e0d8f0 !important; }
+body.dark .reply-time, body.dark .recent-date { color: #9c90b8 !important; }
+body.dark .category-list a, body.dark .recent-list a { color: #d0c6e2 !important; }
+body.dark .nav-footer .copy-line { color: #8e82a8 !important; }
+body.dark a:not(.nav-item):not(.btn) { color: #c8b8f0; }
+body.dark .c-sub a { color: #c8b8f0; }
+
 /* 相册 */
 .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; max-width: 900px; transition: opacity .4s ease; }
 .album-card { opacity: 0; animation: albumFadeIn .45s ease forwards; }

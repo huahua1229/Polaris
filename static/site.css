@@ -1142,3 +1142,8 @@ body.dark .bubble-content { color: #ddd; }
     transition: all .2s;
 }
 .player-close:hover { background: linear-gradient(135deg,#c44dff,#ff6b9d); color: #fff; }
+
+.profile-mini .mini-avatar { cursor: pointer; transition: transform .2s; position: relative; }
+.profile-mini .mini-avatar:hover { transform: scale(1.06); }
+.profile-mini .mini-avatar .charm-bubble { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(8px) scale(.9); }
+.profile-mini .mini-avatar .charm-bubble.show { transform: translateX(-50%) translateY(0) scale(1); }

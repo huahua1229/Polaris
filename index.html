@@ -2111,12 +2111,13 @@ body.dark ::placeholder{color:#888;}
             <div class="reader-body" id="readerBody"></div>
         </div>
     </div>
-    <div class="page-charm" aria-hidden="true"><img src="static/avatar.png" alt=""><div class="charm-bubble" id="charmBubble">有什么想了解的都可以看看~</div></div>
-<script>
+    <script>
 (function(){
-  var charm=document.querySelector('.page-charm');
-  var bubble=document.getElementById('charmBubble');
-  if(!charm||!bubble) return;
+  var charm=document.querySelector('.profile-mini .mini-avatar');
+  if(!charm) return;
+  var bubble=document.createElement('div');
+  bubble.className='charm-bubble';
+  charm.appendChild(bubble);
   var LINES=[
     '有什么想了解的都可以看看~',
     '你好呀~我是小绘♡',

@@ -1639,7 +1639,7 @@ document.addEventListener('DOMContentLoaded',function(){
                       '<div style="font-weight:700;margin:4px 0;">' + escHtml(p.title) + '</div>' +
                       (p.desc ? '<div style="font-size:12.5px;color:#666;">' + escHtml(p.desc) + '</div>' : '') +
                       '<div style="font-size:12.5px;margin-top:6px;max-height:300px;overflow:auto;color:#555;white-space:pre-wrap;word-break:break-word;">' + escHtml(p.content) + '</div>' +
-                      (p.attachment_name ? '<div style="font-size:12px;margin-top:4px;color:#e75480;">📎 附件: ' + escHtml(p.attachment_name) + ' (' + (Math.round((p.attachment_size||0)/1024) + 'KB') + ')</div>' : '') +
+                      (p.attachment_name ? '<div style="font-size:12px;margin-top:4px;color:#e75480;">📎 附件: <a href="'+PUB+escHtml(p.attachment_path)+'" target="_blank" download style="color:#e75480;text-decoration:underline;">'+escHtml(p.attachment_name)+'</a> (' + (Math.round((p.attachment_size||0)/1024) + 'KB') + ')</div>' : '') +
                       '<div style="display:flex;gap:8px;margin-top:8px;">' +
                         '<button type="button" class="af-btn" data-pid="' + escHtml(p.id) + '" data-act="publish">✅ 通过并发布</button>' +
                         '<button type="button" class="af-btn danger" data-pid="' + escHtml(p.id) + '" data-act="reject">🗑 拒绝</button>' +
@@ -2788,7 +2788,7 @@ document.addEventListener('DOMContentLoaded',function(){
           '<div style="font-weight:700;margin:6px 0;font-size:15px;">'+esc(p.title)+'</div>'+
           (p.summary?'<div style="font-size:13px;color:#666;margin:4px 0;">'+esc(p.summary)+'</div>':'')+
           '<div style="font-size:13px;margin-top:6px;max-height:300px;overflow:auto;color:#555;white-space:pre-wrap;word-break:break-word;line-height:1.7;">'+esc(p.content)+'</div>'+
-          (p.attachment_name?'<div style="font-size:12px;margin-top:6px;color:#e75480;">📎 附件: '+esc(p.attachment_name)+' ('+Math.round((p.attachment_size||0)/1024)+'KB)</div>':'')+
+          (p.attachment_name?'<div style="font-size:12px;margin-top:6px;color:#e75480;">📎 附件: <a href="'+PUB+esc(p.attachment_path)+'" target="_blank" download style="color:#e75480;text-decoration:underline;">'+esc(p.attachment_name)+'</a> ('+Math.round((p.attachment_size||0)/1024)+'KB)</div>':'')+
           '<div style="display:flex;gap:8px;margin-top:10px;">'+
             '<button type="button" class="form-submit" style="padding:8px 16px;font-size:13px;" data-pid="'+esc(p.id)+'" data-act="publish">✅ 通过并发布</button>'+
             '<button type="button" class="form-submit" style="padding:8px 16px;font-size:13px;background:#ff6b6b;" data-pid="'+esc(p.id)+'" data-act="reject">🗑 拒绝</button>'+

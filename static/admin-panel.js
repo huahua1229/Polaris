@@ -126,7 +126,7 @@
       var old=document.getElementById('photoAdminBox'); if(old) old.remove();
       var box=document.createElement('div'); box.id='photoAdminBox';
       box.style.cssText='margin:8px 0 10px;padding:10px;border:1px solid #f0d;border-radius:10px;background:rgba(255,255,255,.6);';
-      box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;">该相册照片（点右上角删除）</span><button id="paClose" style="padding:3px 10px;font-size:12px;border:1px solid #f8bbd0;background:#fff;border-radius:6px;cursor:pointer;color:#c2185b;">收起</button></div>'+
+      box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;">该相册照片（点右上角删除）</span><button id="paClose" style="padding:7px 18px;font-size:13px;border:1px solid #f8bbd0;background:#fff;border-radius:8px;cursor:pointer;color:#c2185b;transition:all .2s;">收起</button></div>'+
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;" id="paGrid"></div>';
       (rootBox||document.getElementById('alManage')).appendChild(box);
       box.querySelector('#paClose').onclick=function(){ box.remove(); };

@@ -1081,6 +1081,9 @@ window.PolarisAuth = (function(){
     document.getElementById('setName').textContent=u.nickname||'';
     document.getElementById('setMail').textContent=u.role==='developer'?'开发者账号':u.email;
     document.getElementById('setNick').value=u.nickname||'';
+    var avEl=document.getElementById('setAv');
+    if(u.avatar){ avEl.innerHTML='<img src="'+u.avatar+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">'; }
+    else { avEl.textContent='🌸'; }
     document.getElementById('setOldPw').value=''; document.getElementById('setNewPw').value=''; document.getElementById('setErr').textContent='';
     var u2=getUser();
     setTimeout(function(){

@@ -288,6 +288,34 @@ body.dark ::placeholder{color:#888;}
                         <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8m-4-4v4M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M17 5h3a1 1 0 011 1c0 3-2 5-4 5M7 5H4a1 1 0 00-1 1c0 3 2 5 4 5"/></svg></span>荣誉证书<span class="t-sub">Awards</span></h2>
                         <div class="honor-grid" id="homeHonors"></div>
                     </section>
+
+                    <!-- 今日一句 -->
+                    <section class="panel anim-in" data-delay="5">
+                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>今日一句<span class="t-sub">Quote</span></h2>
+                        <div class="quote-box">
+                            <div class="quote-mark">"</div>
+                            <p class="quote-text" id="dailyQuote">我们都是小怪兽，总有一天会被正义的奥特曼杀死。</p>
+                            <div class="quote-from">—— 绘梨衣</div>
+                        </div>
+                    </section>
+
+                    <!-- 正在听 -->
+                    <section class="panel anim-in" data-delay="6">
+                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>正在听<span class="t-sub">Now Playing</span></h2>
+                        <div class="now-playing">
+                            <div class="np-disc" id="npDisc">♪</div>
+                            <div class="np-info">
+                                <div class="np-title" id="npTitle">点右下角小黄鸭开始播放</div>
+                                <div class="np-artist" id="npArtist">花之舞 · SAKURA · 群青 · 最后的旅行 · To My Savior</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 最近动态 -->
+                    <section class="panel anim-in" data-delay="7">
+                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>最近动态<span class="t-sub">Moments</span></h2>
+                        <div class="moments-list" id="homeMoments"></div>
+                    </section>
                 </main>
 
                 <aside class="right-rail">
@@ -2518,6 +2546,57 @@ body.dark ::placeholder{color:#888;}
     var txt=tag.textContent; tag.textContent=''; var i=0;
     function type(){ if(i<=txt.length){ tag.textContent=txt.slice(0,i++); setTimeout(type,90); } }
     setTimeout(type, 700);
+  }
+})();
+</script>
+
+<script>
+(function(){
+  // 今日一句轮播
+  var QUOTES=[
+    ['我们都是小怪兽，总有一天会被正义的奥特曼杀死。','—— 绘梨衣'],
+    ['世界是一个无情的猎手，它从不因为你的眼泪而手下留情。','—— 路明非'],
+    ['所爱隔山海，山海皆可平。','—— 龙族'],
+    ['凡王之血，必以剑终。','—— 楚子航'],
+    ['每个人心里都有个悲伤的小怪兽，它在黑夜里独自舔伤。','—— 绘梨衣'],
+    ['人一生里，总要有一次，为了某个人而不顾自己。','—— 路明非']
+  ];
+  var qi=0;
+  function rotQuote(){
+    qi=(qi+1)%QUOTES.length;
+    var q=document.getElementById('dailyQuote');
+    var f=document.querySelector('.quote-from');
+    if(!q) return;
+    q.style.opacity=0;
+    setTimeout(function(){ q.textContent=QUOTES[qi][0]; f.textContent=QUOTES[qi][1]; q.style.opacity=1; },250);
+  }
+  setInterval(rotQuote, 8000);
+
+  // 正在听：监听播放器
+  var audio=document.getElementById('bgMusic');
+  var npT=document.getElementById('npTitle'), npA=document.getElementById('npArtist'), npD=document.getElementById('npDisc');
+  if(audio){
+    audio.addEventListener('play', function(){
+      var bt=document.getElementById('barTitle'), ba=document.getElementById('barArtist');
+      if(bt && bt.textContent) npT.textContent=bt.textContent;
+      if(ba && ba.textContent) npA.textContent=ba.textContent;
+      npD.classList.add('spin');
+    });
+    audio.addEventListener('pause', function(){ npD.classList.remove('spin'); });
+  }
+
+  // 最近动态
+  var MOMENTS=[
+    ['2026-09-22','小站音乐库上新 4 首：SAKURA、群青、最后的旅行、To My Savior 🎵'],
+    ['2026-09-20','完成了留言板点赞、回复、审核系统 ✨'],
+    ['2026-09-15','拿到泰迪杯全国专科组三等奖 🏆'],
+    ['2026-09-10','小站从纯前端升级到 Supabase 全栈 🚀']
+  ];
+  var ml=document.getElementById('homeMoments');
+  if(ml){
+    ml.innerHTML=MOMENTS.map(function(m){
+      return '<div class="moment-item"><div class="moment-date">'+m[0]+'</div><div class="moment-text">'+m[1]+'</div></div>';
+    }).join('');
   }
 })();
 </script>

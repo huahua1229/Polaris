@@ -687,6 +687,7 @@ body.dark ::placeholder{color:#888;}
         <span class="fab-badge" id="fabBadge">♪</span>
     </button>
     <div class="player-bar" id="playerBar">
+        <button class="player-close" id="playerClose" aria-label="收起音乐条">✕</button>
         <div class="player-cover"><img src="static/avatar.png" alt="专辑封面" id="barCover"></div>
         <div class="player-info">
             <div class="player-title" id="barTitle">花之舞 · 钢琴版</div>
@@ -2492,6 +2493,14 @@ body.dark ::placeholder{color:#888;}
     btn.classList.toggle('show', window.scrollY>400);
   }, {passive:true});
   btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  // 音乐条收起
+  var pclose=document.getElementById('playerClose');
+  if(pclose){ pclose.addEventListener('click', function(e){
+    e.stopPropagation();
+    var bar=document.getElementById('playerBar'); var fab=document.getElementById('playerFab');
+    if(bar) bar.classList.remove('open');
+    if(fab) fab.classList.remove('bar-open');
+  }); }
   // 留言表单折叠
   var tg=document.getElementById('guestbookToggle');
   var gf=document.getElementById('guestbookForm');

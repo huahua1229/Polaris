@@ -995,6 +995,19 @@ body.dark .msg-meta, body.dark .article-meta, body.dark .article-summary { color
 body.dark .side-nav { background: rgba(26,22,38,.85); }
 body.dark .top-bar { background: rgba(26,22,38,.9); }
 
+/* 夜间模式：正文与次要文字提亮，保证可读性 */
+body.dark .about-text { color: #e8e0f4 !important; }
+body.dark .about-text b { color: #ff9ec4 !important; }
+body.dark .tl-desc { color: #cfc4e4 !important; }
+body.dark .tl-role { color: #e0d6f0 !important; }
+body.dark .tl-time { color: #b6a8d0 !important; }
+body.dark .rail-card p, body.dark .rail-card .profile-sub, body.dark .profile-card p { color: #d6cce8 !important; }
+body.dark .mini-stat .label, body.dark .msg-stat .label { color: #a89cc4 !important; }
+body.dark .panel-title .t-sub, body.dark .top-crumb, body.dark .top-greeting { color: #a89cc4 !important; }
+body.dark .album-info p { color: #b8aec8 !important; }
+body.dark .c-sub, body.dark .c-faint { color: #ccc0e2 !important; }
+body.dark .honor-item .h-tag, body.dark .honor-item .h-name { color: #d6cce8 !important; }
+
 /* 相册 */
 .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; max-width: 900px; transition: opacity .4s ease; }
 .album-card { opacity: 0; animation: albumFadeIn .45s ease forwards; }

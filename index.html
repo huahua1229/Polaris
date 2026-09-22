@@ -1313,7 +1313,18 @@ document.addEventListener('DOMContentLoaded',function(){
                 if(!a) return;
                 document.getElementById('readerTitle').textContent = a.title || '';
                 document.getElementById('readerMeta').textContent = '📅 ' + (a.date||'') + (a.catLabel ? '  ·  ' + a.catLabel : '');
-                document.getElementById('readerBody').textContent = a.content || a.excerpt || '（正文待补充）';
+                var rb = document.getElementById('readerBody');
+                rb.textContent = a.content || a.excerpt || '（正文待补充）';
+                if (a.author) { var by=document.createElement('div'); by.style.cssText='font-size:12px;color:#999;margin-bottom:10px;'; by.textContent='作者：'+a.author; rb.appendChild(by); }
+                if (a.attachment && a.attachment.path) {
+                  var att=document.createElement('div'); att.style.cssText='margin-top:16px;padding:10px 12px;border:1px dashed #e75480;border-radius:8px;display:inline-block;';
+                  var lk=document.createElement('a');
+                  lk.href='https://ldprlyzawsgwjtgdwexz.supabase.co/storage/v1/object/public/'+a.attachment.path;
+                  lk.target='_blank'; lk.rel='noopener';
+                  lk.style.color='#e75480'; lk.style.textDecoration='underline';
+                  lk.textContent='📎 附件下载：'+(a.attachment.name||'文件');
+                  att.appendChild(lk); rb.appendChild(att);
+                }
                 document.getElementById('readerOverlay').classList.add('show');
                 document.body.style.overflow = 'hidden';
             });

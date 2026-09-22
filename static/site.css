@@ -1135,9 +1135,10 @@ body.dark .bubble-content { color: #ddd; }
 .empty-message .icon { font-size: 42px; margin-bottom: 10px; }
 
 .player-close {
-    position: absolute; top: -10px; right: -8px; z-index: 5;
-    width: 26px; height: 26px; border-radius: 50%; border: none; cursor: pointer;
-    background: linear-gradient(135deg,#c44dff,#ff6b9d); color: #fff; font-size: 13px;
-    line-height: 1; box-shadow: 0 2px 8px rgba(255,107,157,.4);
+    position: absolute; top: 8px; right: 10px; z-index: 5;
+    width: 22px; height: 22px; border-radius: 50%; border: none; cursor: pointer;
+    background: rgba(196,77,255,.12); color: #b066d8; font-size: 12px;
+    line-height: 1; display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
 }
-.player-close:hover { transform: scale(1.1); }
+.player-close:hover { background: linear-gradient(135deg,#c44dff,#ff6b9d); color: #fff; }

@@ -2211,7 +2211,18 @@ document.addEventListener('DOMContentLoaded',function(){
             if (!list) return;
             photos.style.display = 'none';
             list.style.display = '';
-            if (window.albumCache) { renderAlbumList(window.albumCache); return; }
+            if (window.albumCache) {
+                renderAlbumList(window.albumCache);
+                if (window.PolarisCloud && window.PolarisCloud.enabled()) {
+                    window.PolarisCloud.call('list_albums', {}).then(function (r) {
+                        if (r && r.ok) {
+                            window.albumCache = (r.albums || []);
+                            renderAlbumList(window.albumCache);
+                        }
+                    }).catch(function(){});
+                }
+                return;
+            }
             list.innerHTML = '<p class="c-sub">加载中...</p>';
             if (!window.PolarisCloud || !window.PolarisCloud.enabled()) { list.innerHTML = '<p class="c-sub">云端未连接</p>'; return; }
             window.PolarisCloud.call('list_albums', {}).then(function (r) {

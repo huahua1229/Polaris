@@ -167,3 +167,56 @@
     };
   }
 })();
+
+// ===== 最近动态管理 =====
+(function(){
+  function getPw(){ return localStorage.getItem('polaris_pw') || ''; }
+  function listMoments(){
+    var box=document.getElementById('moList');
+    if(!box) return;
+    box.innerHTML='<div style="color:#aaa;font-size:13px;">加载中...</div>';
+    window.PolarisCloud.call('list_moments').then(function(d){
+      if(!d.ok||!d.list||!d.list.length){ box.innerHTML='<div style="color:#aaa;font-size:13px;">还没有动态</div>'; return; }
+      box.innerHTML='';
+      d.list.forEach(function(m){
+        var row=document.createElement('div');
+        row.style.cssText='display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid rgba(255,182,193,.4);border-radius:8px;margin-bottom:8px;';
+        row.innerHTML='<div style="flex:1;"><div style="font-size:11px;color:#b2608a;font-family:monospace;">'+m.date+'</div><div style="font-size:13px;color:#5a4a5a;margin-top:4px;line-height:1.5;">'+m.content+'</div></div>';
+        var del=document.createElement('button');
+        del.textContent='删除';
+        del.style.cssText='padding:4px 10px;font-size:12px;border:none;border-radius:6px;background:#ffe0e0;color:#e66;cursor:pointer;flex-shrink:0;';
+        del.onclick=function(){
+          customConfirm('确定删除这条动态吗？','删除动态').then(function(yes){
+            if(!yes) return;
+            window.PolarisCloud.call('delete_moment',{id:m.id,password:getPw()}).then(function(r){
+              if(r&&r.ok){ toast('已删除','success'); listMoments(); } else { toast('删除失败','error'); }
+            });
+          });
+        };
+        row.appendChild(del);
+        box.appendChild(row);
+      });
+    });
+  }
+  window.__listMoments=listMoments;
+  document.addEventListener('DOMContentLoaded',function(){
+    var add=document.getElementById('moAdd');
+    if(add){
+      add.onclick=function(){
+        var date=document.getElementById('mo_date').value.trim();
+        var content=document.getElementById('mo_content').value.trim();
+        if(!date||!content){ alert('请填日期和内容'); return; }
+        window.PolarisCloud.call('add_moment',{date:date,content:content,password:getPw()}).then(function(r){
+          if(r&&r.ok){ toast('已发布','success'); document.getElementById('mo_content').value=''; listMoments(); }
+          else { toast('发布失败','error'); }
+        });
+      };
+    }
+    // 切到动态 tab 时加载
+    document.querySelectorAll('.admin-tab').forEach(function(tab){
+      tab.addEventListener('click',function(){
+        if(tab.getAttribute('data-tab')==='moments') listMoments();
+      });
+    });
+  });
+})();

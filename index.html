@@ -767,6 +767,7 @@ body.dark ::placeholder{color:#888;}
             <button type="button" class="admin-tab" data-tab="data">数据</button>
             <button type="button" class="admin-tab" data-tab="music">音乐</button>
             <button type="button" class="admin-tab" data-tab="album">相册</button>
+            <button type="button" class="admin-tab" data-tab="moments">动态</button>
         </div>
         <div class="admin-body">
             <!-- 基础 -->
@@ -921,6 +922,21 @@ body.dark ::placeholder{color:#888;}
                     </div>
                     <button type="button" class="af-add" id="alCreate">＋ 创建相册</button>
                     <div id="alManage" style="margin-top:16px;"></div>
+                </div>
+            </div>
+
+            <div class="admin-tabpage" data-page="moments" style="display:none;">
+                <div class="af-section">
+                    <div class="af-title">发一条新动态</div>
+                    <div class="af-grid">
+                        <div class="af-field"><label>日期</label><input id="mo_date" class="af-input" placeholder="2026-09-22"></div>
+                        <div class="af-field" style="grid-column:1/-1;"><label>内容</label><input id="mo_content" class="af-input" placeholder="今天完成了..."></div>
+                    </div>
+                    <button type="button" class="af-add" id="moAdd">＋ 发布动态</button>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">已发布的动态</div>
+                    <div id="moList"></div>
                 </div>
             </div>
         </div>
@@ -2585,18 +2601,20 @@ body.dark ::placeholder{color:#888;}
     audio.addEventListener('pause', function(){ npD.classList.remove('spin'); });
   }
 
-  // 最近动态
-  var MOMENTS=[
-    ['2026-09-22','小站音乐库上新 4 首：SAKURA、群青、最后的旅行、To My Savior 🎵'],
-    ['2026-09-20','完成了留言板点赞、回复、审核系统 ✨'],
-    ['2026-09-15','拿到泰迪杯全国专科组三等奖 🏆'],
-    ['2026-09-10','小站从纯前端升级到 Supabase 全栈 🚀']
-  ];
+  // 最近动态：从数据库读
   var ml=document.getElementById('homeMoments');
   if(ml){
-    ml.innerHTML=MOMENTS.map(function(m){
-      return '<div class="moment-item"><div class="moment-date">'+m[0]+'</div><div class="moment-text">'+m[1]+'</div></div>';
-    }).join('');
+    window.PolarisCloud.call('list_moments').then(function(d){
+      if(d && d.ok && d.list && d.list.length){
+        ml.innerHTML=d.list.map(function(m){
+          return '<div class="moment-item"><div class="moment-date">'+m.date+'</div><div class="moment-text">'+m.content+'</div></div>';
+        }).join('');
+      } else {
+        ml.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;">还没有动态，敬请期待~</div>';
+      }
+    }).catch(function(){
+      ml.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;">动态加载失败</div>';
+    });
   }
 })();
 </script>

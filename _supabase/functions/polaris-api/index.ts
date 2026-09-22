@@ -442,6 +442,30 @@ async function handle(req) {
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true });
     }
+    /* ===== 最近动态 ===== */
+    case 'list_moments': {
+      const { data, error } = await sb.from('moments').select('*').order('sort_order',{ascending:false}).order('date',{ascending:false});
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true, list: data || [] });
+    }
+    case 'add_moment': {
+      const adm = await requireAdmin(sb, body);
+      if (!adm.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('moments').insert({
+        date: String(body.date || '').slice(0,20),
+        content: String(body.content || '').slice(0,500),
+        sort_order: Number(body.sort_order || 0),
+      });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+    case 'delete_moment': {
+      const adm = await requireAdmin(sb, body);
+      if (!adm.ok) return json({ ok: false, error: 'auth' });
+      const { error } = await sb.from('moments').delete().eq('id', String(body.id || ''));
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
     case 'upload_music_file': {
       const adm = await requireAdmin(sb, body);
       if (!adm.ok) return json({ ok: false, error: 'auth' });

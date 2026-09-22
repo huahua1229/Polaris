@@ -36,31 +36,28 @@
     var title = document.getElementById('mu_title').value.trim();
     var artist = document.getElementById('mu_artist').value.trim();
     var file = document.getElementById('mu_file').files[0];
-    var coverInput = document.getElementById('mu_cover');
-    var coverFile = coverInput && coverInput.files && coverInput.files[0];
     var tip = document.getElementById('muTip');
     if(!title || !file){ alert('请填写歌名并选择文件'); return; }
     var fileName = 'music_' + Date.now() + '.mp3';
-    var coverPath = '';
-    var chain = Promise.resolve();
-    if(coverFile){
-      tip.textContent = '上传封面...';
-      var cExt=(coverFile.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
-      coverPath='covers/cover_'+Date.now()+'.'+cExt;
-      chain=fetch(MUS_OBJ+coverPath,{method:'POST',headers:{'Authorization':MUS_AUTH,'Content-Type':coverFile.type||'image/jpeg','x-upsert':'true'},body:coverFile}).then(function(r){ if(!r.ok) throw new Error('封面上传失败'); });
-    }
-    chain.then(function(){
-      tip.textContent = '上传音乐...';
-      return fetch(MUS_OBJ+fileName,{method:'POST',headers:{'Authorization':MUS_AUTH,'Content-Type':'audio/mpeg','x-upsert':'true'},body:file});
-    }).then(function(r){ if(!r.ok) throw new Error('音乐上传失败'); return window.PolarisCloud.call('add_music',{title:title, artist:artist, file_path:fileName, cover:coverPath, password:getPw()}); })
-    .then(function(d){
-      if(d.ok){
-        tip.textContent = '上传成功！';
-        document.getElementById('mu_title').value=''; document.getElementById('mu_artist').value='';
-        document.getElementById('mu_file').value=''; if(coverInput) coverInput.value='';
-        listMusic();
-      } else { tip.textContent = '上传失败，请重试'; }
-    }).catch(function(e){ tip.textContent = '上传出错: ' + (e && e.message || e); });
+    tip.textContent = '读取文件...';
+    var reader = new FileReader();
+    reader.onload = function(){
+      var b64 = String(reader.result).split(',')[1] || '';
+      tip.textContent = '上传中...';
+      window.PolarisCloud.call('upload_music_file',{name:fileName, data:b64, content_type:file.type||'audio/mpeg', password:getPw()}).then(function(r){
+        if(!r || !r.ok) throw new Error('上传失败:' + (r && r.error || ''));
+        return window.PolarisCloud.call('add_music',{title:title, artist:artist, file_path:fileName, cover:'', password:getPw()});
+      }).then(function(d){
+        if(d && d.ok){
+          tip.textContent = '上传成功！';
+          document.getElementById('mu_title').value=''; document.getElementById('mu_artist').value='';
+          document.getElementById('mu_file').value='';
+          listMusic();
+        } else { tip.textContent = '保存记录失败'; }
+      }).catch(function(e){ tip.textContent = '出错: ' + (e && e.message || e); });
+    };
+    reader.onerror = function(){ tip.textContent = '文件读取失败'; };
+    reader.readAsDataURL(file);
   }
 
   document.getElementById('muUpload').addEventListener('click', uploadMusic);

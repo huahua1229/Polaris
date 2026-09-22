@@ -442,6 +442,26 @@ async function handle(req) {
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true });
     }
+    case 'upload_music_file': {
+      const adm = await requireAdmin(sb, body);
+      if (!adm.ok) return json({ ok: false, error: 'auth' });
+      const name = String(body.name || 'track.mp3').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80);
+      const b64 = String(body.data || '');
+      if (!b64) return json({ ok: false, error: 'no_data' });
+      const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      const ctype = String(body.content_type || 'audio/mpeg');
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/music/${name}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SERVICE_KEY}`,
+          'Content-Type': ctype,
+          'x-upsert': 'true',
+        },
+        body: bin,
+      });
+      if (!res.ok) return json({ ok: false, error: 'storage_' + res.status });
+      return json({ ok: true, path: name });
+    }
 
     /* ===== 相册 ===== */
     case 'list_albums': {

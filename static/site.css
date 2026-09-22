@@ -1151,3 +1151,7 @@ body.dark .bubble-content { color: #ddd; }
 
 .profile-mini .mini-avatar .charm-bubble { background: transparent !important; box-shadow: none !important; color: #777 !important; padding: 4px 8px !important; }
 .profile-mini .mini-avatar .charm-bubble::after { display: none !important; }
+
+.quick-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quick-link { display: flex; align-items: center; justify-content: center; padding: 9px 8px; border-radius: 11px; background: rgba(255,182,193,.22); color: #b23a78; text-decoration: none; font-size: 13px; font-weight: 500; transition: all .2s; }
+.quick-link:hover { background: linear-gradient(135deg,#ff9ec7,#c44df0); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,107,157,.35); }

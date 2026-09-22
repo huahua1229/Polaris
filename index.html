@@ -1274,11 +1274,17 @@ body.dark ::placeholder{color:#888;}
                         var frid = this.getAttribute('data-frid');
                         var fract = this.getAttribute('data-fract');
                         var pw2 = (typeof getSessionPw === 'function') ? getSessionPw() : '';
+                        var self = this;
                         var action = fract === 'approve' ? 'approve_friend_request' : 'reject_friend_request';
-                        this.disabled = true;
-                        window.PolarisCloud.call(action, {id: frid, password: pw2}).then(function(r2){
-                            if(r2 && r2.ok){ loadAdminFrRequests(); }
-                            else { alert('操作失败，请检查口令~'); }
+                        var cTitle = fract === 'approve' ? '通过友链' : '拒绝友链';
+                        var cMsg = fract === 'approve' ? '确定通过并添加为友链吗？' : '确定拒绝这条友链申请吗？删除后不可恢复。';
+                        customConfirm(cMsg, cTitle).then(function(yes){
+                            if(!yes) return;
+                            self.disabled = true;
+                            window.PolarisCloud.call(action, {id: frid, password: pw2}).then(function(r2){
+                                if(r2 && r2.ok){ toast(fract==='approve'?'✅ 已添加友链':'🗑 已拒绝','success'); loadAdminFrRequests(); }
+                                else { toast('操作失败，请检查口令~','error'); self.disabled=false; }
+                            }).catch(function(){ toast('网络错误','error'); self.disabled=false; });
                         });
                     });
                 });
@@ -1312,16 +1318,24 @@ body.dark ::placeholder{color:#888;}
                         var pid = this.getAttribute('data-pid');
                         var act = this.getAttribute('data-act');
                         var pw2 = (typeof getSessionPw === 'function') ? getSessionPw() : '';
-                        if (act === 'reject') {
-                            if (!confirm('确定拒绝这条投稿吗？')) return;
-                            window.PolarisCloud.deletePostAsync(pid, pw2).then(function(r2){ if(r2&&r2.ok){alert('已拒绝');loadAdminPosts();} else alert('操作失败'); });
-                        } else {
-                            if (!confirm('通过并发布这条投稿？会以投稿人名字署名展示。')) return;
-                            window.PolarisCloud.publishPostAsync(pid, pw2).then(function(r2){
-                                if(r2&&r2.ok){ alert('已发布！'); loadAdminPosts(); if(window.PolarisRender) window.PolarisRender.renderAll(); }
-                                else alert('发布失败');
-                            });
-                        }
+                        var self = this;
+                        var cTitle = act === 'reject' ? '拒绝投稿' : '通过投稿';
+                        var cMsg = act === 'reject' ? '确定拒绝并删除这篇投稿吗？删除后不可恢复。' : '确定通过并发布这篇投稿吗？会以投稿人名字署名展示。';
+                        customConfirm(cMsg, cTitle).then(function(yes){
+                            if(!yes) return;
+                            self.disabled = true;
+                            if (act === 'reject') {
+                                window.PolarisCloud.deletePostAsync(pid, pw2).then(function(r2){
+                                    if(r2&&r2.ok){ toast('🗑 已拒绝','success'); loadAdminPosts(); }
+                                    else { toast('操作失败','error'); self.disabled=false; }
+                                }).catch(function(){ toast('网络错误','error'); self.disabled=false; });
+                            } else {
+                                window.PolarisCloud.publishPostAsync(pid, pw2).then(function(r2){
+                                    if(r2&&r2.ok){ toast('✅ 已发布','success'); loadAdminPosts(); if(window.PolarisRender) window.PolarisRender.renderAll(); }
+                                    else { toast('发布失败','error'); self.disabled=false; }
+                                }).catch(function(){ toast('网络错误','error'); self.disabled=false; });
+                            }
+                        });
                     });
                 });
             });
@@ -1571,7 +1585,8 @@ body.dark ::placeholder{color:#888;}
         }
         var resetBtn = document.getElementById('adminReset');
         if (resetBtn) resetBtn.addEventListener('click', function () {
-            if (confirm('确定恢复为网站初始内容吗？当前修改将丢失（可先导出备份）。')) {
+            customConfirm('确定恢复为网站初始内容吗？当前修改将丢失（建议先导出备份）。', '恢复初始内容').then(function(yes){
+             if(!yes) return;
                 if (PolarisSite.cloudEnabled && PolarisSite.cloudEnabled()) {
                     var pwS = ''; try { pwS = sessionStorage.getItem('polaris_admin_pw') || ''; } catch (e) { }
                     if (!pwS) { showToast('请先通过口令验证~'); return; }
@@ -1590,7 +1605,7 @@ body.dark ::placeholder{color:#888;}
                     buildForms();
                     showToast('已恢复默认内容~');
                 }
-            }
+            });
         });
     })();
 
@@ -2178,12 +2193,15 @@ body.dark ::placeholder{color:#888;}
         del.textContent = '删除';
         del.style.cssText = 'padding:4px 10px;font-size:12px;border:none;border-radius:6px;background:#ffe0e0;color:#e66;cursor:pointer;';
         del.onclick = function(){
-          if(!confirm('确定删除这首？')) return;
-          fetch(EDGE_URL, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({action:'delete_music', password:getPw(), id:m.id})
-          }).then(function(r){return r.json();}).then(function(res){
-            if(res.ok){ listMusic(); } else { alert('删除失败'); }
+          var musicId = m.id;
+          customConfirm('确定删除这首音乐吗？删除后不可恢复。', '删除音乐').then(function(yes){
+            if(!yes) return;
+            fetch(EDGE_URL, {
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({action:'delete_music', password:getPw(), id:musicId})
+            }).then(function(r){return r.json();}).then(function(res){
+              if(res.ok){ toast('已删除','success'); listMusic(); } else { toast('删除失败','error'); }
+            }).catch(function(){ toast('网络错误','error'); });
           });
         };
         row.appendChild(del);
@@ -2263,12 +2281,15 @@ body.dark ::placeholder{color:#888;}
         delBtn.style.cssText = 'padding:4px 12px;margin:0;';
         delBtn.textContent = '删除';
         delBtn.onclick = function () {
-          if (!confirm('确定删除「' + al.title + '」？里面的照片也会一起删除')) return;
-          var adminPw = prompt('请输入管理口令：');
-          if (!adminPw) return;
-          window.PolarisCloud.call('delete_album', {id: al.id, password: adminPw}).then(function (r2) {
-            if (r2 && r2.ok) { alert('已删除'); loadAlbumManage(); loadAlbumOptions(); }
-            else alert('删除失败');
+          var albumTitle = al.title, albumId = al.id;
+          customConfirm('确定删除「' + albumTitle + '」吗？相册和里面的照片将一起删除，不可恢复。', '删除相册').then(function(yes){
+            if(!yes) return;
+            var adminPw = prompt('请输入管理口令：');
+            if (!adminPw) return;
+            window.PolarisCloud.call('delete_album', {id: albumId, password: adminPw}).then(function (r2) {
+              if (r2 && r2.ok) { toast('已删除','success'); loadAlbumManage(); loadAlbumOptions(); }
+              else toast('删除失败，请检查口令','error');
+            }).catch(function(){ toast('网络错误','error'); });
           });
         };
         row.appendChild(delBtn);

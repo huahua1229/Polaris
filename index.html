@@ -1196,8 +1196,8 @@ body.dark ::placeholder{color:#888;}
                         var id = this.getAttribute('data-did');
                         var pw = (typeof getSessionPw === 'function') ? getSessionPw() : '';
                         window.PolarisCloud.deleteMessageAsync(id, pw).then(function (r2) {
-                            if (r2 && r2.ok) { alert('已删除'); loadAdminMessages(); renderMessages && renderMessages(); }
-                            else alert('删除失败：口令不对？请在面板里重新验证一次');
+                            if (r2 && r2.ok) { toast('已删除','success'); loadAdminMessages(); renderMessages && renderMessages(); }
+                            else toast('删除失败：口令不对','error');
                         });
                     });
                 });
@@ -1731,7 +1731,8 @@ body.dark ::placeholder{color:#888;}
                             var pw = getSessionPw();
                             if (!pw) { pw = prompt('请输入作者口令以删除留言~'); if (!pw) return; }
                             window.PolarisCloud.deleteMessageAsync(id, pw).then(function (r) {
-                                if (!(r && r.ok)) alert('删除失败：口令错误或网络异常~');
+                                if (!(r && r.ok)) { toast('删除失败：口令错误','error'); return; }
+                                toast('已删除','success');
                                 renderMessages();
                             });
                         } else {

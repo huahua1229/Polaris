@@ -181,7 +181,7 @@ body.dark .wallpaper-overlay {
 .mask-layer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 290; }
 
 /* ============ 三栏布局 ============ */
-.layout { position: relative; z-index: 10; padding: calc(var(--top-h) + 20px) 22px 28px; }
+.layout { position: relative; z-index: 10; padding: calc(var(--top-h) + 20px) 22px 28px var(--side-w); }
 .layout-inner { display: grid; grid-template-columns: 1fr var(--rail-w); gap: clamp(14px, 2vw, 24px); align-items: flex-start; max-width: 1500px; margin: 0 auto; }
 .main-content { flex: 1; min-width: 0; }
 

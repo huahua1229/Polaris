@@ -2349,7 +2349,10 @@ document.addEventListener('DOMContentLoaded',function(){
                 r.photos.forEach(function (ph) {
                     var item = document.createElement('div');
                     item.className = 'photo-item';
-                    item.innerHTML = '<img src="' + ph.url + '" loading="lazy"><div class="photo-caption">' + (ph.caption || '') + '</div>';
+                    item.innerHTML = '<img src="' + ph.url + '" style="opacity:0;transition:opacity .35s ease;"><div class="photo-caption">' + (ph.caption || '') + '</div>';
+                    var img = item.querySelector('img');
+                    function showImg(){ img.style.opacity = 1; }
+                    if (img.complete) showImg(); else { img.onload = showImg; img.onerror = showImg; }
                     grid.appendChild(item);
                 });
             });

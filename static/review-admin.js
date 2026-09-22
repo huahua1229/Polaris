@@ -40,7 +40,7 @@
             btnEl.disabled=true;
             var fn=act==='publish'?window.PolarisCloud.publishPostAsync:window.PolarisCloud.deletePostAsync;
             fn(pid, pw).then(function(r){
-              if(r&&r.ok){ toast(act==='publish'?'✅ 已发布':'🗑 已拒绝','success'); loadPosts(pw); }
+              if(r&&r.ok){ toast(act==='publish'?'✅ 已发布':'🗑 已拒绝','success'); loadPosts(pw); if(window.PolarisRender) window.PolarisRender.renderAll(); }
               else { toast('操作失败，请重试','error'); btnEl.disabled=false; }
             }).catch(function(){ toast('网络错误','error'); btnEl.disabled=false; });
           });
@@ -79,7 +79,7 @@
             if(!yes) return;
             self.disabled=true;
             window.PolarisCloud.call(fract==='approve'?'approve_friend_request':'reject_friend_request',{id:frid,password:pw}).then(function(r){
-              if(r&&r.ok){ toast(fract==='approve'?'✅ 已添加友链':'🗑 已拒绝','success'); loadFr(pw); }
+              if(r&&r.ok){ toast(fract==='approve'?'✅ 已添加友链':'🗑 已拒绝','success'); loadFr(pw); if(window.PolarisRender) window.PolarisRender.renderAll(); }
               else { toast('操作失败','error'); self.disabled=false; }
             }).catch(function(){ toast('网络错误','error'); self.disabled=false; });
           });
@@ -153,7 +153,7 @@
             if(!yes) return;
             btnEl.disabled=true;
             window.PolarisCloud.deleteMessageAsync(mid, pw).then(function(r){
-              if(r&&r.ok){ toast('已删除','success'); loadMsgs(pw); }
+              if(r&&r.ok){ toast('已删除','success'); loadMsgs(pw); if(window.PolarisRender) window.PolarisRender.renderAll(); }
               else { toast('删除失败','error'); btnEl.disabled=false; }
             }).catch(function(){ toast('网络错误','error'); btnEl.disabled=false; });
           });

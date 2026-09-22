@@ -8,9 +8,10 @@
    页面仍可正常浏览、管理内容、留言（数据只存本机浏览器）。
 
    安全模型：
-   - 留言发布/回复/点赞：公开操作，无需口令
-   - 内容更新、口令修改、删除留言：作者操作，需口令，
-     口令由服务端函数校验（前端不保存口令明文，仅会话内暂存）
+   - 浏览内容：公开，无需登录
+   - 留言 / 回复 / 点赞 / 投稿 / 友链申请：需登录（QQ邮箱注册的用户账号）
+   - 审核、内容更新、音乐/相册管理：仅开发者（管理密钥），服务端校验
+   - 登录凭证保存在 localStorage('polaris_user')，call() 会自动附带
    ============================================================ */
 window.POLARIS_CLOUD_CONFIG = {
     fnUrl: 'https://ldprlyzawsgwjtgdwexz.supabase.co/functions/v1/super-function',
@@ -32,6 +33,11 @@ window.PolarisCloud = (function () {
         for (var k in payload) {
             if (Object.prototype.hasOwnProperty.call(payload, k)) body[k] = payload[k];
         }
+        // 自动附带登录凭证（无需每个调用方手动传）
+        try {
+            var u = JSON.parse(localStorage.getItem('polaris_user') || 'null');
+            if (u && u.token) body.token = u.token;
+        } catch (e) {}
         return new Promise(function (resolve) {
             var xhr = new XMLHttpRequest();
             xhr.open('POST', cfg.fnUrl, true);
@@ -74,6 +80,20 @@ window.PolarisCloud = (function () {
         return call('change_password', { password: password || '', new_password: newPassword || '' });
     }
 
+    /* ---------- 用户账号 ---------- */
+    function registerAsync(email, password, nickname) {
+        return call('register', { email: email, password: password, nickname: nickname });
+    }
+    function loginAsync(email, password) {
+        return call('login', { email: email, password: password });
+    }
+    function developerLoginAsync(password) {
+        return call('developer_login', { password: password });
+    }
+    function updateProfileAsync(patch) {
+        return call('update_profile', patch);
+    }
+
     /* ---------- 留言 ---------- */
     function loadMessagesAsync() {
         return call('read_messages');
@@ -86,6 +106,10 @@ window.PolarisCloud = (function () {
     }
     function likeAsync(id, delta) {
         return call('like_message', { id: id, delta: delta });
+    }
+    /* 登录用户点赞：后端按账号去重，再点取消，返回 { liked, likes } */
+    function toggleLikeAsync(id) {
+        return call('like_message', { id: id });
     }
     function deleteMessageAsync(id, password) {
         return call('delete_message', { id: id, password: password || '' });
@@ -126,10 +150,15 @@ window.PolarisCloud = (function () {
         resetContentAsync: resetContentAsync,
         verifyPasswordAsync: verifyPasswordAsync,
         changePasswordAsync: changePasswordAsync,
+        registerAsync: registerAsync,
+        loginAsync: loginAsync,
+        developerLoginAsync: developerLoginAsync,
+        updateProfileAsync: updateProfileAsync,
         loadMessagesAsync: loadMessagesAsync,
         addMessageAsync: addMessageAsync,
         addReplyAsync: addReplyAsync,
         likeAsync: likeAsync,
+        toggleLikeAsync: toggleLikeAsync,
         deleteMessageAsync: deleteMessageAsync,
         uploadAttachmentAsync: uploadAttachmentAsync,
         submitPostAsync: submitPostAsync,

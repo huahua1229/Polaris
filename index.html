@@ -941,7 +941,7 @@ window.PolarisAuth = (function(){
   function developerLogin(p){ return PolarisCloud.developerLoginAsync(p).then(function(r){ if(r&&r.ok&&r.token) afterAuth(r,p); return r;}); }
   function updateProfile(patch){
     return PolarisCloud.updateProfileAsync(patch).then(function(r){
-      if(r&&r.ok&&r.token){ var u=getUser(); u.nickname=r.nickname||u.nickname; u.token=r.token; setUser(u); }
+      if(r&&r.ok&&r.token){ var u=getUser(); u.nickname=r.nickname||u.nickname; u.avatar=(r.avatar!==undefined?r.avatar:u.avatar); u.token=r.token; setUser(u); }
       return r;
     });
   }

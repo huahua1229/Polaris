@@ -105,7 +105,7 @@
           customConfirm('确定删除「' + albumTitle + '」吗？相册和里面的照片将一起删除，不可恢复。', '删除相册').then(function(yes){
             if(!yes) return;
             window.PolarisCloud.call('delete_album', {id: albumId}).then(function (r2) {
-              if (r2 && r2.ok) { toast('已删除','success'); window.albumCache=null; loadAlbumManage(); loadAlbumOptions(); }
+              if (r2 && r2.ok) { toast('已删除','success'); window.albumCache=null; loadAlbumManage(); loadAlbumOptions(); if(window.loadAlbums) window.loadAlbums(); }
               else toast('删除失败：' + window.PolarisAuth.errText(r2 && r2.error),'error');
             }).catch(function(){ toast('网络错误','error'); });
           });

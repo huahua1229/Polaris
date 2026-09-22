@@ -656,9 +656,9 @@ body.dark .wallpaper-overlay {
     border-radius: 10px; padding: 10px 14px; margin-bottom: 8px;
     border-left: 3px solid var(--c-dpink);
 }
-.reply-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.reply-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
 .reply-author { font-family: 'ZCOOL KuaiLe', cursive; font-size: 13px; color: var(--c-purple); }
-.reply-time { font-size: 11px; color: #bbb; }
+.reply-time { font-size: 11px; color: #bbb; margin-left: auto; }
 .reply-content { font-size: 12.5px; line-height: 1.7; color: #666; word-break: break-word; }
 .empty-message { text-align: center; padding: 44px 20px; color: var(--c-faint); font-size: 14px; }
 .empty-message .icon { font-size: 46px; margin-bottom: 12px; opacity: 0.5; }

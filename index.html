@@ -1284,6 +1284,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 return '<div class="project-card tilt anim-in" data-delay="' + (i % 4) + '" data-cat="' + esc(x.cat) + '">' +
                     '<div class="pc-top"><span class="pc-ico">' + esc(x.ico) + '</span><div class="pc-tags">' + tags + '</div></div>' +
                     '<div class="pc-title">' + esc(x.title) + '</div><div class="pc-desc">' + esc(x.desc) + '</div>' +
+                    (x.attachment && x.attachment.path ? '<div style="margin:6px 0 2px;"><a href="https://ldprlyzawsgwjtgdwexz.supabase.co/storage/v1/object/public/'+esc(x.attachment.path)+'" target="_blank" rel="noopener" download style="color:#e75480;font-size:12px;text-decoration:underline;">📎 附件：'+esc(x.attachment.name||'下载')+'</a></div>' : '') +
                     '<div class="pc-foot"><div class="pc-meta"><span>⭐ ' + (parseInt(x.stars) || 0) + '</span><span>💬 ' + esc(x.catLabel) + '</span></div>' +
                     '<span class="pc-go" data-toast="项目详情整理中，敬请期待~">查看详情 →</span></div></div>';
             }).join('');

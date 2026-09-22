@@ -2188,27 +2188,35 @@ document.addEventListener('DOMContentLoaded',function(){
 
         /* ===== 相册 ===== */
         var albumPw = {};
+        window.albumCache = null;
+        function renderAlbumList(albums) {
+            var list = document.getElementById('albumList');
+            list.innerHTML = ''; list.style.opacity = 0;
+            (albums || []).forEach(function (al) {
+                var card = document.createElement('div');
+                card.className = 'album-card';
+                var cover = al.cover_url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600';
+                card.innerHTML = '<div class="album-cover" style="background-image:url(\'' + cover + '\')">' +
+                    (al.is_public ? '' : '<span class="album-lock">🔒 私密</span>') + '</div>' +
+                    '<div class="album-info"><h3>' + al.title + '</h3><p>' + (al.description || '') + '</p></div>';
+                card.onclick = function () { openAlbum(al); };
+                list.appendChild(card);
+            });
+            list.style.transition = 'opacity .4s'; list.style.opacity = 1;
+        }
         function loadAlbums() {
             var list = document.getElementById('albumList');
             var photos = document.getElementById('albumPhotos');
             if (!list) return;
             photos.style.display = 'none';
             list.style.display = '';
+            if (window.albumCache) { renderAlbumList(window.albumCache); return; }
             list.innerHTML = '<p class="c-sub">加载中...</p>';
             if (!window.PolarisCloud || !window.PolarisCloud.enabled()) { list.innerHTML = '<p class="c-sub">云端未连接</p>'; return; }
             window.PolarisCloud.call('list_albums', {}).then(function (r) {
                 if (!r || !r.ok) { list.innerHTML = '<p class="c-sub">加载失败</p>'; return; }
-                list.innerHTML = ''; list.style.opacity = 0;
-                (r.albums || []).forEach(function (al) {
-                    var card = document.createElement('div');
-                    card.className = 'album-card';
-                    var cover = al.cover_url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600';
-                    card.innerHTML = '<div class="album-cover" style="background-image:url(\'' + cover + '\')">' +
-                        (al.is_public ? '' : '<span class="album-lock">🔒 私密</span>') + '</div>' +
-                        '<div class="album-info"><h3>' + al.title + '</h3><p>' + (al.description || '') + '</p></div>';
-                    card.onclick = function () { openAlbum(al); };
-                    list.appendChild(card); list.style.transition = 'opacity .4s'; list.style.opacity = 1;
-                });
+                window.albumCache = (r.albums || []);
+                renderAlbumList(window.albumCache);
             });
         }
         function openAlbum(al) {
@@ -2569,7 +2577,7 @@ document.addEventListener('DOMContentLoaded',function(){
           customConfirm('确定删除「' + albumTitle + '」吗？相册和里面的照片将一起删除，不可恢复。', '删除相册').then(function(yes){
             if(!yes) return;
             window.PolarisCloud.call('delete_album', {id: albumId}).then(function (r2) {
-              if (r2 && r2.ok) { toast('已删除','success'); loadAlbumManage(); loadAlbumOptions(); }
+              if (r2 && r2.ok) { toast('已删除','success'); window.albumCache=null; loadAlbumManage(); loadAlbumOptions(); }
               else toast('删除失败：' + window.PolarisAuth.errText(r2 && r2.error),'error');
             }).catch(function(){ toast('网络错误','error'); });
           });
@@ -2593,7 +2601,7 @@ document.addEventListener('DOMContentLoaded',function(){
       window.PolarisCloud.call('create_album', {
         title: title, description: desc, is_public: isPub, album_password: pw
       }).then(function (r) {
-        if (r && r.ok) { toast('相册创建成功','success'); loadAlbumOptions(); }
+        if (r && r.ok) { toast('相册创建成功','success'); window.albumCache=null; loadAlbumOptions(); }
         else alert('创建失败：' + ((r && r.error) ? window.PolarisAuth.errText(r.error) : '请确认已用开发者账号登录'));
       });
     };

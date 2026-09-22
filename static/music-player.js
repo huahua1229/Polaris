@@ -10,6 +10,10 @@
   var volBar = document.getElementById('playerVolBar');
   var volFill = document.getElementById('playerVolFill');
   var volIcon = document.getElementById('playerVolIcon');
+  var barTitle = document.getElementById('barTitle');
+  var barArtist = document.getElementById('barArtist');
+  var prevBtn = document.getElementById('playerPrev');
+  var nextBtn = document.getElementById('playerNext');
   var duckImg = document.getElementById('fabDuck');
   var coverImg = document.getElementById('fabCover');
 
@@ -84,6 +88,8 @@
   }
 
   audio.addEventListener('ended', nextTrack);
+  if(prevBtn) prevBtn.addEventListener('click', function(e){ e.stopPropagation(); loadTrack(currentIdx - 1); audio.play().catch(function(){}); });
+  if(nextBtn) nextBtn.addEventListener('click', function(e){ e.stopPropagation(); loadTrack(currentIdx + 1); audio.play().catch(function(){}); });
 
   window.loadMusicList = function() {
     return window.PolarisCloud.call('list_music').then(function(d){

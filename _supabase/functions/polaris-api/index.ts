@@ -454,12 +454,13 @@ async function handle(req) {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${SERVICE_KEY}`,
+          'apikey': SERVICE_KEY,
           'Content-Type': ctype,
           'x-upsert': 'true',
         },
         body: bin,
       });
-      if (!res.ok) return json({ ok: false, error: 'storage_' + res.status });
+      if (!res.ok) return json({ ok: false, error: 'storage_' + res.status + ':' + await res.text() });
       return json({ ok: true, path: name });
     }
 

@@ -1909,6 +1909,36 @@ body.dark ::placeholder{color:#888;}
     </script>
 
 <script>
+// 全局 toast
+function toast(msg, type) {
+    var el = document.getElementById('toast');
+    if (!el) { el = document.createElement('div'); el.id = 'toast'; document.body.appendChild(el); }
+    el.textContent = msg;
+    el.className = type || '';
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.classList.remove('show'); }, 2200);
+}
+// 自定义确认弹窗
+function customConfirm(msg, title) {
+    return new Promise(function(resolve) {
+        var mask = document.getElementById('confirmMask');
+        if (!mask) {
+            mask = document.createElement('div');
+            mask.id = 'confirmMask';
+            mask.innerHTML = '<div class="confirm-box"><h3 id="confirmTitle">确认操作</h3><p id="confirmText"></p><div class="confirm-btns"><button class="cancel" id="confirmCancel">取消</button><button class="ok" id="confirmOk">确定</button></div></div>';
+            document.body.appendChild(mask);
+        }
+        document.getElementById('confirmTitle').textContent = title || '确认操作';
+        document.getElementById('confirmText').textContent = msg;
+        mask.classList.add('show');
+        function done(v) { mask.classList.remove('show'); document.getElementById('confirmOk').onclick = null; document.getElementById('confirmCancel').onclick = null; resolve(v); }
+        document.getElementById('confirmOk').onclick = function() { done(true); };
+        document.getElementById('confirmCancel').onclick = function() { done(false); };
+    });
+}
+</script>
+<script>
 (function(){
   var s=document.getElementById('splash');
   function hide(){ if(!s) return; s.classList.add('done'); setTimeout(function(){ if(s&&s.parentNode) s.parentNode.removeChild(s); }, 700); }

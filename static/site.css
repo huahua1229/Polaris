@@ -1054,3 +1054,24 @@ body.dark .c-sub a { color: #c8b8f0; }
 .message-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .reply-avatar { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; margin-right: 6px; vertical-align: middle; }
 body.dark .av-upload { background: rgba(255,182,193,.12); color: #ff9ec4; }
+
+
+/* ===== 统一文件选择按钮风格（投稿/音乐/相册上传） ===== */
+input[type="file"] {
+  width: 100%; padding: 8px 10px;
+  border: 1.5px dashed rgba(196, 77, 255, 0.4);
+  border-radius: 10px; background: rgba(255, 255, 255, 0.5);
+  color: #b066d8; font-size: 13px; font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer; transition: all .2s ease;
+  box-sizing: border-box;
+}
+input[type="file"]:hover { border-color: #ff6b9d; background: rgba(255, 107, 157, 0.08); }
+input[type="file"]::-webkit-file-upload-button {
+  background: linear-gradient(135deg, #c44dff, #ff6b9d);
+  color: #fff; border: none; padding: 6px 16px;
+  border-radius: 8px; margin-right: 12px; cursor: pointer;
+  font-family: inherit; font-size: 13px; transition: filter .2s ease;
+}
+input[type="file"]::-webkit-file-upload-button:hover { filter: brightness(1.08); }
+body.dark input[type="file"] { background: rgba(255,255,255,.08); color: #ffc0da; border-color: rgba(255,182,193,.3); }
+body.dark input[type="file"]::-webkit-file-upload-button { background: linear-gradient(135deg, #9b4dff, #e05a8e); }

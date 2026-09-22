@@ -481,7 +481,8 @@ body.dark ::placeholder{color:#888;}
                         <span class="page-subtitle">欢迎留下你的足迹，每一条留言都是珍贵的回忆~</span>
                     </div>
 
-                    <section class="panel guestbook-form anim-in" data-delay="1">
+                    <button class="guestbook-toggle" id="guestbookToggle">✏️ 我要留言</button>
+                    <section class="panel guestbook-form anim-in" id="guestbookForm" style="display:none">
                         <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>写下你的留言<span class="t-sub">Guestbook</span></h2>
                         <div class="form-row">
                             <label class="form-label">QQ 邮箱（必填，仅作者可见，用于联系你）</label>
@@ -510,8 +511,8 @@ body.dark ::placeholder{color:#888;}
                         <div class="mini-name"></div>
                         <div class="mini-bio"></div>
                         <div class="mini-stats">
-                            <div class="mini-stat"><div class="num count-num" data-target="7">0</div><div class="label">在线天数</div></div>
-                            <div class="mini-stat"><div class="num count-num" data-target="9">0</div><div class="label">访客足迹</div></div>
+                            <div class="mini-stat"><div class="num" id="miniMsgCount">0</div><div class="label">留言</div></div>
+                            <div class="mini-stat"><div class="num" id="miniLikeCount">0</div><div class="label">获赞</div></div>
                             <div class="mini-stat"><div class="num">∞</div><div class="label">欢迎光临</div></div>
                         </div>
                     </div>
@@ -1702,8 +1703,16 @@ body.dark ::placeholder{color:#888;}
         function getLikedIds() { try { return JSON.parse(localStorage.getItem(LIKES_KEY) || '[]'); } catch (e) { return []; } }
         function saveLikedIds(ids) { localStorage.setItem(LIKES_KEY, JSON.stringify(ids)); }
         function formatTime(ts) {
-            var d = new Date(ts);
-            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+            var diff = Date.now() - ts;
+            var m = Math.floor(diff / 60000);
+            if (m < 1) return '刚刚';
+            if (m < 60) return m + ' 分钟前';
+            var h = Math.floor(m / 60);
+            if (h < 24) return h + ' 小时前';
+            var d = Math.floor(h / 24);
+            if (d < 7) return d + ' 天前';
+            var dt = new Date(ts);
+            return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
         }
         function getInitial(name) { return name ? name.charAt(0).toUpperCase() : '匿'; }
         function genId() { return Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
@@ -1741,6 +1750,8 @@ body.dark ::placeholder{color:#888;}
             if (statCount) statCount.textContent = msgs.length;
             if (statReply) statReply.textContent = replies;
             if (statLike) statLike.textContent = likes;
+            var mmc = document.getElementById('miniMsgCount'); if (mmc) mmc.textContent = msgs.length;
+            var mlc = document.getElementById('miniLikeCount'); if (mlc) mlc.textContent = likes;
             if (visitorList) {
                 var recent = seen.slice(0, 6);
                 visitorList.innerHTML = recent.map(function (n) {
@@ -1767,32 +1778,30 @@ body.dark ::placeholder{color:#888;}
                             '<div class="reply-content">' + escHtml(r.message).replace(/\n/g, '<br>') + '</div>' +
                         '</div>';
                     }).join('') : '';
-                    /* 云端模式：删除按钮仅作者可见；本地模式：照旧 */
                     var delHtml = (!cloudMode() || author)
                         ? '<button class="message-delete" data-id="' + escHtml(msg.id) + '">删除</button>' : '';
-                    return '<div class="message-card">' +
-                        '<div class="message-header">' +
-                            '<div class="message-author">' +
-                                '<div class="message-avatar">' + (msg.avatar ? '<img src="' + escHtml(msg.avatar) + '" alt="">' : getInitial(msg.name)) + '</div>' +
-                                '<span class="message-name">' + escHtml(msg.name || (msg.email ? msg.email.split('@')[0] : '匿名访客')) + '</span>' +
-                                (msg.email ? '<span style="font-size:11px;color:#aaa;margin-left:6px;">📧 ' + escHtml(maskEmail(msg.email)) + '</span>' : '') +
-                            '</div>' +
-                            '<div style="display:flex;align-items:center;gap:8px;">' +
-                                '<span class="message-time">' + formatTime(msg.time) + '</span>' +
+                    var avatarHtml = msg.avatar ? '<img src="' + escHtml(msg.avatar) + '" alt="">' : getInitial(msg.name);
+                    return '<div class="message-card bubble">' +
+                        '<div class="bubble-avatar">' + avatarHtml + '</div>' +
+                        '<div class="bubble-body">' +
+                            '<div class="bubble-meta">' +
+                                '<span class="bubble-name">' + escHtml(msg.name || (msg.email ? msg.email.split('@')[0] : '匿名访客')) + '</span>' +
+                                (msg.email ? '<span class="bubble-mail">📧 ' + escHtml(maskEmail(msg.email)) + '</span>' : '') +
+                                '<span class="bubble-time">' + formatTime(msg.time) + '</span>' +
                                 delHtml +
                             '</div>' +
-                        '</div>' +
-                        '<div class="message-content">' + escHtml(msg.message).replace(/\n/g, '<br>') + '</div>' +
-                        '<div class="message-actions">' +
-                            '<button class="action-btn like-btn ' + (isLiked ? 'liked' : '') + '" data-id="' + escHtml(msg.id) + '">' + (isLiked ? '❤️' : '🤍') + ' <span class="count">' + (msg.likes || 0) + '</span></button>' +
-                            '<button class="action-btn reply-btn" data-idx="' + idx + '">💬 回复' + ((msg.replies && msg.replies.length > 0) ? ' (' + msg.replies.length + ')' : '') + '</button>' +
-                        '</div>' +
-                        '<div class="reply-section" id="reply-' + idx + '">' +
-                            '<div class="reply-form">' +
-                                '<input type="text" class="reply-input" id="reply-input-' + idx + '" placeholder="写下你的回复...（Ctrl+Enter 发送）" maxlength="200">' +
-                                '<button class="reply-submit" data-idx="' + idx + '">回复</button>' +
+                            '<div class="bubble-content">' + escHtml(msg.message).replace(/\n/g, '<br>') + '</div>' +
+                            '<div class="bubble-actions">' +
+                                '<button class="action-btn like-btn ' + (isLiked ? 'liked' : '') + '" data-id="' + escHtml(msg.id) + '">' + (isLiked ? '❤️' : '🤍') + ' <span class="count">' + (msg.likes || 0) + '</span></button>' +
+                                '<button class="action-btn reply-btn" data-idx="' + idx + '">💬 回复' + ((msg.replies && msg.replies.length > 0) ? ' (' + msg.replies.length + ')' : '') + '</button>' +
                             '</div>' +
-                            '<div class="reply-list">' + repliesHtml + '</div>' +
+                            '<div class="reply-section" id="reply-' + idx + '">' +
+                                '<div class="reply-form">' +
+                                    '<input type="text" class="reply-input" id="reply-input-' + idx + '" placeholder="写下你的回复...（Ctrl+Enter 发送）" maxlength="200">' +
+                                    '<button class="reply-submit" data-idx="' + idx + '">回复</button>' +
+                                '</div>' +
+                                '<div class="reply-list">' + repliesHtml + '</div>' +
+                            '</div>' +
                         '</div>' +
                     '</div>';
                 }).join('');
@@ -2483,6 +2492,15 @@ body.dark ::placeholder{color:#888;}
     btn.classList.toggle('show', window.scrollY>400);
   }, {passive:true});
   btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  // 留言表单折叠
+  var tg=document.getElementById('guestbookToggle');
+  var gf=document.getElementById('guestbookForm');
+  if(tg&&gf){ tg.addEventListener('click',function(){
+    var open=gf.style.display!=='none';
+    gf.style.display=open?'none':'block';
+    tg.textContent=open?'✏️ 我要留言':'▲ 收起留言框';
+    if(!open){ var em=document.getElementById('guestEmail'); if(em) em.focus(); }
+  }); }
   // hero 打字机
   var tag=document.getElementById('heroTag');
   if(tag){

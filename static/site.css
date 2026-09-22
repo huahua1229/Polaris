@@ -1106,3 +1106,30 @@ body.dark input[type="file"]::-webkit-file-upload-button { background: linear-gr
 #backTop.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
 #backTop:hover { transform: translateY(-3px); }
 body.dark #backTop { background: linear-gradient(135deg,#9b4dff,#e05a8e); }
+
+
+/* ===== 留言板优化 ===== */
+.guestbook-toggle { width: 100%; padding: 14px; margin-bottom: 14px; border: 1.5px dashed #e0a8ff;
+  background: rgba(196,77,255,.06); color: #b066d8; border-radius: 14px; cursor: pointer;
+  font-size: 15px; font-weight: 600; transition: all .2s; }
+.guestbook-toggle:hover { background: rgba(196,77,255,.12); border-color: #c44dff; }
+
+/* 气泡式留言 */
+.message-card.bubble { display: flex; gap: 14px; padding: 16px; margin-bottom: 14px; }
+.bubble-avatar { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 50%; overflow: hidden;
+  background: linear-gradient(135deg,#c44dff,#ff6b9d); color: #fff; font-weight: 700; font-size: 18px;
+  display: flex; align-items: center; justify-content: center; }
+.bubble-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.bubble-body { flex: 1; min-width: 0; }
+.bubble-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; font-size: 13px; }
+.bubble-name { font-weight: 700; color: #c44dff; }
+.bubble-mail { color: #bbb; font-size: 11px; }
+.bubble-time { color: #aaa; font-size: 12px; margin-left: auto; }
+.bubble-content { background: linear-gradient(135deg, rgba(196,77,255,.07), rgba(255,107,157,.07));
+  padding: 12px 14px; border-radius: 4px 14px 14px 14px; line-height: 1.7; color: #555; }
+.bubble-actions { margin-top: 8px; display: flex; gap: 10px; }
+body.dark .bubble-content { color: #ddd; }
+
+/* 空状态 */
+.empty-message { text-align: center; padding: 50px 20px; color: #aaa; }
+.empty-message .icon { font-size: 42px; margin-bottom: 10px; }

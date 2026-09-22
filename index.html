@@ -2111,7 +2111,7 @@ document.addEventListener('DOMContentLoaded',function(){
                         var replyText = input.value.trim();
                         if (!replyText) { alert('回复内容不能为空哦~'); input.focus(); return; }
                         if (cloudMode() && !window.PolarisAuth.isLoggedIn()) { window.PolarisAuth.openLogin('login'); return; }
-                        var reply = { name: cloudMode() ? '' : (nameInput.value.trim() || '匿名访客'), message: replyText, time: Date.now(), avatar: curAv() };
+                        var reply = { name: cloudMode() ? '' : (nameInput.value.trim() || '匿名访客'), message: replyText, time: Date.now(), avatar: (function(){try{return (JSON.parse(localStorage.getItem('polaris_user')||'{}').avatar)||'';}catch(e){return '';}})() };
                         if (cloudMode()) {
                             var mid = msgs[idx] ? msgs[idx].id : '';
                             if (!mid) return;
@@ -2170,7 +2170,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 if (!window.PolarisAuth.isLoggedIn()) { window.PolarisAuth.openLogin('login'); return; }
                 if (!message) { alert('留言内容不能为空哦~'); msgInput.focus(); return; }
                 submitBtn.disabled = true; submitBtn.textContent = '发送中...';
-                window.PolarisCloud.addMessageAsync({ message: message, time: Date.now(), avatar: curAv() }).then(function (r) {
+                window.PolarisCloud.addMessageAsync({ message: message, time: Date.now(), avatar: (function(){try{return (JSON.parse(localStorage.getItem('polaris_user')||'{}').avatar)||'';}catch(e){return '';}})() }).then(function (r) {
                     submitBtn.disabled = false;
                     if (!(r && r.ok)) { submitBtn.textContent = '🌸 提交留言'; alert(window.PolarisAuth.errText(r && r.error) || '留言发布失败，请稍后重试~'); return; }
                     msgInput.value = '';

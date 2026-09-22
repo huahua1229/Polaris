@@ -836,6 +836,7 @@ body.dark ::placeholder{color:#888;}
                         <div class="af-field"><label>歌名</label><input id="mu_title" class="af-input" placeholder="如：花之舞"></div>
                         <div class="af-field"><label>作者</label><input id="mu_artist" class="af-input" placeholder="如：DJ Okawari"></div>
                         <div class="af-field" style="grid-column:1/-1;"><label>选择 mp3 文件</label><input type="file" id="mu_file" accept="audio/mpeg,audio/mp3,.mp3" class="af-input"></div>
+                        <div class="af-field" style="grid-column:1/-1;"><label>封面图（可选，不选用默认头像）</label><input type="file" id="mu_cover" accept="image/*" class="af-input"></div>
                     </div>
                     <button type="button" class="af-add" id="muUpload">⬆ 上传音乐</button>
                     <div class="af-hint" id="muTip">音乐文件会上传到 Supabase Storage 的 music 文件夹，然后自动加到播放列表。</div>
@@ -2536,6 +2537,8 @@ document.addEventListener('DOMContentLoaded',function(){
     audio.src = STORAGE + m.file_path;
     barTitle.textContent = m.title;
     barArtist.textContent = m.artist || '';
+    var bc = document.getElementById('barCover');
+    if(bc){ bc.src = m.cover ? STORAGE + m.cover : 'static/avatar.png'; }
   }
   function nextTrack(){
     if(playlist.length > 1) loadTrack(currentIdx + 1);
@@ -2589,34 +2592,37 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   }
 
+  var MUS_OBJ='https://ldprlyzawsgwjtgdwexz.supabase.co/storage/v1/object/music/';
+  var MUS_AUTH='Bearer sb_publishable_vVhLivALBiNuxHUVRzfDmg_uDzYXlnr';
   function uploadMusic(){
     var title = document.getElementById('mu_title').value.trim();
     var artist = document.getElementById('mu_artist').value.trim();
     var file = document.getElementById('mu_file').files[0];
+    var coverInput = document.getElementById('mu_cover');
+    var coverFile = coverInput && coverInput.files && coverInput.files[0];
     var tip = document.getElementById('muTip');
     if(!title || !file){ alert('请填写歌名并选择文件'); return; }
-    tip.textContent = '上传中...';
     var fileName = 'music_' + Date.now() + '.mp3';
-    fetch('https://ldprlyzawsgwjtgdwexz.supabase.co/storage/v1/object/music/' + fileName, {
-      method:'POST',
-      headers:{
-        'Authorization':'Bearer sb_publishable_vVhLivALBiNuxHUVRzfDmg_uDzYXlnr',
-        'Content-Type':'audio/mpeg'
-      },
-      body: file
-    }).then(function(r){ return r.json(); }).then(function(up){
-      return window.PolarisCloud.call('add_music',{title:title, artist:artist, file_path:fileName, password:getPw()});
-    }).then(function(d){
+    var coverPath = '';
+    var chain = Promise.resolve();
+    if(coverFile){
+      tip.textContent = '上传封面...';
+      var cExt=(coverFile.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+      coverPath='covers/cover_'+Date.now()+'.'+cExt;
+      chain=fetch(MUS_OBJ+coverPath,{method:'POST',headers:{'Authorization':MUS_AUTH,'Content-Type':coverFile.type||'image/jpeg','x-upsert':'true'},body:coverFile}).then(function(r){ if(!r.ok) throw new Error('封面上传失败'); });
+    }
+    chain.then(function(){
+      tip.textContent = '上传音乐...';
+      return fetch(MUS_OBJ+fileName,{method:'POST',headers:{'Authorization':MUS_AUTH,'Content-Type':'audio/mpeg','x-upsert':'true'},body:file});
+    }).then(function(r){ if(!r.ok) throw new Error('音乐上传失败'); return window.PolarisCloud.call('add_music',{title:title, artist:artist, file_path:fileName, cover:coverPath, password:getPw()}); })
+    .then(function(d){
       if(d.ok){
         tip.textContent = '上传成功！';
-        document.getElementById('mu_title').value = '';
-        document.getElementById('mu_artist').value = '';
-        document.getElementById('mu_file').value = '';
+        document.getElementById('mu_title').value=''; document.getElementById('mu_artist').value='';
+        document.getElementById('mu_file').value=''; if(coverInput) coverInput.value='';
         listMusic();
-      } else {
-        tip.textContent = '上传失败，请重试';
-      }
-    }).catch(function(e){ tip.textContent = '上传出错: ' + e.message; });
+      } else { tip.textContent = '上传失败，请重试'; }
+    }).catch(function(e){ tip.textContent = '上传出错: ' + (e && e.message || e); });
   }
 
   document.getElementById('muUpload').addEventListener('click', uploadMusic);
@@ -2666,8 +2672,42 @@ document.addEventListener('DOMContentLoaded',function(){
             }).catch(function(){ toast('网络错误','error'); });
           });
         };
+        var phBtn = document.createElement('button');
+        phBtn.className='af-add'; phBtn.style.cssText='padding:4px 12px;margin:0 6px 0 0;';
+        phBtn.textContent='管理照片';
+        phBtn.onclick = function(){ openPhotosAdmin(al.id, box); };
+        row.appendChild(phBtn);
         row.appendChild(delBtn);
         box.appendChild(row);
+      });
+    });
+  }
+  function openPhotosAdmin(albumId, rootBox){
+    window.PolarisCloud.call('list_photos',{albumId:albumId, password:getPw()}).then(function(r){
+      if(!r||!r.ok){ alert('加载照片失败：'+(r&&r.error||'')); return; }
+      var old=document.getElementById('photoAdminBox'); if(old) old.remove();
+      var box=document.createElement('div'); box.id='photoAdminBox';
+      box.style.cssText='margin:8px 0 10px;padding:10px;border:1px solid #f0d;border-radius:10px;background:rgba(255,255,255,.6);';
+      box.innerHTML='<div style="font-size:13px;font-weight:600;margin-bottom:8px;">该相册照片（点右上角删除）</div>'+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;" id="paGrid"></div>';
+      (rootBox||document.getElementById('alManage')).appendChild(box);
+      var grid=box.querySelector('#paGrid');
+      var list=r.photos||[];
+      if(!list.length){ grid.innerHTML='<div style="color:#aaa;font-size:12px;">暂无照片</div>'; }
+      list.forEach(function(ph){
+        var cell=document.createElement('div'); cell.style.cssText='position:relative;';
+        cell.innerHTML='<img src="'+ph.url+'" style="width:100%;height:80px;object-fit:cover;border-radius:6px;">'+
+          '<button style="position:absolute;top:4px;right:4px;background:rgba(220,60,60,.85);color:#fff;border:none;border-radius:4px;padding:2px 6px;font-size:11px;cursor:pointer;">删</button>';
+        cell.querySelector('button').onclick=function(){
+          customConfirm('确定删除这张照片吗？','删除照片').then(function(yes){
+            if(!yes) return;
+            window.PolarisCloud.call('delete_photo',{id:ph.id, password:getPw()}).then(function(res){
+              if(res&&res.ok){ toast('已删除','success'); cell.remove(); }
+              else toast('删除失败','error');
+            });
+          });
+        };
+        grid.appendChild(cell);
       });
     });
   }

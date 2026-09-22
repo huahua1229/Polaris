@@ -279,7 +279,7 @@ body.dark .wallpaper-overlay {
 
 /* ============ 底部播放条 ============ */
 .player-bar {
-    position: fixed; right: 18px; top: 130px; width: 340px; max-width: calc(100vw - 32px);
+    position: fixed; right: 22px; bottom: 86px; width: 340px; max-width: calc(100vw - 32px);
     z-index: 280; flex-wrap: wrap;
     transform: translateX(calc(100% + 40px)); opacity: 0; pointer-events: none;
     transition: transform .35s cubic-bezier(.22,.9,.32,1), opacity .3s;
@@ -954,9 +954,9 @@ body.dark .wallpaper-overlay {
     border-radius: inherit;
 }
 
-/* 右上角音乐悬浮钮 */
+/* 右下角音乐悬浮钮（回到顶部上方） */
 .player-fab {
-    position: fixed; right: 18px; top: 130px; z-index: 285;
+    position: fixed; right: 22px; bottom: 86px; z-index: 285;
     width: 52px; height: 52px; border-radius: 50%; cursor: pointer;
     border: 3px solid var(--c-lpink); padding: 0; overflow: hidden;
     box-shadow: 0 4px 18px rgba(255, 107, 157, .35);

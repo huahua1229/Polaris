@@ -14,6 +14,34 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c44dff' d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z'/%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="static/site.css">
+<script>
+function toast(msg, type) {
+    var el = document.getElementById('toast');
+    if (!el) { el = document.createElement('div'); el.id = 'toast'; document.body.appendChild(el); }
+    el.textContent = msg;
+    el.className = type || '';
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.classList.remove('show'); }, 2200);
+}
+function customConfirm(msg, title) {
+    return new Promise(function(resolve) {
+        var mask = document.getElementById('confirmMask');
+        if (!mask) {
+            mask = document.createElement('div');
+            mask.id = 'confirmMask';
+            mask.innerHTML = '<div class="confirm-box"><h3 id="confirmTitle">确认操作</h3><p id="confirmText"></p><div class="confirm-btns"><button class="cancel" id="confirmCancel">取消</button><button class="ok" id="confirmOk">确定</button></div></div>';
+            document.body.appendChild(mask);
+        }
+        document.getElementById('confirmTitle').textContent = title || '确认操作';
+        document.getElementById('confirmText').textContent = msg;
+        mask.classList.add('show');
+        function done(v) { mask.classList.remove('show'); document.getElementById('confirmOk').onclick = null; document.getElementById('confirmCancel').onclick = null; resolve(v); }
+        document.getElementById('confirmOk').onclick = function() { done(true); };
+        document.getElementById('confirmCancel').onclick = function() { done(false); };
+    });
+}
+</script>
 
 <style>
 #splash{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;

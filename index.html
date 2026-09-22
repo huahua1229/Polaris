@@ -1206,12 +1206,15 @@ body.dark ::placeholder{color:#888;}
                 }).join('');
                 box.querySelectorAll('button[data-did]').forEach(function (btn) {
                     btn.addEventListener('click', function () {
-                        if (!confirm('确定删除这条留言吗？')) return;
-                        var id = this.getAttribute('data-did');
-                        var pw = (typeof getSessionPw === 'function') ? getSessionPw() : '';
-                        window.PolarisCloud.deleteMessageAsync(id, pw).then(function (r2) {
-                            if (r2 && r2.ok) { toast('已删除','success'); loadAdminMessages(); renderMessages && renderMessages(); }
-                            else toast('删除失败：口令不对','error');
+                        var self = this;
+                        customConfirm('删除后无法恢复，确定删除这条留言吗？', '删除确认').then(function(yes){
+                            if(!yes) return;
+                            var id = self.getAttribute('data-did');
+                            var pw = (typeof getSessionPw === 'function') ? getSessionPw() : '';
+                            window.PolarisCloud.deleteMessageAsync(id, pw).then(function (r2) {
+                                if (r2 && r2.ok) { toast('已删除','success'); loadAdminMessages(); renderMessages && renderMessages(); }
+                                else toast('删除失败：口令不对','error');
+                            });
                         });
                     });
                 });

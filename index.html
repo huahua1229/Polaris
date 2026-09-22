@@ -2408,15 +2408,18 @@ body.dark ::placeholder{color:#888;}
         btn.addEventListener('click', function(){
           var pid=this.getAttribute('data-pid');
           var act=this.getAttribute('data-act');
-          var msg = act==='publish' ? '确定通过并发布这篇投稿吗？' : '确定拒绝并删除这篇投稿吗？';
-          if(!confirm(msg)) return;
-          this.disabled=true;
-          var fn=act==='publish'?window.PolarisCloud.publishPostAsync:window.PolarisCloud.deletePostAsync;
           var btnEl=this;
-          fn(pid, pw).then(function(r){
-            if(r&&r.ok){ toast(act==='publish'?'✅ 已发布':'🗑 已拒绝','success'); loadPosts(pw); }
-            else { toast('操作失败，请重试','error'); btnEl.disabled=false; }
-          }).catch(function(){ toast('网络错误','error'); btnEl.disabled=false; });
+          var title = act==='publish' ? '通过投稿' : '拒绝投稿';
+          var msg = act==='publish' ? '确定通过并发布这篇投稿吗？' : '确定拒绝并删除这篇投稿吗？删除后不可恢复。';
+          customConfirm(msg, title).then(function(yes){
+            if(!yes) return;
+            btnEl.disabled=true;
+            var fn=act==='publish'?window.PolarisCloud.publishPostAsync:window.PolarisCloud.deletePostAsync;
+            fn(pid, pw).then(function(r){
+              if(r&&r.ok){ toast(act==='publish'?'✅ 已发布':'🗑 已拒绝','success'); loadPosts(pw); }
+              else { toast('操作失败，请重试','error'); btnEl.disabled=false; }
+            }).catch(function(){ toast('网络错误','error'); btnEl.disabled=false; });
+          });
         });
       });
     });
@@ -2445,14 +2448,17 @@ body.dark ::placeholder{color:#888;}
         btn.addEventListener('click', function(){
           var frid=this.getAttribute('data-frid');
           var fract=this.getAttribute('data-fract');
-          var msg = fract==='approve' ? '确定通过并添加为友链吗？' : '确定拒绝这条友链申请吗？';
-          if(!confirm(msg)) return;
-          this.disabled=true;
           var self=this;
-          window.PolarisCloud.call(fract==='approve'?'approve_friend_request':'reject_friend_request',{id:frid,password:pw}).then(function(r){
-            if(r&&r.ok){ toast(fract==='approve'?'✅ 已添加友链':'🗑 已拒绝','success'); loadFr(pw); }
-            else { toast('操作失败','error'); self.disabled=false; }
-          }).catch(function(){ toast('网络错误','error'); self.disabled=false; });
+          var title = fract==='approve' ? '通过友链' : '拒绝友链';
+          var msg = fract==='approve' ? '确定通过并添加为友链吗？' : '确定拒绝这条友链申请吗？删除后不可恢复。';
+          customConfirm(msg, title).then(function(yes){
+            if(!yes) return;
+            self.disabled=true;
+            window.PolarisCloud.call(fract==='approve'?'approve_friend_request':'reject_friend_request',{id:frid,password:pw}).then(function(r){
+              if(r&&r.ok){ toast(fract==='approve'?'✅ 已添加友链':'🗑 已拒绝','success'); loadFr(pw); }
+              else { toast('操作失败','error'); self.disabled=false; }
+            }).catch(function(){ toast('网络错误','error'); self.disabled=false; });
+          });
         });
       });
     });
@@ -2475,8 +2481,15 @@ body.dark ::placeholder{color:#888;}
       box.querySelectorAll('button[data-mid]').forEach(function(btn){
         btn.addEventListener('click', function(){
           var mid=this.getAttribute('data-mid');
-          this.disabled=true;
-          window.PolarisCloud.deleteMessageAsync(mid, pw).then(function(r){ if(r&&r.ok) loadMsgs(pw); else alert('删除失败'); });
+          var btnEl=this;
+          customConfirm('确定删除这条留言吗？删除后不可恢复。', '删除留言').then(function(yes){
+            if(!yes) return;
+            btnEl.disabled=true;
+            window.PolarisCloud.deleteMessageAsync(mid, pw).then(function(r){
+              if(r&&r.ok){ toast('已删除','success'); loadMsgs(pw); }
+              else { toast('删除失败','error'); btnEl.disabled=false; }
+            }).catch(function(){ toast('网络错误','error'); btnEl.disabled=false; });
+          });
         });
       });
     });

@@ -1149,5 +1149,5 @@ body.dark .bubble-content { color: #ddd; }
 .profile-mini .mini-avatar .charm-bubble::after { left: 50%; right: auto; margin-left: -6px; }
 .profile-mini .mini-avatar .charm-bubble.show { transform: translateX(-50%) translateY(0) scale(1); }
 
-.profile-mini .mini-avatar .charm-bubble { background: transparent !important; box-shadow: none !important; color: #d6488a !important; font-weight: 600; padding: 4px 8px !important; text-shadow: 0 1px 4px rgba(255,255,255,.9); }
+.profile-mini .mini-avatar .charm-bubble { background: transparent !important; box-shadow: none !important; color: #777 !important; padding: 4px 8px !important; }
 .profile-mini .mini-avatar .charm-bubble::after { display: none !important; }

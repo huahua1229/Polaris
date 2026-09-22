@@ -956,7 +956,7 @@ body.dark .wallpaper-overlay {
 
 /* 右上角音乐悬浮钮 */
 .player-fab {
-    position: fixed; right: 18px; top: 76px; z-index: 285;
+    position: fixed; right: 18px; top: 130px; z-index: 285;
     width: 52px; height: 52px; border-radius: 50%; cursor: pointer;
     border: 3px solid var(--c-lpink); padding: 0; overflow: hidden;
     box-shadow: 0 4px 18px rgba(255, 107, 157, .35);
@@ -1098,7 +1098,7 @@ body.dark input[type="file"]::-webkit-file-upload-button { background: linear-gr
 .hero-panel:hover { transform: none; }
 
 /* ===== 回到顶部 ===== */
-#backTop { position: fixed; right: 24px; bottom: 90px; z-index: 900;
+#backTop { position: fixed; right: 22px; bottom: 26px; z-index: 900;
   width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
   background: linear-gradient(135deg,#c44dff,#ff6b9d); color: #fff; font-size: 20px;
   box-shadow: 0 4px 14px rgba(255,107,157,.4); opacity: 0; pointer-events: none;

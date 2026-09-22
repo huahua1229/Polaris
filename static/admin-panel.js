@@ -164,7 +164,7 @@
       window.PolarisCloud.call('create_album', {
         title: title, description: desc, is_public: isPub, album_password: pw
       }).then(function (r) {
-        if (r && r.ok) { toast('相册创建成功','success'); window.albumCache=null; loadAlbumOptions(); loadAlbumManage(); }
+        if (r && r.ok) { toast('相册创建成功','success'); window.albumCache=null; loadAlbumOptions(); loadAlbumManage(); if(window.loadAlbums) window.loadAlbums(); }
         else alert('创建失败：' + ((r && r.error) ? window.PolarisAuth.errText(r.error) : '请确认已用开发者账号登录'));
       });
     };

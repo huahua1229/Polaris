@@ -1075,3 +1075,34 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]::-webkit-file-upload-button:hover { filter: brightness(1.08); }
 body.dark input[type="file"] { background: rgba(255,255,255,.08); color: #ffc0da; border-color: rgba(255,182,193,.3); }
 body.dark input[type="file"]::-webkit-file-upload-button { background: linear-gradient(135deg, #9b4dff, #e05a8e); }
+
+
+/* ===== Hero 首屏 ===== */
+.hero-panel { padding: 44px 30px 38px; text-align: center; background: linear-gradient(135deg, rgba(196,77,255,.07), rgba(255,107,157,.09)); }
+.hero-greet { font-size: 13px; color: #b066d8; letter-spacing: 3px; }
+.hero-name { font-size: clamp(32px, 5vw, 50px); font-weight: 800; margin: 10px 0 0; line-height: 1.1;
+  background: linear-gradient(135deg, #c44dff, #ff6b9d); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.hero-caret { -webkit-text-fill-color: #ff6b9d; animation: heroBlink 1s steps(1) infinite; margin-left: 2px; }
+@keyframes heroBlink { 50% { opacity: 0; } }
+.hero-tag { font-size: 15px; color: #999; margin: 14px 0 26px; min-height: 22px; }
+.hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hero-btn { padding: 10px 26px; border-radius: 26px; background: linear-gradient(135deg,#c44dff,#ff6b9d); color: #fff; text-decoration: none; font-size: 14px; transition: transform .2s, box-shadow .2s; }
+.hero-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,107,157,.45); }
+.hero-btn.ghost { background: transparent; border: 1.5px solid #ff6b9d; color: #ff6b9d; }
+.hero-btn.ghost:hover { background: rgba(255,107,157,.1); }
+@media (max-width: 640px) { .hero-panel { padding: 30px 18px 26px; } }
+
+/* ===== 卡片 hover 上浮 ===== */
+.panel { transition: transform .25s ease, box-shadow .25s ease; }
+.panel:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(196,77,255,.10); }
+.hero-panel:hover { transform: none; }
+
+/* ===== 回到顶部 ===== */
+#backTop { position: fixed; right: 24px; bottom: 90px; z-index: 900;
+  width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+  background: linear-gradient(135deg,#c44dff,#ff6b9d); color: #fff; font-size: 20px;
+  box-shadow: 0 4px 14px rgba(255,107,157,.4); opacity: 0; pointer-events: none;
+  transform: translateY(10px); transition: all .3s ease; }
+#backTop.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+#backTop:hover { transform: translateY(-3px); }
+body.dark #backTop { background: linear-gradient(135deg,#9b4dff,#e05a8e); }

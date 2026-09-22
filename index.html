@@ -249,6 +249,16 @@ body.dark ::placeholder{color:#888;}
             <div class="layout-inner">
                 <main class="main-content">
                     <h1 class="sr-only">Polaris 的个人网站</h1>
+                    <!-- Hero -->
+                    <section class="panel hero-panel anim-in">
+                        <div class="hero-greet">你好，欢迎来到</div>
+                        <h1 class="hero-name">Polaris<span class="hero-caret">|</span></h1>
+                        <p class="hero-tag" id="heroTag">一名热爱 AI 与数据挖掘的探索者</p>
+                        <div class="hero-cta">
+                            <a href="#projects" class="hero-btn">看看我的项目 ↓</a>
+                            <a href="#guestbook" class="hero-btn ghost">去留言板打个招呼</a>
+                        </div>
+                    </section>
                     <!-- 关于我 -->
                     <section class="panel anim-in">
                         <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg></span>关于我<span class="t-sub">About Me</span></h2>
@@ -2463,6 +2473,23 @@ body.dark ::placeholder{color:#888;}
   window.addEventListener('hashchange', function(){
     if((location.hash||'').indexOf('review')>=0 && window.PolarisAuth && window.PolarisAuth.isDeveloper() && contentBox.style.display!=='block'){ enterReview(adminPw()); }
   });
+})();
+</script>
+<button id="backTop" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>
+(function(){
+  var btn=document.getElementById('backTop');
+  window.addEventListener('scroll', function(){
+    btn.classList.toggle('show', window.scrollY>400);
+  }, {passive:true});
+  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  // hero 打字机
+  var tag=document.getElementById('heroTag');
+  if(tag){
+    var txt=tag.textContent; tag.textContent=''; var i=0;
+    function type(){ if(i<=txt.length){ tag.textContent=txt.slice(0,i++); setTimeout(type,90); } }
+    setTimeout(type, 700);
+  }
 })();
 </script>
 </body>

@@ -24,6 +24,13 @@ function toast(msg, type) {
     clearTimeout(el._t);
     el._t = setTimeout(function(){ el.classList.remove('show'); }, 2200);
 }
+function forgotPassword(){
+  var e = prompt('请输入要重置密码的 QQ 邮箱：');
+  if(!e) return;
+  window.PolarisCloud.call('request_reset_password',{email:e}).then(function(r){
+    alert(r.ok ? '已提交申请，等待站长审核通过' : '提交失败：'+(r.error||''));
+  }).catch(function(){ alert('网络错误，请重试'); });
+}
 function customConfirm(msg, title) {
     return new Promise(function(resolve) {
         var mask = document.getElementById('confirmMask');
@@ -650,6 +657,11 @@ body.dark ::placeholder{color:#888;}
                         <div class="af-hint" id="adminMsgTip">加载中...</div>
                         <div id="adminMsgList" style="display:flex;flex-direction:column;gap:10px;"></div>
                     </div>
+                    <div class="panel anim-in" data-delay="4" style="margin-top:20px;">
+                        <h2 class="panel-title"><span class="t-icon">🔑</span>密码重置申请<span class="t-sub">Reset</span></h2>
+                        <div class="af-hint" id="adminResetTip">加载中...</div>
+                        <div id="adminResetList" style="display:flex;flex-direction:column;gap:10px;"></div>
+                    </div>
                 </div>
             </main>
         </section>
@@ -984,7 +996,7 @@ window.PolarisAuth = (function(){
         '<div class="auth-err" id="auErr"></div>'+
         '<button type="button" class="auth-submit" id="auSubmit">登 录</button>'+
         '<div class="auth-switch" id="auSwitch"></div>'+
-        '<div class="auth-hint">QQ 邮箱仅作为登录账号，无需验证真实性；忘记密码请联系站长重置</div>'+
+'<div class="auth-hint">QQ 邮箱仅作为登录账号，无需验证真实性；<a href="javascript:void(0)" onclick="forgotPassword()" style="color:#e75480;">忘记密码？</a></div>'+
       '</div>'+
       '<div class="auth-box" id="settingCard" style="display:none">'+
         '<div class="auth-user-head">'+
@@ -2906,6 +2918,49 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   }
 
+  function loadResets(pw){
+    var tip=document.getElementById('adminResetTip');
+    var box=document.getElementById('adminResetList');
+    if(!tip||!box) return;
+    window.PolarisCloud.call('list_reset_requests',{password:pw}).then(function(r){
+      var reqs=(r&&r.ok&&r.requests)?r.requests:[];
+      tip.textContent='待处理密码重置 '+reqs.length+' 条';
+      if(!reqs.length){ box.innerHTML='<div style="color:#aaa;font-size:13px;">暂无申请</div>'; return; }
+      box.innerHTML=reqs.map(function(x){
+        var d=new Date(x.created_at||Date.now());
+        var ds=d.getMonth()+1+'-'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+        return '<div class="admin-item" style="padding:12px 14px;border:1px solid #fce4ec;border-radius:12px;background:#fff;">'+
+          '<div style="font-size:12px;color:#888;">🔑 '+esc(x.email||'')+' · '+ds+'</div>'+
+          '<div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap;">'+
+            '<input type="text" data-rid="'+esc(x.id)+'" placeholder="输入新密码（至少6位）" style="flex:1;min-width:150px;padding:6px 10px;font-size:13px;border:1px solid #eee;border-radius:6px;">'+
+            '<button class="form-submit" style="padding:6px 14px;font-size:12px;" data-a="ok" data-rid="'+esc(x.id)+'">✅ 批准并设密码</button>'+
+            '<button class="form-submit" style="padding:6px 14px;font-size:12px;background:#ff6b6b;" data-a="no" data-rid="'+esc(x.id)+'">🗑 拒绝</button>'+
+          '</div></div>';
+      }).join('');
+      box.querySelectorAll('button[data-rid]').forEach(function(btn){
+        btn.onclick=function(){
+          var rid=this.getAttribute('data-rid'); var act=this.getAttribute('data-a');
+          if(act==='no'){
+            customConfirm('确定拒绝这条重置申请吗？','拒绝申请').then(function(yes){
+              if(!yes)return;
+              window.PolarisCloud.call('reject_reset',{id:rid,password:pw}).then(function(r2){ if(r2&&r2.ok){toast('已拒绝','success');loadResets(pw);} });
+            });
+          } else {
+            var inp=box.querySelector('input[data-rid="'+rid+'"]');
+            var np=inp.value.trim();
+            if(np.length<6){ alert('新密码至少 6 位'); return; }
+            customConfirm('确定将该用户密码设为新密码并立即生效吗？','批准重置').then(function(yes){
+              if(!yes)return;
+              window.PolarisCloud.call('approve_reset',{id:rid,new_password:np,password:pw}).then(function(r2){
+                if(r2&&r2.ok){ toast('已重置，把新密码告诉用户即可','success'); loadResets(pw); }
+                else alert('失败：'+(r2&&r2.error||''));
+              });
+            });
+          }
+        };
+      });
+    });
+  }
   function loadMsgs(pw){
     var tip=document.getElementById('adminMsgTip');
     var box=document.getElementById('adminMsgList');
@@ -2945,6 +3000,7 @@ document.addEventListener('DOMContentLoaded',function(){
     loadPosts(pw);
     loadFr(pw);
     loadMsgs(pw);
+    loadResets(pw);
   }
 
   loginBtn.addEventListener('click', function(){

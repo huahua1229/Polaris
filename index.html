@@ -2265,8 +2265,19 @@ document.addEventListener('DOMContentLoaded',function(){
 (function(){
   var s=document.getElementById('splash');
   function hide(){ if(!s) return; s.classList.add('done'); setTimeout(function(){ if(s&&s.parentNode) s.parentNode.removeChild(s); }, 700); }
-  window.addEventListener('load', function(){ setTimeout(hide, 350); });
-  setTimeout(hide, 4500);
+  function waitFirstImages(cb){
+    var imgs=[].slice.call(document.images).filter(function(i){ return i && !i.complete && !i.dataset.splashWait; });
+    if(!imgs.length){ cb(); return; }
+    imgs.forEach(function(i){ i.dataset.splashWait='1'; });
+    var doneN=0, finished=false;
+    var timer=setTimeout(finish, 2500);
+    function finish(){ if(finished) return; finished=true; clearTimeout(timer); cb(); }
+    imgs.forEach(function(im){ im.addEventListener('load', finish); im.addEventListener('error', finish); });
+  }
+  window.addEventListener('load', function(){
+    waitFirstImages(function(){ setTimeout(hide, 200); });
+  });
+  setTimeout(hide, 6000);
 })();
 </script>
 <div class="reader-overlay" id="readerOverlay">

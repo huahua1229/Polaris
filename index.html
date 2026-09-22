@@ -1769,7 +1769,7 @@ body.dark ::placeholder{color:#888;}
                 messageCount.textContent = '(' + msgs.length + ' 条)';
                 updateRail(msgs);
                 if (msgs.length === 0) {
-                    messageList.innerHTML = '<div class="empty-message"><div class="icon">💌</div><div>还没有留言，快来抢沙发吧~</div></div>';
+                    messageList.innerHTML = '<div class="empty-message"><img src="static/erii_flower.jpg" alt="绘梨衣" style="width:180px;border-radius:14px;margin-bottom:12px;box-shadow:0 6px 18px rgba(255,107,157,.25);"><div class="icon">💌</div><div>还没有留言，快来抢沙发吧~</div></div>';
                     return;
                 }
                 messageList.innerHTML = msgs.map(function (msg, idx) {

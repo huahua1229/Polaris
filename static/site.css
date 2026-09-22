@@ -1041,3 +1041,16 @@ body.dark .c-sub a { color: #c8b8f0; }
 .album-pw-box { max-width: 400px; margin: 40px auto; text-align: center; padding: 30px; background: rgba(255,255,255,.9); border-radius: 16px; }
 .album-pw-box input { width: 100%; padding: 12px; border: 2px solid #ffb6c1; border-radius: 10px; margin: 12px 0; font-size: 15px; }
 .album-back { margin-bottom: 16px; cursor: pointer; color: #ff6b9d; }
+
+/* ===== 头像选择器 ===== */
+.avatar-picker { display: grid; grid-template-columns: repeat(4, 56px); gap: 10px; margin: 6px 0 10px; }
+.av-cell { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; cursor: pointer; border: 3px solid transparent; transition: transform .2s, border-color .2s; }
+.av-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.av-cell:hover { transform: scale(1.08); }
+.av-cell.sel { border-color: var(--c-pink); box-shadow: 0 0 0 3px rgba(255,107,157,.25); }
+.av-upload { width: 100%; padding: 9px; border: 1px dashed rgba(255,107,157,.5); background: rgba(255,182,193,.12); color: #d4558a; border-radius: 10px; cursor: pointer; font-size: 13px; margin-top: 4px; }
+.av-upload:hover { background: rgba(255,182,193,.25); }
+.message-avatar { overflow: hidden; }
+.message-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.reply-avatar { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; margin-right: 6px; vertical-align: middle; }
+body.dark .av-upload { background: rgba(255,182,193,.12); color: #ff9ec4; }

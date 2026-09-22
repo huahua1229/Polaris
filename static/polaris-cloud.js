@@ -81,8 +81,8 @@ window.PolarisCloud = (function () {
     }
 
     /* ---------- 用户账号 ---------- */
-    function registerAsync(email, password, nickname) {
-        return call('register', { email: email, password: password, nickname: nickname });
+    function registerAsync(email, password, nickname, avatar) {
+        return call('register', { email: email, password: password, nickname: nickname, avatar: avatar || '' });
     }
     function loginAsync(email, password) {
         return call('login', { email: email, password: password });
@@ -102,7 +102,7 @@ window.PolarisCloud = (function () {
         return call('add_message', msg);
     }
     function addReplyAsync(id, reply) {
-        return call('add_reply', { id: id, name: reply.name, message: reply.message, time: reply.time });
+        return call('add_reply', { id: id, name: reply.name, message: reply.message, time: reply.time, avatar: reply.avatar || '' });
     }
     function likeAsync(id, delta) {
         return call('like_message', { id: id, delta: delta });

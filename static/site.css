@@ -693,6 +693,34 @@ body.dark .wallpaper-overlay {
 @media print { .view { display: none !important; } .view.active { display: block !important; } }
 
 /* ============ 响应式 ============ */
+
+/* 笔记本/小窗口(901-1280)：侧边栏改为顶部横向导航，主内容全宽 */
+@media (max-width: 1280px) and (min-width: 901px) {
+    :root { --top-h: 60px; }
+    .side-nav {
+        left: 0; right: 0; width: auto; bottom: auto;
+        flex-direction: row; align-items: center; gap: 14px;
+        height: var(--top-h); padding: 0 16px;
+        border-right: none; border-bottom: 1.5px solid var(--glass-border);
+    }
+    .nav-brand { padding: 0; margin: 0; border-bottom: none; gap: 8px; }
+    .brand-sub { display: none; }
+    .brand-name { font-size: 19px; }
+    .nav-menu { flex-direction: row; flex: 1; justify-content: center; gap: 1px; }
+    .nav-item { padding: 8px 10px; font-size: 14px; gap: 6px; border-radius: 10px; white-space: nowrap; }
+    .nav-item:hover { transform: none; }
+    .nav-item::before { display: none; }
+    .nav-footer { margin: 0; padding: 0; border-top: none; display: flex; flex-direction: row; align-items: center; gap: 8px; }
+    .nav-footer .pet-line, .nav-footer .copy-line { display: none; }
+    .nav-footer .auth-entry, .nav-footer .admin-entry {
+        display: inline-flex; align-items: center; width: auto; margin: 0;
+        padding: 6px 12px; font-size: 13px;
+    }
+    .top-bar { display: none; }
+    .scroll-progress { left: 0; top: var(--top-h); }
+    .layout { padding: calc(var(--top-h) + 18px) 18px 28px; }
+    .right-rail { top: calc(var(--top-h) + 18px); }
+}
 @media (max-width: 1366px) {
     .right-rail { display: none; }
     .layout-inner { grid-template-columns: 1fr; max-width: 1060px; }

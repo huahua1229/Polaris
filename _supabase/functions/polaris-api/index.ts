@@ -88,7 +88,7 @@ async function issueUserToken(user) {
     sub: String(user.id), email: user.email, nick: user.nickname,
     role: 'user', exp: Date.now() + TOKEN_TTL_USER,
   });
-  return { token, email: user.email, nickname: user.nickname, role: 'user' };
+  return { token, email: user.email, nickname: user.nickname, role: 'user', avatar: user.avatar || '' };
 }
 
 /* 要求登录用户（普通用户或开发者），返回身份；失败返回 null */
@@ -121,6 +121,7 @@ async function handle(req) {
       const email = String(body.email || '').trim().toLowerCase();
       const password = String(body.password || '');
       const nickname = String(body.nickname || '').trim().slice(0, 20);
+      const avatar = String(body.avatar || '').slice(0, 60000);
       if (!QQ_RE.test(email)) return json({ ok: false, error: 'bad-email' });
       if (password.length < 6) return json({ ok: false, error: 'weak' });
       if (!nickname) return json({ ok: false, error: 'bad-nick' });
@@ -129,7 +130,7 @@ async function handle(req) {
       const salt = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
       const password_hash = await hashPassword(password, salt);
       const { data: ins, error } = await sb.from('users')
-        .insert({ email, password_hash, salt, nickname }).select('*').single();
+        .insert({ email, password_hash, salt, nickname, avatar }).select('*').single();
       if (error || !ins) return json({ ok: false, error: 'db' });
       return json({ ok: true, ...(await issueUserToken(ins)) });
     }
@@ -165,6 +166,7 @@ async function handle(req) {
       if (error || !user) return json({ ok: false, error: 'not-found' });
       const patch = {};
       if (newNick) patch.nickname = newNick;
+      if (body.avatar !== undefined) patch.avatar = String(body.avatar || '').slice(0, 60000);
       if (newPw) {
         if (newPw.length < 6) return json({ ok: false, error: 'weak' });
         const oldHash = await hashPassword(oldPw, user.salt);
@@ -209,7 +211,7 @@ async function handle(req) {
       const id = String(body.id || (time + '_' + Math.random().toString(36).slice(2, 11)));
       const name = u.nickname || '匿名访客';
       const email = u.role === 'developer' ? '' : u.email;
-      const { error } = await sb.from('guestbook_messages').insert({ id, name, email, message, time, likes: 0, replies: [] });
+      const { error } = await sb.from('guestbook_messages').insert({ id, name, email, message, time, likes: 0, replies: [], avatar: String(body.avatar || '').slice(0,60000) });
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true, id });
     }
@@ -223,7 +225,7 @@ async function handle(req) {
       const { data: row, error: e1 } = await sb.from('guestbook_messages').select('replies').eq('id', id).maybeSingle();
       if (e1 || !row) return json({ ok: false, error: 'not-found' });
       const replies = Array.isArray(row.replies) ? row.replies : [];
-      replies.push({ name: u.nickname || '匿名访客', message, time });
+      replies.push({ name: u.nickname || '匿名访客', message, time, avatar: String(body.avatar || '').slice(0,60000) });
       const { error } = await sb.from('guestbook_messages').update({ replies }).eq('id', id);
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true });
@@ -427,7 +429,7 @@ async function handle(req) {
         title: String(body.title || '未命名').slice(0, 100),
         artist: String(body.artist || '').slice(0, 50),
         file_path: String(body.file_path || '').slice(0, 300),
-        cover: String(body.cover || '').slice(0, 300),
+        cover: String(body.cover || '').slice(0, 60000),
         sort_order: Number(body.sort_order || 0),
       });
       if (error) return json({ ok: false, error: 'db' });
@@ -454,9 +456,13 @@ async function handle(req) {
       return json({ ok: false, error: 'wrong' });
     }
     case 'list_photos': {
-      const { data: album } = await sb.from('albums').select('is_public,password').eq('id', String(body.albumId || '')).single();
-      if (album && !album.is_public && album.password !== body.password) return json({ ok: false, error: 'auth' });
-      const { data, error } = await sb.from('album_photos').select('id,url,caption,sort_order').eq('album_id', String(body.albumId || '')).order('sort_order');
+      const albumId = String(body.albumId || '');
+      const { data: album } = await sb.from('albums').select('is_public,password').eq('id', albumId).maybeSingle();
+      if (album && !album.is_public) {
+        const adm = await requireAdmin(sb, body);
+        if (!adm.ok && album.password !== body.password) return json({ ok: false, error: 'auth' });
+      }
+      const { data, error } = await sb.from('album_photos').select('id,url,caption,sort_order').eq('album_id', albumId).order('sort_order');
       if (error) return json({ ok: false, error: 'db' });
       return json({ ok: true, photos: data || [] });
     }
@@ -492,6 +498,47 @@ async function handle(req) {
       await sb.from('album_photos').delete().eq('album_id', String(body.id || ''));
       const { error } = await sb.from('albums').delete().eq('id', String(body.id || ''));
       if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true });
+    }
+
+    /* ===== 密码重置（用户申请 -> 站长审核） ===== */
+    case 'request_reset_password': {
+      const email = String(body.email || '').trim().toLowerCase();
+      if (!QQ_RE.test(email)) return json({ ok: false, error: 'bad-email' });
+      const { data: user } = await sb.from('users').select('id').eq('email', email).maybeSingle();
+      if (!user) return json({ ok: false, error: 'no-user' });
+      const { data: dup } = await sb.from('password_reset_requests').select('id').eq('email', email).eq('status', 'pending').maybeSingle();
+      if (dup) return json({ ok: true, note: 'already-pending' });
+      const id = 'rr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      await sb.from('password_reset_requests').insert({ id, email, status: 'pending', created_at: new Date().toISOString() });
+      return json({ ok: true });
+    }
+    case 'list_reset_requests': {
+      const adm = await requireAdmin(sb, body);
+      if (!adm.ok) return json({ ok: false, error: 'auth' });
+      const { data, error } = await sb.from('password_reset_requests').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+      if (error) return json({ ok: false, error: 'db' });
+      return json({ ok: true, requests: data || [] });
+    }
+    case 'approve_reset': {
+      const adm = await requireAdmin(sb, body);
+      if (!adm.ok) return json({ ok: false, error: 'auth' });
+      const id = String(body.id || '');
+      const newPw = String(body.new_password || '');
+      if (newPw.length < 6) return json({ ok: false, error: 'weak' });
+      const { data: req } = await sb.from('password_reset_requests').select('*').eq('id', id).maybeSingle();
+      if (!req || req.status !== 'pending') return json({ ok: false, error: 'not-found' });
+      const salt = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      const hash = await hashPassword(newPw, salt);
+      const { error: e1 } = await sb.from('users').update({ password_hash: hash, salt }).eq('email', req.email);
+      if (e1) return json({ ok: false, error: 'db' });
+      await sb.from('password_reset_requests').update({ status: 'approved', handled_at: new Date().toISOString() }).eq('id', id);
+      return json({ ok: true });
+    }
+    case 'reject_reset': {
+      const adm = await requireAdmin(sb, body);
+      if (!adm.ok) return json({ ok: false, error: 'auth' });
+      await sb.from('password_reset_requests').update({ status: 'rejected', handled_at: new Date().toISOString() }).eq('id', String(body.id || ''));
       return json({ ok: true });
     }
 

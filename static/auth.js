@@ -78,8 +78,8 @@ window.PolarisAuth = (function(){
     if((location.hash||'').indexOf('review')>=0) location.hash='#home';
   }
   function errText(c){
-    return ({'exists':'该 QQ 邮箱已注册，请直接登录','not-found':'账号不存在，请先注册','bad-pw':'密码错误',
-      'weak':'密码至少需要 6 位','bad-email':'请填写正确的 QQ 邮箱（数字@qq.com）','bad-nick':'请填写昵称',
+    return ({'exists':'该邮箱已注册，请直接登录','not-found':'账号不存在，请先注册','bad-pw':'密码错误',
+      'weak':'密码至少需要 6 位','bad-email':'请填写正确的邮箱地址（例如 name@example.com）','bad-nick':'请填写昵称',
       'auth':'请先登录','empty':'信息没有填写完整','network':'连接失败，请检查网络或用系统浏览器打开','timeout':'响应较慢，请重试或切换网络','db':'服务器繁忙，请稍后重试'})[c] || '操作失败，请稍后重试';
   }
 
@@ -95,7 +95,7 @@ window.PolarisAuth = (function(){
           '<button type="button" class="auth-tab" data-tab="register">注册</button>'+
           '<button type="button" class="auth-tab" data-tab="dev">开发者</button>'+
         '</div>'+
-        '<div class="auth-field" data-f="email"><label>QQ 邮箱（账号）</label><input id="auEmail" type="email" inputmode="email" placeholder="例如 123456@qq.com" autocomplete="username"></div>'+
+        '<div class="auth-field" data-f="email"><label>邮箱（账号）</label><input id="auEmail" type="email" inputmode="email" placeholder="例如 name@example.com" autocomplete="username"></div>'+
         '<div class="auth-field" data-f="nick" style="display:none"><label>昵称</label><input id="auNick" maxlength="20" placeholder="展示在留言/投稿上的名字"></div>'+
         '<div class="auth-field" data-f="avatar" style="display:none"><label>选择头像</label><div class="avatar-picker" id="regAvatars"></div><input type="file" id="regAvUpload" accept="image/*" style="display:none"><button type="button" class="av-upload" id="regAvUploadBtn">上传自定义头像</button></div>'+
         '<div class="auth-field" data-f="pw"><label>密码</label><input id="auPw" type="password" placeholder="至少 6 位" autocomplete="current-password"></div>'+
@@ -104,7 +104,7 @@ window.PolarisAuth = (function(){
         '<div class="auth-err" id="auErr"></div>'+
         '<button type="button" class="auth-submit" id="auSubmit">登 录</button>'+
         '<div class="auth-switch" id="auSwitch"></div>'+
-'<div class="auth-hint">QQ 邮箱仅作为登录账号，无需验证真实性；<a href="javascript:void(0)" onclick="forgotPassword()" style="color:#e75480;">忘记密码？</a></div>'+
+'<div class="auth-hint">邮箱仅作为登录账号，无需验证真实性；<a href="javascript:void(0)" onclick="forgotPassword()" style="color:#e75480;">忘记密码？</a></div>'+
       '</div>'+
       '<div class="auth-box" id="settingCard" style="display:none">'+
         '<div class="auth-user-head">'+
@@ -173,7 +173,7 @@ window.PolarisAuth = (function(){
     }
     var email=document.getElementById('auEmail').value.trim();
     var pwd=document.getElementById('auPw').value;
-    if(!/^\d{5,12}@qq\.com$/i.test(email)){ errEl.textContent=errText('bad-email'); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(email)){ errEl.textContent=errText('bad-email'); return; }
     if(pwd.length<6){ errEl.textContent=errText('weak'); return; }
     if(curTab==='register'){
       var nick=document.getElementById('auNick').value.trim();

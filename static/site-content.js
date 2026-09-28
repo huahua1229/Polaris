@@ -11,6 +11,7 @@ window.PolarisSite = (function () {
     var DEFAULTS = {
         profile: {
             name: 'Polaris',
+            avatar: '',
             bio: '在代码与山海之间寻找平衡',
             greet: '每一条留言我都会认真看~',
             phone: '15112318680',

@@ -354,9 +354,15 @@ body.dark ::placeholder{color:#888;}
             </div>
             <div class="resume-sheet" id="resumeSheet">
                 <header class="rs-head">
-                    <div class="rs-name" id="rsName"></div>
-                    <div class="rs-title" id="rsSchool"></div>
-                    <div class="rs-contact" id="rsContact"></div>
+                    <div class="rs-head-main">
+                        <div class="rs-name" id="rsName"></div>
+                        <div class="rs-title" id="rsSchool"></div>
+                        <div class="rs-contact" id="rsContact"></div>
+                    </div>
+                    <div class="rs-photo" id="rsPhoto">
+                        <img id="rsPhotoImg" alt="个人照片" style="display:none;">
+                        <span class="rs-photo-tip" id="rsPhotoTip">贴照片处</span>
+                    </div>
                 </header>
                 <div class="rs-body">
                     <section class="rs-sec">
@@ -763,6 +769,7 @@ body.dark ::placeholder{color:#888;}
                         <div class="af-field"><label>所在地</label><input id="af_location" class="af-input"></div>
                         <div class="af-field"><label>年龄</label><input id="af_age" class="af-input"></div>
                         <div class="af-field"><label>身份</label><input id="af_status" class="af-input"></div>
+                        <div class="af-field" style="grid-column:1/-1;"><label>简历照片 URL（可选，留空则显示「贴照片处」）</label><input id="af_avatar" class="af-input" placeholder="https:// 图片地址"></div>
                     </div>
                 </div>
                 <div class="af-section">
@@ -1010,6 +1017,9 @@ body.dark ::placeholder{color:#888;}
             /* 简历（A4 打印版） */
             var rsN = document.getElementById('rsName');
             if (rsN) rsN.textContent = p.name;
+            var rsPi = document.getElementById('rsPhotoImg');
+            var rsPt = document.getElementById('rsPhotoTip');
+            if (rsPi && p.avatar) { rsPi.src = p.avatar; rsPi.style.display = 'block'; if (rsPt) rsPt.style.display = 'none'; }
             var rsS = document.getElementById('rsSchool');
             if (rsS) rsS.textContent = (p.status ? esc(p.status) + ' · ' : '') + esc(p.school);
             var rsC = document.getElementById('rsContact');
@@ -1315,6 +1325,7 @@ body.dark ::placeholder{color:#888;}
             var ri = document.getElementById('af_resumeIntro'); if (ri) ri.value = c.resumeIntro;
             var intr = document.getElementById('af_interests'); if (intr) intr.value = p.interests;
             var aw = document.getElementById('af_awards'); if (aw) aw.value = p.awards;
+            var av = document.getElementById('af_avatar'); if (av) av.value = p.avatar || '';
             /* 列表 */
             buildList('adminSkills', c.skills, 'skills');
             buildList('adminProjects', c.projects, 'projects');
@@ -1472,7 +1483,7 @@ body.dark ::placeholder{color:#888;}
                 name: g('af_name'), school: g('af_school'), bio: g('af_bio'),
                 phone: g('af_phone'), email: g('af_email'), location: g('af_location'),
                 age: g('af_age'), status: g('af_status'),
-                interests: g('af_interests'), awards: g('af_awards')
+                interests: g('af_interests'), awards: g('af_awards'), avatar: g('af_avatar')
             };
             c.about = g('af_about');
             c.resumeIntro = g('af_resumeIntro');

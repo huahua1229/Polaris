@@ -24,11 +24,13 @@
     --top-h: 56px;
     --player-h: 66px;
     --radius: 14px;
+    /* 正文字体栈：优先系统中文字体，无需外链，国内加载零等待 */
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
 }
 
 html { scroll-behavior: smooth; }
 body {
-    font-family: 'Noto Sans SC', sans-serif;
+    font-family: var(--font-body);
     color: var(--c-ink);
     min-height: 100vh;
     background: linear-gradient(135deg, #ffd1dc 0%, #ffb6c1 50%, #dda0dd 100%) fixed;
@@ -269,7 +271,7 @@ body.dark .wallpaper-overlay {
     width: 64px; height: 2px; background: var(--grad-main);
     border-radius: 2px;
 }
-.panel-title .t-sub { font-size: 12px; color: #aaa; font-family: 'Noto Sans SC', sans-serif; font-weight: 400; margin-left: auto; }
+.panel-title .t-sub { font-size: 12px; color: #aaa; font-weight: 400; margin-left: auto; }
 .panel-title .t-icon { font-size: 17px; }
 
 /* 入场动效 */
@@ -538,7 +540,7 @@ body.dark .wallpaper-overlay {
     border-radius: 12px; background: rgba(255,255,255,0.75);
     font-size: 13px; color: #666; outline: none;
     transition: border-color 0.3s, box-shadow 0.3s;
-    font-family: 'Noto Sans SC', sans-serif;
+    font-family: var(--font-body);
 }
 .search-input:focus { border-color: var(--c-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.15); }
 .search-btn {
@@ -580,7 +582,7 @@ body.dark .wallpaper-overlay {
     border-radius: 12px; background: rgba(255,255,255,0.75);
     font-size: 14px; color: #555; outline: none;
     transition: border-color 0.3s, box-shadow 0.3s;
-    font-family: 'Noto Sans SC', sans-serif;
+    font-family: var(--font-body);
 }
 .form-input:focus, .form-textarea:focus { border-color: var(--c-pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.15); }
 .form-textarea { resize: vertical; min-height: 96px; line-height: 1.7; }
@@ -641,7 +643,7 @@ body.dark .wallpaper-overlay {
     border-radius: 10px; background: rgba(255,255,255,0.75);
     font-size: 13px; color: #555; outline: none;
     transition: border-color 0.3s;
-    font-family: 'Noto Sans SC', sans-serif;
+    font-family: var(--font-body);
 }
 .reply-input:focus { border-color: var(--c-pink); }
 .reply-submit {
@@ -752,6 +754,17 @@ body.dark .wallpaper-overlay {
     .page-title { font-size: 24px; }
     .resume-avatar { width: 78px; height: 78px; font-size: 34px; }
     .mini-avatar { width: 64px; height: 64px; font-size: 28px; }
+    /* 防 iOS 聚焦时自动放大页面：输入框字号不小于 16px */
+    .form-input, .form-textarea, .reply-input,
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="url"], input[type="search"], textarea { font-size: 16px; }
+    /* 触控目标更友好（符合 44px 最小可点区域） */
+    .form-submit { min-height: 46px; padding: 12px 28px; }
+    .nav-item { min-height: 48px; }
+    .action-btn, .message-delete { padding: 7px 11px; }
+    /* 相册照片自适应高度，避免小屏过高 */
+    .photo-item img { height: 160px; }
+    .album-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 }
 
 /* ============ 打印（简历用） ============ */
@@ -825,7 +838,7 @@ body.dark .wallpaper-overlay {
 .admin-tab {
     padding: 6px 13px; border: 1px solid rgba(255, 182, 193, 0.6); border-radius: 999px;
     background: rgba(255, 255, 255, 0.6); color: #b06ab3; font-size: 12.5px; cursor: pointer;
-    white-space: nowrap; transition: all 0.2s ease; font-family: 'Noto Sans SC', sans-serif;
+    white-space: nowrap; transition: all 0.2s ease; font-family: var(--font-body);
 }
 .admin-tab.active { background: linear-gradient(135deg, #ff6b9d, #c44dff); color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(255, 107, 157, 0.35); }
 .admin-body { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
@@ -850,7 +863,7 @@ body.dark .wallpaper-overlay {
 .af-input {
     width: 100%; padding: 8px 10px; border: 1.5px solid rgba(255, 182, 193, 0.65);
     border-radius: 10px; background: rgba(255, 255, 255, 0.85); color: #5b4163;
-    font-size: 13px; font-family: 'Noto Sans SC', sans-serif; outline: none;
+    font-size: 13px; font-family: var(--font-body); outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .af-input:focus { border-color: #ff6b9d; box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.15); }
@@ -858,7 +871,7 @@ body.dark .wallpaper-overlay {
     width: 100%; min-height: 90px; padding: 9px 11px; resize: vertical;
     border: 1.5px solid rgba(255, 182, 193, 0.65); border-radius: 10px;
     background: rgba(255, 255, 255, 0.85); color: #5b4163; font-size: 13px;
-    line-height: 1.7; font-family: 'Noto Sans SC', sans-serif; outline: none;
+    line-height: 1.7; font-family: var(--font-body); outline: none;
 }
 .af-textarea:focus { border-color: #ff6b9d; box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.15); }
 .af-hint { font-size: 11.5px; color: #b394bb; line-height: 1.8; margin: 4px 0 10px; }
@@ -866,7 +879,7 @@ body.dark .wallpaper-overlay {
 .af-btn {
     padding: 8px 16px; border: 1.5px solid rgba(255, 107, 157, 0.55); border-radius: 10px;
     background: rgba(255, 255, 255, 0.75); color: #c44dff; font-size: 13px; cursor: pointer;
-    font-family: 'Noto Sans SC', sans-serif; transition: all 0.2s ease;
+    font-family: var(--font-body); transition: all 0.2s ease;
 }
 .af-btn:hover { background: rgba(255, 107, 157, 0.1); }
 .af-btn.danger { border-color: rgba(220, 80, 90, 0.55); color: #dc505a; }
@@ -874,7 +887,7 @@ body.dark .wallpaper-overlay {
 .af-add {
     width: 100%; margin-top: 6px; padding: 8px; border: 1.5px dashed rgba(196, 77, 255, 0.55);
     border-radius: 10px; background: rgba(255, 255, 255, 0.5); color: #c44dff;
-    font-size: 13px; cursor: pointer; font-family: 'Noto Sans SC', sans-serif; transition: all 0.2s ease;
+    font-size: 13px; cursor: pointer; font-family: var(--font-body); transition: all 0.2s ease;
 }
 .af-add:hover { background: rgba(255, 107, 157, 0.1); border-color: #ff6b9d; }
 
@@ -1061,7 +1074,7 @@ input[type="file"] {
   width: 100%; padding: 8px 10px;
   border: 1.5px dashed rgba(196, 77, 255, 0.4);
   border-radius: 10px; background: rgba(255, 255, 255, 0.5);
-  color: #b066d8; font-size: 13px; font-family: 'Noto Sans SC', sans-serif;
+  color: #b066d8; font-size: 13px; font-family: var(--font-body);
   cursor: pointer; transition: all .2s ease;
   box-sizing: border-box;
 }
@@ -1106,6 +1119,30 @@ body.dark input[type="file"]::-webkit-file-upload-button { background: linear-gr
 #backTop.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
 #backTop:hover { transform: translateY(-3px); }
 body.dark #backTop { background: linear-gradient(135deg,#9b4dff,#e05a8e); }
+
+/* ===== 全局轻提示 Toast（由 index.html 的 toast() 使用） ===== */
+#toast {
+    position: fixed; left: 50%; bottom: 92px; z-index: 99999;
+    transform: translateX(-50%) translateY(16px);
+    max-width: 86vw; width: max-content; text-align: center;
+    background: rgba(255, 255, 255, 0.96); color: #c44dff;
+    font-size: 13.5px; font-family: 'ZCOOL KuaiLe', cursive; line-height: 1.5;
+    padding: 10px 22px; border-radius: 18px;
+    border: 1.5px solid rgba(255, 182, 193, 0.55);
+    box-shadow: 0 6px 24px rgba(255, 107, 157, 0.3);
+    opacity: 0; pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* 可点击复制项 */
+.copyable { cursor: pointer; }
+.copyable .copy-ico { margin-left: 6px; opacity: 0.4; font-size: 12px; transition: opacity 0.2s; }
+.copyable:hover .copy-ico { opacity: 1; }
+.copyable:active { color: var(--c-purple); }
+#toast.success { color: #2ea86b; border-color: rgba(46, 168, 107, 0.5); }
+#toast.error { color: #e0533f; border-color: rgba(224, 83, 63, 0.5); }
+body.dark #toast { background: rgba(40, 32, 46, 0.96); color: #f3c7e6; border-color: rgba(255, 182, 193, 0.35); }
+@media (max-width: 640px) { #toast { bottom: 78px; font-size: 13px; padding: 9px 18px; } }
 
 
 /* ===== 留言板优化 ===== */

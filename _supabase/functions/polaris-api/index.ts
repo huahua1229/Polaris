@@ -12,7 +12,7 @@ const TOKEN_SECRET = SERVICE_KEY || 'polaris-static-fallback-secret';
 const PBKDF2_ITERATIONS = 60000;
 const TOKEN_TTL_USER = 7 * 24 * 3600 * 1000;       // 普通用户登录 7 天
 const TOKEN_TTL_DEV = 30 * 24 * 3600 * 1000;       // 开发者登录 30 天
-const QQ_RE = /^\d{5,12}@qq\.com$/i;
+const QQ_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;   // 通用邮箱格式（允许英文、数字、常见符号）
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -194,8 +194,11 @@ async function handle(req) {
       if (error) return json({ ok: false, error: 'db' });
       const out = { ok: true, messages: data || [] };
       const u = await requireUser(body);
-      if (u && u.role === 'user') {
-        const { data: likes } = await sb.from('message_likes').select('message_id').eq('user_id', u.id);
+      if (u) {
+        // 开发者点赞同样以 'developer' 作为 user_id 记录，这里必须一并返回，
+        // 否则开发者换设备/清缓存后点赞高亮丢失，再点会反而变成“取消赞”。
+        const uid = u.role === 'developer' ? 'developer' : u.id;
+        const { data: likes } = await sb.from('message_likes').select('message_id').eq('user_id', uid);
         out.liked_ids = (likes || []).map((x) => x.message_id);
       }
       return json(out);
@@ -236,20 +239,30 @@ async function handle(req) {
       const id = String(body.id || '');
       if (!id) return json({ ok: false, error: 'empty' });
       const uid = u.role === 'developer' ? 'developer' : u.id;
-      const { data: row, error: e1 } = await sb.from('guestbook_messages').select('likes').eq('id', id).maybeSingle();
+      const { data: row, error: e1 } = await sb.from('guestbook_messages').select('id').eq('id', id).maybeSingle();
       if (e1 || !row) return json({ ok: false, error: 'not-found' });
       const { data: existing } = await sb.from('message_likes')
         .select('user_id').eq('user_id', uid).eq('message_id', id).maybeSingle();
-      let liked;
-      let likes = Number(row.likes) || 0;
-      if (existing) {
-        await sb.from('message_likes').delete().eq('user_id', uid).eq('message_id', id);
-        liked = false; likes = Math.max(0, likes - 1);
-      } else {
+      const had = !!existing;
+      // body.liked 为「目标状态」时按幂等语义执行：想赞就保证结果为已赞，绝不会反向取消。
+      // 关键：前端红心状态来自本机缓存、可能失真，若用「切换」语义，
+      // 一次“点赞”会被服务端当成“取消”，形成“点亮后 1~2 秒又变回未点赞”的怪象。
+      // 省略 liked 时退化为切换，兼容旧版前端。
+      const want = typeof body.liked === 'boolean' ? body.liked : !had;
+      let liked = had;
+      if (want && !had) {
         const { error: insE } = await sb.from('message_likes').insert({ user_id: uid, message_id: id });
         if (insE && !String(insE.code || '').includes('23505')) return json({ ok: false, error: 'db' });
-        liked = true; likes = likes + 1;
+        liked = true;
+      } else if (!want && had) {
+        await sb.from('message_likes').delete().eq('user_id', uid).eq('message_id', id);
+        liked = false;
       }
+      // 以去重点赞记录的真实条数回写 likes：既避免“读-改-写”并发丢计数，
+      // 也能把历史漂移的计数自动校正到与记录一致。
+      const { count } = await sb.from('message_likes')
+        .select('*', { count: 'exact', head: true }).eq('message_id', id);
+      const likes = count || 0;
       await sb.from('guestbook_messages').update({ likes }).eq('id', id);
       return json({ ok: true, liked, likes });
     }

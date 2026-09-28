@@ -5,8 +5,44 @@
 window.PolarisAuth = (function(){
   var KEY='polaris_user', listeners=[];
   function getUser(){ try{return JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){return null;} }
-  function isLoggedIn(){ var u=getUser(); return !!(u&&u.token); }
-  function isDeveloper(){ var u=getUser(); return !!u&&u.role==='developer'; }
+  /* 从无状态 token 解出过期时间；token 格式为 base64url(payload).hmac，payload 内含 exp(ms) */
+  function tokenExp(t){
+    try{
+      var p=String(t||'').split('.')[0];
+      if(!p) return 0;
+      p=p.replace(/-/g,'+').replace(/_/g,'/');
+      while(p.length%4) p+='=';
+      var o=JSON.parse(decodeURIComponent(escape(atob(p))));
+      return Number(o&&o.exp)||0;
+    }catch(e){ return 0; }
+  }
+  /* 过期判定：解不出 exp 时按未过期处理（保持兼容，避免误锁已有会话） */
+  function isExpired(u){
+    if(!u||!u.token) return false;
+    var exp=tokenExp(u.token);
+    return !!(exp&&exp<Date.now());
+  }
+  function isLoggedIn(){ var u=getUser(); return !!(u&&u.token)&&!isExpired(u); }
+  function isDeveloper(){ var u=getUser(); return !!u&&u.role==='developer'&&!isExpired(u); }
+  /* 会话过期：清掉本地登录态，界面回到未登录，并提示一次重新登录 */
+  var expiredNotified=false;
+  function pruneExpired(){
+    var u=getUser();
+    if(!u||!u.token||!isExpired(u)) return false;
+    try{
+      localStorage.removeItem(KEY);
+      sessionStorage.removeItem('polaris_admin_ok');
+      sessionStorage.removeItem('polaris_admin_pw');
+      sessionStorage.removeItem('polaris_pw');
+      localStorage.removeItem('polaris_pw');
+    }catch(e){}
+    emit(null);
+    if(!expiredNotified){
+      expiredNotified=true;
+      try{ if(typeof toast==='function') toast('登录已过期，请重新登录~','error'); }catch(e){}
+    }
+    return true;
+  }
   function cloud(){ return !!(window.PolarisCloud&&window.PolarisCloud.enabled()); }
   function onChange(f){ listeners.push(f); }
   function emit(u){ for(var i=0;i<listeners.length;i++){ try{listeners[i](u||getUser());}catch(e){console.error(e);} } }
@@ -54,7 +90,7 @@ window.PolarisAuth = (function(){
       URL.revokeObjectURL(url);
       cb(c.toDataURL('image/jpeg',0.85));
     };
-    img.onerror=function(){ URL.revokeObjectURL(url); alert('图片读取失败'); };
+    img.onerror=function(){ URL.revokeObjectURL(url); toast('图片读取失败', 'error'); };
     img.src=url;
   }
   function register(e,p,n,av){ return PolarisCloud.registerAsync(e,p,n,av).then(function(r){ if(r&&r.ok&&r.token) afterAuth(r); return r;}); }
@@ -256,7 +292,7 @@ window.PolarisAuth = (function(){
     return bar;
   }
   function applyAuthUI(){
-    var u=getUser(), in_=!!(u&&u.token), dev=isDeveloper();
+    var u=getUser(), in_=!!(u&&u.token)&&!isExpired(u), dev=isDeveloper();
     var navR=document.getElementById('navReview'); if(navR) navR.style.display=dev?'':'none';
     var adm=document.getElementById('adminEntry'); if(adm) adm.style.display=dev?'':'none';
     var ent=document.getElementById('authEntry');
@@ -280,7 +316,11 @@ window.PolarisAuth = (function(){
   document.addEventListener('focusin',function(e){
     if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-needlogin')&&!isLoggedIn()){ e.target.blur(); openLogin('login'); }
   });
-  function init(){ ensureDom(); applyAuthUI(); }
+  /* 切回标签时顺手清理过期会话（长时间挂着的页面也能及时恢复未登录态） */
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible') pruneExpired();
+  });
+  function init(){ ensureDom(); pruneExpired(); applyAuthUI(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
   else init();
   onChange(function(){ applyAuthUI(); });

@@ -221,10 +221,11 @@
         fills.forEach(function (el) { io.observe(el); });
     }
 
-    /* ---------- 滚动进度条 + 回到顶部 ---------- */
+    /* ---------- 滚动进度条 + 回到顶部（右下浮动钮 + 顶栏文字按钮） ---------- */
     function initScrollFx() {
         var bar = document.getElementById('scrollBar');
-        var backTop = document.getElementById('backTop');
+        var backTop = document.getElementById('backTop');       // 右下浮动圆形按钮
+        var topBack = document.querySelector('.top-backtop');   // 顶栏“↑ 回到顶部”按钮
         var ticking = false;
         function update() {
             var h = document.documentElement;
@@ -232,13 +233,21 @@
             var pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
             if (bar) bar.style.width = pct + '%';
             if (backTop) backTop.classList.toggle('show', h.scrollTop > 320);
+            if (topBack) topBack.classList.toggle('show', h.scrollTop > 320);
             ticking = false;
         }
         window.addEventListener('scroll', function () {
             if (!ticking) { ticking = true; requestAnimationFrame(update); }
         }, { passive: true });
         update();
-        if (backTop) backTop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        if (backTop && !backTop.dataset.btBound) {
+            backTop.dataset.btBound = '1';
+            backTop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        }
+        if (topBack && !topBack.dataset.btBound) {
+            topBack.dataset.btBound = '1';
+            topBack.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        }
     }
 
     /* ---------- 移动端抽屉 ---------- */
@@ -354,6 +363,57 @@
         });
     }
 
+    /* ---------- Esc 关闭浮层（阅读层 / 移动端抽屉 / 内容管理面板） ---------- */
+    function initEscClose() {
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape' && e.key !== 'Esc') return;
+            var ov = document.getElementById('readerOverlay');
+            if (ov && ov.classList.contains('show')) {
+                ov.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+            var nav = document.getElementById('sideNav');
+            var mask = document.getElementById('maskLayer');
+            if (nav && nav.classList.contains('open')) {
+                nav.classList.remove('open');
+                if (mask) mask.classList.remove('show');
+            }
+            var panel = document.getElementById('adminPanel');
+            if (panel && panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                var am = document.getElementById('adminMask');
+                if (am) am.classList.remove('show');
+            }
+        });
+    }
+
+    /* ---------- 点击复制（电话 / 邮箱等） ---------- */
+    function initCopy() {
+        if (document.body.dataset.copyBound) return;
+        document.body.dataset.copyBound = '1';
+        function legacyCopy(text, cb) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;top:-9999px;opacity:0;';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); cb(); } catch (e) { }
+            document.body.removeChild(ta);
+        }
+        document.addEventListener('click', function (e) {
+            var el = e.target.closest('[data-copy]');
+            if (!el) return;
+            var val = el.getAttribute('data-copy');
+            if (!val) return;
+            function done() { if (window.toast) window.toast('已复制：' + val, 'success'); }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(val).then(done).catch(function () { legacyCopy(val, done); });
+            } else {
+                legacyCopy(val, done);
+            }
+        });
+    }
+
     /* ---------- 博客文章展开 + 最新文章跳转（防重绑，支持重渲染） ---------- */
     function initBlogExpand() {
         var items = document.querySelectorAll('.article-item');
@@ -398,6 +458,8 @@
         initScrollFx();
         initDrawer();
         initToast();
+        initCopy();
+        initEscClose();
         refresh();
     });
 

@@ -12,7 +12,11 @@
     <meta property="og:url" content="https://huahua1229.github.io/Polaris/">
     <meta name="theme-color" content="#ff6b9d">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c44dff' d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z'/%3E%3C/svg%3E">
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- 字体异步加载：Google Fonts 在大陆可能较慢甚至超时，用 media=print 技巧避免阻塞首屏渲染，加载完再应用 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap"></noscript>
     <link rel="stylesheet" href="static/site.css">
 <script>
 function toast(msg, type) {
@@ -28,8 +32,8 @@ function forgotPassword(){
   var e = prompt('请输入要重置密码的 QQ 邮箱：');
   if(!e) return;
   window.PolarisCloud.call('request_reset_password',{email:e}).then(function(r){
-    alert(r.ok ? '已提交申请，等待站长审核通过' : '提交失败：'+(r.error||''));
-  }).catch(function(){ alert('网络错误，请重试'); });
+    toast(r.ok ? '已提交申请，等待站长审核通过' : '提交失败：'+(r.error||''), r.ok ? 'success' : 'error');
+  }).catch(function(){ toast('网络错误，请重试', 'error'); });
 }
 function customConfirm(msg, title) {
     return new Promise(function(resolve) {
@@ -238,7 +242,7 @@ body.dark ::placeholder{color:#888;}
         </div>
         <div class="top-right">
             <span class="top-greeting" id="topGreeting"></span>
-            <button class="top-backtop" id="backTop">↑ 回到顶部</button>
+            <button class="top-backtop" type="button">↑ 回到顶部</button>
         </div>
     </header>
     <div class="scroll-progress"><i id="scrollBar"></i></div>
@@ -334,10 +338,14 @@ body.dark ::placeholder{color:#888;}
                         <div class="tag-list" id="homeInterests"></div>
                     </div>
                     <div class="rail-card">
+                        <div class="rail-card-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg></span>联系我</div>
+                        <ul class="rail-list" id="homeContact"></ul>
+                    </div>
+                    <div class="rail-card">
                         <div class="rail-card-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>快速逛逛</div>
                         <div class="quick-links">
                             <a class="quick-link" href="#guestbook">💬 留言板</a>
-                            <a class="quick-link" href="#gallery">📷 相册</a>
+                            <a class="quick-link" href="#album">📷 相册</a>
                             <a class="quick-link" href="#submit">✏️ 投稿</a>
                             <a class="quick-link" href="#resume">📄 我的简历</a>
                         </div>
@@ -955,6 +963,7 @@ body.dark ::placeholder{color:#888;}
     (function () {
         'use strict';
         function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+        function escAttr(s) { return esc(s).replace(/"/g, '&quot;'); }
         function nl2br(s) { return esc(s).replace(/\n/g, '<br>'); }
 
         function renderSkills(sel, list) {
@@ -981,7 +990,7 @@ body.dark ::placeholder{color:#888;}
             if (!el) return;
             el.innerHTML = list.map(function (h) {
                 return '<div class="honor-item tilt" onclick="window.open(\'' + esc(h.img) + '\',\'_blank\')" style="cursor:pointer;">' +
-                    '<img src="' + esc(h.img) + '" alt="' + esc(h.name) + '">' +
+                    '<img src="' + esc(h.img) + '" alt="' + esc(h.name) + '" loading="lazy" decoding="async">' +
                     '<div><div class="h-name">' + esc(h.name) + '</div><span class="h-tag">' + esc(h.tag) + '</span></div></div>';
             }).join('');
         }
@@ -992,6 +1001,21 @@ body.dark ::placeholder{color:#888;}
                 renderWith(c);
                 if (window.PolarisFx) { try { window.PolarisFx.refresh(); } catch (e) { } }
             }).catch(function () {});
+        }
+        /* 刷新「动态类」板块：首页最近动态 / 留言板 / 相册。
+           这些板块各自异步拉取云端数据，保存内容后统一刷新，避免必须手动刷新页面 */
+        function refreshDynamics() {
+            try { if (window.loadHomeMoments) window.loadHomeMoments(); } catch (e) { }
+            try { if (window.PolarisGuestbook && window.PolarisGuestbook.reload) window.PolarisGuestbook.reload(); } catch (e) { }
+            try {
+                var cur = location.hash.replace('#', '').replace(/^view-/, '');
+                if (cur === 'album' && window.loadAlbums) window.loadAlbums();
+            } catch (e) { }
+        }
+        /* 一次性刷新全站（静态板块 + 动态板块） */
+        function refreshAll() {
+            renderAll();
+            refreshDynamics();
         }
         function renderWith(c) {
             var p = c.profile;
@@ -1028,8 +1052,8 @@ body.dark ::placeholder{color:#888;}
             if (rsS) rsS.textContent = (p.status ? esc(p.status) + ' · ' : '') + esc(p.school);
             var rsC = document.getElementById('rsContact');
             if (rsC) rsC.innerHTML =
-                (p.phone ? '<span>电话：' + esc(p.phone) + '</span>' : '') +
-                (p.email ? '<span>邮箱：' + esc(p.email) + '</span>' : '') +
+                (p.phone ? '<span class="copyable" data-copy="' + escAttr(p.phone) + '" title="点击复制电话">电话：' + esc(p.phone) + '</span>' : '') +
+                (p.email ? '<span class="copyable" data-copy="' + escAttr(p.email) + '" title="点击复制邮箱">邮箱：' + esc(p.email) + '</span>' : '') +
                 (p.location ? '<span>城市：' + esc(p.location) + '</span>' : '') +
                 (p.age ? '<span>年龄：' + esc(p.age) + '</span>' : '') +
                 (p.status ? '<span>身份：' + esc(p.status) + '</span>' : '');
@@ -1094,7 +1118,7 @@ body.dark ::placeholder{color:#888;}
                         '<div class="article-arrow">→</div></div>';
                 }).join('');
             }
-            bl.addEventListener('click', function(e){
+            if (bl) bl.onclick = function(e){
                 var item = e.target.closest('.article-item');
                 if(!item) return;
                 var idx = Array.prototype.indexOf.call(bl.children, item);
@@ -1116,14 +1140,14 @@ body.dark ::placeholder{color:#888;}
                 }
                 document.getElementById('readerOverlay').classList.add('show');
                 document.body.style.overflow = 'hidden';
-            });
+            };
             /* 友链 */
             var fl = document.getElementById('friendsList');
             if (fl) {
                 var friends = c.friends || [];
                 fl.innerHTML = friends.length ? friends.map(function (f) {
                     var av = f.avatar
-                        ? '<img src="' + esc(f.avatar) + '" alt="">'
+                        ? '<img src="' + esc(f.avatar) + '" alt="" loading="lazy" decoding="async">'
                         : '<span class="friend-av-fallback">' + esc((f.name||'友').charAt(0)) + '</span>';
                     return '<a class="friend-card" href="' + esc(f.url||'#') + '" target="_blank" rel="noopener">' +
                         '<div class="friend-av">' + av + '</div>' +
@@ -1191,19 +1215,68 @@ body.dark ::placeholder{color:#888;}
             if (ra) ra.innerHTML = awards;
             var hc = document.getElementById('homeContact');
             if (hc) hc.innerHTML =
-                '<li>电话：' + esc(p.phone) + '</li>' +
-                '<li>邮箱：' + esc(p.email) + '</li>' +
+                '<li class="copyable" data-copy="' + escAttr(p.phone) + '" title="点击复制电话">电话：' + esc(p.phone) + '<span class="copy-ico">⧉</span></li>' +
+                '<li class="copyable" data-copy="' + escAttr(p.email) + '" title="点击复制邮箱">邮箱：' + esc(p.email) + '<span class="copy-ico">⧉</span></li>' +
                 '<li>年龄：' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
             var rc = document.getElementById('resumeContact');
             if (rc) rc.innerHTML =
-                '<li>电话：' + esc(p.phone) + '</li>' +
-                '<li>邮箱：' + esc(p.email) + '</li>' +
+                '<li class="copyable" data-copy="' + escAttr(p.phone) + '" title="点击复制电话">电话：' + esc(p.phone) + '</li>' +
+                '<li class="copyable" data-copy="' + escAttr(p.email) + '" title="点击复制邮箱">邮箱：' + esc(p.email) + '</li>' +
                 '<li>城市：' + esc(p.location) + '</li>' +
                 '<li>年龄：' + esc(p.age) + ' · ' + esc(p.status) + '</li>';
         }
 
-        window.PolarisRender = { renderAll: renderAll, esc: esc };
+        window.PolarisRender = {
+            renderAll: renderAll,
+            refreshAll: refreshAll,
+            refreshDynamics: refreshDynamics,
+            renderData: renderWith,
+            esc: esc
+        };
         renderAll();
+    })();
+
+    /* ============================================================
+       自动同步：无需刷新页面即可看到最新内容
+       1) 同一浏览器多标签页：任一标签保存后，其它标签自动更新
+       2) 从其它应用/标签切回本页（或跨设备修改）：自动拉取云端最新数据
+       ============================================================ */
+    (function () {
+        'use strict';
+        var chan = null;
+        try { if ('BroadcastChannel' in window) chan = new BroadcastChannel('polaris-sync'); } catch (e) { chan = null; }
+        function softRefresh() {
+            if (window.PolarisRender && window.PolarisRender.refreshAll) {
+                try { window.PolarisRender.refreshAll(); } catch (e) { }
+            }
+        }
+        /* 收到其它标签页的「已保存」广播 → 本标签自动刷新（不用刷新页面） */
+        if (chan) {
+            chan.onmessage = function (ev) {
+                var d = (ev && ev.data) || {};
+                if (d.type === 'guestbook') {
+                    /* 其它标签发了新留言 → 本标签留言板自动刷新 */
+                    try { if (window.PolarisGuestbook && window.PolarisGuestbook.reload) window.PolarisGuestbook.reload(); } catch (e) { }
+                } else if (d.type === 'content-saved') {
+                    softRefresh();
+                }
+            };
+        }
+        /* 页面重新变为可见（切回标签 / 从别的设备回来）→ 拉一次云端最新 */
+        var lastVisible = 0;
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState !== 'visible') return;
+            var now = Date.now();
+            if (now - lastVisible < 2000) return;
+            lastVisible = now;
+            softRefresh();
+        });
+        /* 保存成功后由页面调用，广播给同浏览器其它标签 */
+        window.PolarisSync = {
+            broadcast: function (topic) {
+                if (chan) { try { chan.postMessage({ type: topic || 'content-saved', t: Date.now() }); } catch (e) { } }
+            }
+        };
     })();
 
     /* ============================================================
@@ -1508,11 +1581,17 @@ body.dark ::placeholder{color:#888;}
             c.honors = collectItems('adminHonors', [['h_name', 'name'], ['h_tag', 'tag'], ['h_img', 'img']]);
             c.friends = collectItems('adminFriends', [['f_name', 'name'], ['f_url', 'url'], ['f_desc', 'desc'], ['f_avatar', 'avatar']]);
             c.blogArticles = collectItems('adminBlog', [['b_title', 'title'], ['b_date', 'date'], ['b_cat', 'cat'], ['b_catLabel', 'catLabel'], ['b_tags', 'tags'], ['b_cover', 'cover'], ['b_grad', 'grad'], ['b_excerpt', 'excerpt'], ['b_content', 'content']]);
+            /* 保存成功后立即用新数据重渲染（不等云端回读），并同步刷新动态板块，无需手动刷新页面 */
+            function applySaved() {
+                if (window.PolarisRender.renderData) window.PolarisRender.renderData(c);
+                window.PolarisFx.refresh();
+                if (window.PolarisRender.refreshDynamics) window.PolarisRender.refreshDynamics();
+                if (window.PolarisSync && window.PolarisSync.broadcast) window.PolarisSync.broadcast();
+            }
             if (PolarisSite.cloudEnabled && PolarisSite.cloudEnabled()) {
                 PolarisSite.saveAsync(c, pwSession || '').then(function (r) {
                     if (r && r.ok) {
-                        window.PolarisRender.renderAll();
-                        window.PolarisFx.refresh();
+                        applySaved();
                         buildForms();
                         showToast('已保存并同步到云端~');
                     } else {
@@ -1521,8 +1600,7 @@ body.dark ::placeholder{color:#888;}
                 });
             } else {
                 PolarisSite.save(c);
-                window.PolarisRender.renderAll();
-                window.PolarisFx.refresh();
+                applySaved();
                 showToast('已保存并应用到全站~');
             }
         }
@@ -1697,7 +1775,7 @@ body.dark ::placeholder{color:#888;}
                             if (!pwS) { showToast('请先通过口令验证再导入~'); return; }
                             PolarisSite.saveAsync(data, pwS).then(function (r) {
                                 if (r && r.ok) {
-                                    window.PolarisRender.renderAll();
+                                    window.PolarisRender.refreshAll();
                                     window.PolarisFx.refresh();
                                     buildForms();
                                     showToast('备份导入成功~');
@@ -1705,13 +1783,13 @@ body.dark ::placeholder{color:#888;}
                             });
                         } else {
                             PolarisSite.save(data);
-                            window.PolarisRender.renderAll();
+                            window.PolarisRender.refreshAll();
                             window.PolarisFx.refresh();
                             buildForms();
                             showToast('备份导入成功~');
                         }
                     } catch (e) {
-                        alert('导入失败：文件不是有效的备份 JSON。');
+                        toast('导入失败：文件不是有效的备份 JSON。', 'error');
                     }
                 };
                 reader.readAsText(file);
@@ -1727,7 +1805,7 @@ body.dark ::placeholder{color:#888;}
                     if (!pwS) { showToast('请先通过口令验证~'); return; }
                     PolarisSite.resetAsync(pwS).then(function (r) {
                         if (r && r.ok) {
-                            window.PolarisRender.renderAll();
+                            window.PolarisRender.refreshAll();
                             window.PolarisFx.refresh();
                             buildForms();
                             showToast('已恢复默认内容~');
@@ -1735,7 +1813,7 @@ body.dark ::placeholder{color:#888;}
                     });
                 } else {
                     PolarisSite.reset();
-                    window.PolarisRender.renderAll();
+                    window.PolarisRender.refreshAll();
                     window.PolarisFx.refresh();
                     buildForms();
                     showToast('已恢复默认内容~');
@@ -1766,6 +1844,9 @@ body.dark ::placeholder{color:#888;}
         function saveLocalMessages(msgs) { localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs)); }
         function getLikedIds() { try { return JSON.parse(localStorage.getItem(LIKES_KEY) || '[]'); } catch (e) { return []; } }
         function saveLikedIds(ids) { localStorage.setItem(LIKES_KEY, JSON.stringify(ids)); }
+        /* 进行中的点赞请求计数：期间不允许服务端旧快照覆盖本机状态，
+           否则取消赞/刚点的赞会被回读的旧列表“顶回去”，导致红心回弹 */
+        var likeInFlight = 0;
         function formatTime(ts) {
             var diff = Date.now() - ts;
             var m = Math.floor(diff / 60000);
@@ -1788,13 +1869,39 @@ body.dark ::placeholder{color:#888;}
         function getSessionPw() { try { return sessionStorage.getItem('polaris_admin_pw') || ''; } catch (e) { return ''; } }
         function isAuthor() { try { return sessionStorage.getItem('polaris_admin_ok') === '1'; } catch (e) { return false; } }
 
+        /* 暴露给统一刷新机制：保存内容 / 其它标签改动后同步刷新留言板 */
+        window.PolarisGuestbook = { reload: renderMessages };
+
+        /* 未登录时点的赞：登录成功后自动补赞，用户无需再点一次 */
+        if (window.PolarisAuth && window.PolarisAuth.onChange) {
+            window.PolarisAuth.onChange(function (u) {
+                if (!u || !u.token) return;
+                var pending = null;
+                try { pending = sessionStorage.getItem('polaris_pending_like'); } catch (e) { }
+                if (!pending) return;
+                try { sessionStorage.removeItem('polaris_pending_like'); } catch (e) { }
+                /* 用户当初的意图是「点赞」，明确传 true：即使本机缓存与服务端不一致也不会被反转成取消 */
+                likeInFlight++;
+                window.PolarisCloud.toggleLikeAsync(pending, true).then(function () {
+                    likeInFlight = Math.max(0, likeInFlight - 1);
+                    renderMessages();
+                }).catch(function () {
+                    likeInFlight = Math.max(0, likeInFlight - 1);
+                    renderMessages();
+                });
+            });
+        }
+
         /* 读取留言：云端优先，失败/未配置回退本地缓存 */
         function getMessagesAsync() {
             if (cloudMode()) {
                 return window.PolarisCloud.loadMessagesAsync().then(function (r) {
                     if (r && r.ok && Array.isArray(r.messages)) {
                         saveLocalMessages(r.messages);
-                        if (r.liked_ids && r.liked_ids.length) { saveLikedIds(r.liked_ids); }
+                        /* 仅当服务端明确下发了本机身份的列表、且此刻没有点赞请求在飞时才整体覆盖：
+                           - 空数组也覆盖（否则取消赞后本地残留旧记录）
+                           - 有点赞在飞时跳过，避免用服务端旧快照覆盖掉刚发生的变更 */
+                        if (Array.isArray(r.liked_ids) && likeInFlight === 0) { saveLikedIds(r.liked_ids); }
                         return r.messages;
                     }
                     return getLocalMessages();
@@ -1838,13 +1945,13 @@ body.dark ::placeholder{color:#888;}
                     var isLiked = likedIds.indexOf(msg.id) >= 0;
                     var repliesHtml = (msg.replies && msg.replies.length > 0) ? msg.replies.map(function (r) {
                         return '<div class="reply-item">' +
-                            '<div class="reply-header">' + (r.avatar ? '<img class="reply-avatar" src="' + escHtml(r.avatar) + '" alt="">' : '') + '<span class="reply-author">' + escHtml(r.name || '匿名访客') + '</span><span class="reply-time">' + formatTime(r.time) + '</span></div>' +
+                            '<div class="reply-header">' + (r.avatar ? '<img class="reply-avatar" src="' + escHtml(r.avatar) + '" alt="" loading="lazy" decoding="async">' : '') + '<span class="reply-author">' + escHtml(r.name || '匿名访客') + '</span><span class="reply-time">' + formatTime(r.time) + '</span></div>' +
                             '<div class="reply-content">' + escHtml(r.message).replace(/\n/g, '<br>') + '</div>' +
                         '</div>';
                     }).join('') : '';
                     var delHtml = (!cloudMode() || author)
                         ? '<button class="message-delete" data-id="' + escHtml(msg.id) + '">删除</button>' : '';
-                    var avatarHtml = msg.avatar ? '<img src="' + escHtml(msg.avatar) + '" alt="">' : getInitial(msg.name);
+                    var avatarHtml = msg.avatar ? '<img src="' + escHtml(msg.avatar) + '" alt="" loading="lazy" decoding="async">' : getInitial(msg.name);
                     return '<div class="message-card bubble">' +
                         '<div class="bubble-avatar">' + avatarHtml + '</div>' +
                         '<div class="bubble-body">' +
@@ -1878,12 +1985,23 @@ body.dark ::placeholder{color:#888;}
                         if (likeBtn) {
                             var id = likeBtn.getAttribute('data-id');
                             if (cloudMode()) {
-                                if (!window.PolarisAuth.isLoggedIn()) { window.PolarisAuth.openLogin('login'); return; }
+                                if (!window.PolarisAuth.isLoggedIn()) {
+                                    /* 记住这次点赞意图，登录成功后自动补上 */
+                                    try { sessionStorage.setItem('polaris_pending_like', id); } catch (e) { }
+                                    window.PolarisAuth.openLogin('login');
+                                    return;
+                                }
                                 var wasLiked = likeBtn.classList.contains('liked');
-                                var optCount = Math.max(0, (parseInt(likeBtn.querySelector('.count').textContent) || 0) + (wasLiked ? -1 : 1));
-                                likeBtn.classList.toggle('liked', !wasLiked);
-                                likeBtn.innerHTML = (!wasLiked ? '❤️' : '🤍') + ' <span class="count">' + optCount + '</span>';
-                                window.PolarisCloud.toggleLikeAsync(id).then(function (r) {
+                                var oldCount = parseInt(likeBtn.querySelector('.count').textContent) || 0;
+                                var want = !wasLiked;   // 用户意图：点亮 true / 取消 false
+                                likeBtn.classList.toggle('liked', want);
+                                likeBtn.innerHTML = (want ? '❤️' : '🤍') + ' <span class="count">' + Math.max(0, oldCount + (want ? 1 : -1)) + '</span>';
+                                /* 明确传「目标状态」，后端幂等执行：点“赞”结果一定是已赞，
+                                   不会因本机缓存失真被反转成“取消” */
+                                likeInFlight++;
+                                var likeDone = function () { likeInFlight = Math.max(0, likeInFlight - 1); };
+                                window.PolarisCloud.toggleLikeAsync(id, want).then(function (r) {
+                                    likeDone();
                                     if (r && r.ok) {
                                         likeBtn.classList.toggle('liked', !!r.liked);
                                         likeBtn.innerHTML = (r.liked ? '❤️' : '🤍') + ' <span class="count">' + r.likes + '</span>';
@@ -1891,8 +2009,23 @@ body.dark ::placeholder{color:#888;}
                                         if (r.liked && ix2 < 0) ids2.push(id);
                                         if (!r.liked && ix2 >= 0) ids2.splice(ix2, 1);
                                         saveLikedIds(ids2);
-                                    } else { renderMessages(); }
-                                }).catch(function () { renderMessages(); });
+                                    } else {
+                                        /* 失败只回滚这一个按钮，不再整列表重建（避免其它红心被连累） */
+                                        likeBtn.classList.toggle('liked', wasLiked);
+                                        likeBtn.innerHTML = (wasLiked ? '❤️' : '🤍') + ' <span class="count">' + oldCount + '</span>';
+                                        if (r && r.error === 'auth') {
+                                            toast('登录已过期，请重新登录后再点赞~', 'error');
+                                            if (window.PolarisAuth) window.PolarisAuth.openLogin('login');
+                                        } else {
+                                            toast('点赞失败，请稍后重试~', 'error');
+                                        }
+                                    }
+                                }).catch(function () {
+                                    likeDone();
+                                    likeBtn.classList.toggle('liked', wasLiked);
+                                    likeBtn.innerHTML = (wasLiked ? '❤️' : '🤍') + ' <span class="count">' + oldCount + '</span>';
+                                    toast('网络异常，点赞未能生效~', 'error');
+                                });
                                 return;
                             }
                             var likedIds = getLikedIds();
@@ -1920,7 +2053,7 @@ body.dark ::placeholder{color:#888;}
                         var idx = parseInt(this.getAttribute('data-idx'));
                         var input = document.getElementById('reply-input-' + idx);
                         var replyText = input.value.trim();
-                        if (!replyText) { alert('回复内容不能为空哦~'); input.focus(); return; }
+                        if (!replyText) { toast('回复内容不能为空哦~', 'error'); input.focus(); return; }
                         if (cloudMode() && !window.PolarisAuth.isLoggedIn()) { window.PolarisAuth.openLogin('login'); return; }
                         var reply = { name: cloudMode() ? '' : (nameInput.value.trim() || '匿名访客'), message: replyText, time: Date.now(), avatar: (function(){try{return (JSON.parse(localStorage.getItem('polaris_user')||'{}').avatar)||'';}catch(e){return '';}})() };
                         if (cloudMode()) {
@@ -1979,23 +2112,24 @@ body.dark ::placeholder{color:#888;}
             var message = msgInput.value.trim();
             if (cloudMode()) {
                 if (!window.PolarisAuth.isLoggedIn()) { window.PolarisAuth.openLogin('login'); return; }
-                if (!message) { alert('留言内容不能为空哦~'); msgInput.focus(); return; }
+                if (!message) { toast('留言内容不能为空哦~', 'error'); msgInput.focus(); return; }
                 submitBtn.disabled = true; submitBtn.textContent = '发送中...';
                 window.PolarisCloud.addMessageAsync({ message: message, time: Date.now(), avatar: (function(){try{return (JSON.parse(localStorage.getItem('polaris_user')||'{}').avatar)||'';}catch(e){return '';}})() }).then(function (r) {
                     submitBtn.disabled = false;
-                    if (!(r && r.ok)) { submitBtn.textContent = '🌸 提交留言'; alert(window.PolarisAuth.errText(r && r.error) || '留言发布失败，请稍后重试~'); return; }
+                    if (!(r && r.ok)) { submitBtn.textContent = '🌸 提交留言'; toast(window.PolarisAuth.errText(r && r.error) || '留言发布失败，请稍后重试~', 'error'); return; }
                     msgInput.value = '';
                     submitBtn.textContent = '✅ 提交成功！';
                     setTimeout(function () { submitBtn.textContent = '🌸 提交留言'; }, 1500);
                     renderMessages();
+                    if (window.PolarisSync) window.PolarisSync.broadcast('guestbook');
                 }).catch(function () {
                     submitBtn.disabled = false; submitBtn.textContent = '🌸 提交留言';
-                    alert('网络异常，留言未发送，请稍后重试~');
+                    toast('网络异常，留言未发送，请稍后重试~', 'error');
                 });
                 return;
             }
-            if (!/^\d{5,12}@qq\.com$/.test(email)) { alert('请填写正确的 QQ 邮箱（5-12 位数字@qq.com）~'); emailInput.focus(); return; }
-            if (!message) { alert('留言内容不能为空哦~'); msgInput.focus(); return; }
+            if (!/^\d{5,12}@qq\.com$/.test(email)) { toast('请填写正确的 QQ 邮箱（5-12 位数字@qq.com）~', 'error'); emailInput.focus(); return; }
+            if (!message) { toast('留言内容不能为空哦~', 'error'); msgInput.focus(); return; }
             var newMsg = { id: genId(), name: name, email: email, message: message, time: Date.now(), likes: 0, replies: [] };
             var local = getLocalMessages();
             local.unshift(newMsg);
@@ -2005,6 +2139,7 @@ body.dark ::placeholder{color:#888;}
             submitBtn.textContent = '✅ 提交成功！';
             setTimeout(function () { submitBtn.textContent = '🌸 提交留言'; }, 1500);
             renderMessages();
+            if (window.PolarisSync) window.PolarisSync.broadcast('guestbook');
         });
         msgInput.addEventListener('keydown', function (e) { if (e.ctrlKey && e.key === 'Enter') submitBtn.click(); });
 
@@ -2117,7 +2252,7 @@ body.dark ::placeholder{color:#888;}
                     var pw = document.getElementById('albumPwInput').value;
                     window.PolarisCloud.call('verify_album_password', {albumId: al.id, password: pw}).then(function (r) {
                         if (r && r.ok) { albumPw[al.id] = pw; loadPhotos(al); }
-                        else alert('密码错误');
+                        else toast('密码错误', 'error');
                     });
                 };
                 document.getElementById('albumBack').onclick = loadAlbums;
@@ -2135,7 +2270,7 @@ body.dark ::placeholder{color:#888;}
                 r.photos.forEach(function (ph) {
                     var item = document.createElement('div');
                     item.className = 'photo-item';
-                    item.innerHTML = '<img src="' + ph.url + '" style="opacity:0;transition:opacity .35s ease;"><div class="photo-caption">' + (ph.caption || '') + '</div>';
+                    item.innerHTML = '<img src="' + ph.url + '" loading="lazy" decoding="async" style="opacity:0;transition:opacity .35s ease;"><div class="photo-caption">' + (ph.caption || '') + '</div>';
                     var img = item.querySelector('img');
                     function showImg(){ img.style.opacity = 1; }
                     if (img.complete) showImg(); else { img.onload = showImg; img.onerror = showImg; }
@@ -2289,9 +2424,9 @@ body.dark ::placeholder{color:#888;}
     var tags = document.getElementById('sbTags').value.trim();
     var fileInput = document.getElementById('sbFile');
     var file = fileInput && fileInput.files && fileInput.files[0];
-    if(!title){ alert('请填写标题~'); return; }
-    if(!content){ alert('请填写正文~'); return; }
-    if(file && file.size > 20*1024*1024){ alert('附件不能超过 20MB~'); return; }
+    if(!title){ toast('请填写标题~', 'error'); return; }
+    if(!content){ toast('请填写正文~', 'error'); return; }
+    if(file && file.size > 20*1024*1024){ toast('附件不能超过 20MB~', 'error'); return; }
     btn.disabled = true; btn.textContent = '提交中...';
     var postData = {type:type, title:title, desc:desc, content:content, tags:tags};
     var chain;
@@ -2310,12 +2445,12 @@ body.dark ::placeholder{color:#888;}
     }
     chain.then(function(r){
         if(r && r.ok){
-          alert('投稿成功！作者审核通过后会展示在小站上，感谢分享~');
+          toast('投稿成功！作者审核通过后会展示在小站上，感谢分享~', 'success');
           ['sbTitle','sbDesc','sbContent','sbTags'].forEach(function(id){document.getElementById(id).value='';});
           if(fileInput) fileInput.value = '';
-        } else { alert('提交失败：' + (r && r.error ? r.error : '请检查网络后重试~')); }
+        } else { toast('提交失败：' + (r && r.error ? r.error : '请检查网络后重试~'), 'error'); }
       })
-      .catch(function(e){ alert('提交失败：' + (e && e.message ? e.message : '请检查网络后重试~')); })
+      .catch(function(e){ toast('提交失败：' + (e && e.message ? e.message : '请检查网络后重试~'), 'error'); })
       .finally(function(){ btn.disabled=false; btn.textContent='🚀 提交投稿'; });
   });
 })();
@@ -2331,16 +2466,16 @@ body.dark ::placeholder{color:#888;}
     var url = document.getElementById('frUrl').value.trim();
     var desc = document.getElementById('frDesc').value.trim();
     var avatar = document.getElementById('frAvatar').value.trim();
-    if(!name){ alert('请填写你的站名~'); return; }
-    if(!/^https?:\/\/.+/.test(url)){ alert('请填写正确的网址（http:// 或 https:// 开头）~'); return; }
-    if(!desc){ alert('请写一句话介绍~'); return; }
+    if(!name){ toast('请填写你的站名~', 'error'); return; }
+    if(!/^https?:\/\/.+/.test(url)){ toast('请填写正确的网址（http:// 或 https:// 开头）~', 'error'); return; }
+    if(!desc){ toast('请写一句话介绍~', 'error'); return; }
     btn.disabled = true; btn.textContent = '提交中...';
     window.PolarisCloud.call('submit_friend_request', {name:name, url:url, desc:desc, avatar:avatar})
       .then(function(r){
         if(r && r.ok){
-          alert('申请提交成功！作者审核通过后会展示在友链页~');
+          toast('申请提交成功！作者审核通过后会展示在友链页~', 'success');
           ['frName','frUrl','frDesc','frAvatar'].forEach(function(id){document.getElementById(id).value='';});
-        } else { alert(window.PolarisAuth.errText(r&&r.error)||'提交失败，请检查网络后重试~'); }
+        } else { toast(window.PolarisAuth.errText(r&&r.error)||'提交失败，请检查网络后重试~', 'error'); }
       })
       .finally(function(){ btn.disabled=false; btn.textContent='🚀 提交友链申请'; });
   });
@@ -2468,12 +2603,12 @@ body.dark ::placeholder{color:#888;}
           } else {
             var inp=box.querySelector('input[data-rid="'+rid+'"]');
             var np=inp.value.trim();
-            if(np.length<6){ alert('新密码至少 6 位'); return; }
+            if(np.length<6){ toast('新密码至少 6 位', 'error'); return; }
             customConfirm('确定将该用户密码设为新密码并立即生效吗？','批准重置').then(function(yes){
               if(!yes)return;
               window.PolarisCloud.call('approve_reset',{id:rid,new_password:np,password:pw}).then(function(r2){
                 if(r2&&r2.ok){ toast('已重置，把新密码告诉用户即可','success'); loadResets(pw); }
-                else alert('失败：'+(r2&&r2.error||''));
+                else toast('失败：'+(r2&&r2.error||''), 'error');
               });
             });
           }
@@ -2552,11 +2687,7 @@ body.dark ::placeholder{color:#888;}
 <button id="backTop" aria-label="回到顶部" title="回到顶部">↑</button>
 <script>
 (function(){
-  var btn=document.getElementById('backTop');
-  window.addEventListener('scroll', function(){
-    btn.classList.toggle('show', window.scrollY>400);
-  }, {passive:true});
-  btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  // 回到顶部（右下浮动钮 #backTop 与顶栏按钮 .top-backtop）统一由 static/site.js 的 initScrollFx 处理
   // 音乐条收起
   var pclose=document.getElementById('playerClose');
   if(pclose){ pclose.addEventListener('click', function(e){
@@ -2619,9 +2750,10 @@ body.dark ::placeholder{color:#888;}
     audio.addEventListener('pause', function(){ npD.classList.remove('spin'); });
   }
 
-  // 最近动态：从数据库读
-  var ml=document.getElementById('homeMoments');
-  if(ml){
+  // 最近动态：从数据库读（暴露为 loadHomeMoments，供保存后统一刷新，无需手动刷新页面）
+  function loadHomeMoments(){
+    var ml=document.getElementById('homeMoments');
+    if(!ml) return;
     window.PolarisCloud.call('list_moments').then(function(d){
       if(d && d.ok && d.list && d.list.length){
         ml.innerHTML=d.list.map(function(m){
@@ -2634,6 +2766,8 @@ body.dark ::placeholder{color:#888;}
       ml.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;">动态加载失败</div>';
     });
   }
+  window.loadHomeMoments = loadHomeMoments;
+  loadHomeMoments();
 })();
 </script>
 <script>

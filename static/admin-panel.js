@@ -37,7 +37,7 @@
     var artist = document.getElementById('mu_artist').value.trim();
     var file = document.getElementById('mu_file').files[0];
     var tip = document.getElementById('muTip');
-    if(!title || !file){ alert('请填写歌名并选择文件'); return; }
+    if(!title || !file){ toast('请填写歌名并选择文件', 'error'); return; }
     var fileName = 'music_' + Date.now() + '.mp3';
     tip.textContent = '读取文件...';
     var reader = new FileReader();
@@ -119,7 +119,7 @@
   }
   function openPhotosAdmin(albumId, rootBox){
     window.PolarisCloud.call('list_photos',{albumId:albumId, password:getPw()}).then(function(r){
-      if(!r||!r.ok){ alert('加载照片失败：'+(r&&r.error||'')); return; }
+      if(!r||!r.ok){ toast('加载照片失败：'+(r&&r.error||''), 'error'); return; }
       var old=document.getElementById('photoAdminBox'); if(old) old.remove();
       var box=document.createElement('div'); box.id='photoAdminBox';
       box.style.cssText='margin:8px 0 10px;padding:10px;border:1px solid #f0d;border-radius:10px;background:rgba(255,255,255,.6);';
@@ -132,7 +132,7 @@
       if(!list.length){ grid.innerHTML='<div style="color:#aaa;font-size:12px;">暂无照片</div>'; }
       list.forEach(function(ph){
         var cell=document.createElement('div'); cell.style.cssText='position:relative;';
-        cell.innerHTML='<img src="'+ph.url+'" style="width:100%;height:80px;object-fit:cover;border-radius:6px;">'+
+        cell.innerHTML='<img src="'+ph.url+'" loading="lazy" decoding="async" style="width:100%;height:80px;object-fit:cover;border-radius:6px;">'+
           '<button style="position:absolute;top:4px;right:4px;background:rgba(220,60,60,.85);color:#fff;border:none;border-radius:4px;padding:2px 6px;font-size:11px;cursor:pointer;">删</button>';
         cell.querySelector('button').onclick=function(){
           customConfirm('确定删除这张照片吗？','删除照片').then(function(yes){
@@ -157,12 +157,12 @@
       var desc = document.getElementById('al_new_desc').value.trim();
       var isPub = document.getElementById('al_new_type').value === '1';
       var pw = document.getElementById('al_new_pw').value;
-      if (!title) { alert('请填相册名称'); return; }
+      if (!title) { toast('请填相册名称', 'error'); return; }
       window.PolarisCloud.call('create_album', {
         title: title, description: desc, is_public: isPub, album_password: pw
       }).then(function (r) {
         if (r && r.ok) { toast('相册创建成功','success'); window.albumCache=null; loadAlbumOptions(); loadAlbumManage(); if(window.loadAlbums) window.loadAlbums(); }
-        else alert('创建失败：' + ((r && r.error) ? window.PolarisAuth.errText(r.error) : '请确认已用开发者账号登录'));
+        else toast('创建失败：' + ((r && r.error) ? window.PolarisAuth.errText(r.error) : '请确认已用开发者账号登录'), 'error');
       });
     };
   }
@@ -189,7 +189,7 @@
           customConfirm('确定删除这条动态吗？','删除动态').then(function(yes){
             if(!yes) return;
             window.PolarisCloud.call('delete_moment',{id:m.id,password:getPw()}).then(function(r){
-              if(r&&r.ok){ toast('已删除','success'); listMoments(); } else { toast('删除失败','error'); }
+              if(r&&r.ok){ toast('已删除','success'); listMoments(); if(window.loadHomeMoments) window.loadHomeMoments(); } else { toast('删除失败','error'); }
             });
           });
         };
@@ -205,9 +205,9 @@
       add.onclick=function(){
         var date=document.getElementById('mo_date').value.trim();
         var content=document.getElementById('mo_content').value.trim();
-        if(!date||!content){ alert('请填日期和内容'); return; }
+        if(!date||!content){ toast('请填日期和内容', 'error'); return; }
         window.PolarisCloud.call('add_moment',{date:date,content:content,password:getPw()}).then(function(r){
-          if(r&&r.ok){ toast('已发布','success'); document.getElementById('mo_content').value=''; listMoments(); }
+          if(r&&r.ok){ toast('已发布','success'); document.getElementById('mo_content').value=''; listMoments(); if(window.loadHomeMoments) window.loadHomeMoments(); }
           else { toast('发布失败','error'); }
         });
       };

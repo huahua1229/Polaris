@@ -104,12 +104,13 @@ window.PolarisCloud = (function () {
     function addReplyAsync(id, reply) {
         return call('add_reply', { id: id, name: reply.name, message: reply.message, time: reply.time, avatar: reply.avatar || '' });
     }
-    function likeAsync(id, delta) {
-        return call('like_message', { id: id, delta: delta });
-    }
-    /* 登录用户点赞：后端按账号去重，再点取消，返回 { liked, likes } */
-    function toggleLikeAsync(id) {
-        return call('like_message', { id: id });
+    /* 登录用户点赞：后端按账号去重，返回 { liked, likes }。
+       liked 传「目标状态」(true=赞 / false=取消)，后端幂等执行——想赞就一定是已赞，
+       避免“本机缓存丢了状态 → 点一次反被当成取消”。省略 liked 时后端退化为切换。 */
+    function toggleLikeAsync(id, liked) {
+        var payload = { id: id };
+        if (typeof liked === 'boolean') payload.liked = liked;
+        return call('like_message', payload);
     }
     function deleteMessageAsync(id, password) {
         return call('delete_message', { id: id, password: password || '' });
@@ -157,7 +158,6 @@ window.PolarisCloud = (function () {
         loadMessagesAsync: loadMessagesAsync,
         addMessageAsync: addMessageAsync,
         addReplyAsync: addReplyAsync,
-        likeAsync: likeAsync,
         toggleLikeAsync: toggleLikeAsync,
         deleteMessageAsync: deleteMessageAsync,
         uploadAttachmentAsync: uploadAttachmentAsync,

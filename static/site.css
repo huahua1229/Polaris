@@ -690,7 +690,7 @@ body.dark .wallpaper-overlay {
 }
 
 /* ============ 单页应用视图路由 ============ */
-.view { display: none; }
+.view { display: none; scroll-margin-top: calc(var(--top-h, 56px) + 14px); }
 .view.active { display: block; }
 @media print { .view { display: none !important; } .view.active { display: block !important; } }
 
@@ -1243,65 +1243,73 @@ body.dark .resume-toolbar-title { color: #e9a8ff; }
 }
 body.dark .resume-sheet { background: #fff; color: #2b2b2b; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
 
-/* 头部 */
-.rs-head { border-bottom: 2.5px solid #333; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+/* 头部（求职版式：姓名醒目、意向清晰、联系方式一行排开） */
+.rs-head { border-bottom: 2px solid #1a1a1a; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
 .rs-head-main { flex: 1; min-width: 0; }
 .rs-photo {
-    width: 100px; height: 128px; flex-shrink: 0; overflow: hidden;
-    border: 2px dashed #b9a8c8; border-radius: 6px;
+    width: 96px; height: 124px; flex-shrink: 0; overflow: hidden;
+    border: 1.5px solid #ddd0ee; border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    background: #faf7fd; color: #9a8aaa; font-size: 13px; letter-spacing: 2px;
+    background: #f7f3fc; color: #9a8aaa; font-size: 12px; letter-spacing: 2px;
 }
 .rs-photo img { width: 100%; height: 100%; object-fit: cover; }
 body.dark .rs-photo { background: #fff; border-color: #b9a8c8; }
-.rs-name { font-size: 30px; font-weight: 800; letter-spacing: 2px; color: #111; line-height: 1.2; }
-.rs-title { font-size: 15px; color: #444; margin-top: 4px; }
-.rs-intent { margin-top: 6px; font-size: 14px; color: #111; font-weight: 600; }
-.rs-intent span { color: #888; font-weight: 400; margin-right: 4px; }
-.rs-contact { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 10px; font-size: 12.5px; color: #333; }
+.rs-name { font-size: 28px; font-weight: 800; letter-spacing: 3px; color: #111; line-height: 1.2; }
+.rs-title { font-size: 14px; color: #555; margin-top: 5px; }
+.rs-intent { margin-top: 6px; font-size: 13.5px; color: #111; font-weight: 600; }
+.rs-intent span { color: #6f4d8f; font-weight: 700; margin-right: 6px; }
+.rs-contact { display: flex; flex-wrap: wrap; gap: 5px 18px; margin-top: 9px; font-size: 12px; color: #444; }
 .rs-contact span { white-space: nowrap; }
 
-/* 章节 */
-.rs-sec { margin-bottom: 14px; }
+/* 章节（左竖条强调 + 粗底线，标题字距拉开更利落） */
+.rs-sec { margin-bottom: 15px; }
 .rs-sec-title {
-    font-size: 15px; font-weight: 700; color: #111; letter-spacing: 1px;
-    padding-bottom: 4px; margin-bottom: 8px; border-bottom: 1px solid #bbb;
+    font-size: 14.5px; font-weight: 700; color: #141414; letter-spacing: 2.5px;
+    padding-bottom: 5px; margin-bottom: 10px; border-bottom: 1.5px solid #1a1a1a;
     display: flex; align-items: center; gap: 8px;
 }
-.rs-sec-title::before { content: ''; width: 4px; height: 15px; background: #c44dff; border-radius: 2px; flex-shrink: 0; }
+.rs-sec-title::before { content: ''; width: 5px; height: 16px; border-radius: 2.5px; background: linear-gradient(180deg, #c44dff, #ff9ec7); flex-shrink: 0; }
 body.dark .rs-sec-title::before { background: #e75480; }
-.rs-para { margin: 0; font-size: 13.5px; line-height: 1.9; color: #333; text-align: justify; }
+.rs-para { margin: 0; font-size: 13px; line-height: 1.85; color: #333; text-align: justify; }
 
-/* 列表条目 */
-.rs-list { display: flex; flex-direction: column; gap: 9px; }
+/* 列表条目（内容左对齐、时间右对齐，标题加粗） */
+.rs-list { display: flex; flex-direction: column; gap: 10px; }
 .rs-item { break-inside: avoid; }
 .rs-item-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
-.rs-item-head b { font-size: 14px; color: #111; }
-.rs-time { font-size: 12px; color: #666; font-style: normal; }
-.rs-item-sub { font-size: 12.5px; color: #555; margin-top: 2px; }
-.rs-item-desc { font-size: 12.5px; color: #444; line-height: 1.75; margin-top: 3px; text-align: justify; }
+.rs-item-head b { font-size: 13.5px; color: #141414; }
+.rs-time { font-size: 11.5px; color: #777; font-style: normal; font-variant-numeric: tabular-nums; }
+.rs-item-sub { font-size: 12px; color: #666; margin-top: 2px; }
+.rs-item-desc { font-size: 12.5px; color: #3d3d3d; line-height: 1.7; margin-top: 3px; text-align: justify; }
 
-/* 荣誉 */
+/* 条目内 bullet 列表（多行描述不再挤成一坨） */
+.rs-bullets { margin: 4px 0 0; padding-left: 15px; display: flex; flex-direction: column; gap: 3px; }
+.rs-bullets li { font-size: 12.5px; color: #3d3d3d; line-height: 1.65; }
+.rs-bullets li::marker { color: #c44dff; }
+
+/* 荣誉（条目前小圆点，右侧出处） */
 .rs-honor { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
-.rs-honor-name { font-size: 13px; color: #222; }
-.rs-honor-tag { font-size: 12px; color: #c44dff; font-weight: 600; }
+.rs-honor-name { font-size: 12.5px; color: #222; font-weight: 600; }
+.rs-honor-name::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #c44dff; margin-right: 8px; vertical-align: 2px; }
+.rs-honor-tag { font-size: 11.5px; color: #8a8496; font-weight: 500; }
 
 /* 项目标签 */
 .rs-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
 .rs-chip { font-size: 11px; color: #555; background: #f2eef7; border: 1px solid #e2d8ee; padding: 1px 8px; border-radius: 10px; }
 body.dark .rs-chip { background: #f2eef7; color: #555; }
 
-/* 自我评价 */
-.rs-eval { font-size: 13px; color: #333; line-height: 1.8; padding-left: 2px; }
+/* 自我评价（「标签：内容」加粗对齐，扫读友好） */
+.rs-eval { display: flex; align-items: baseline; gap: 4px; font-size: 12.5px; color: #3d3d3d; line-height: 1.75; }
+.rs-eval + .rs-eval { margin-top: 4px; }
+.rs-eval b { flex-shrink: 0; color: #141414; font-weight: 700; }
+.rs-eval b::after { content: '：'; }
+.rs-eval span { min-width: 0; }
 
-/* 技能区（纸张内进度条沿用 .skill-row 结构，但颜色调为打印友好） */
-#rsSkills .skill-track { background: #e8e3ee; }
-#rsSkills .skill-fill { background: linear-gradient(90deg, #6f4d8f, #c44dff); }
-body.dark #rsSkills .skill-fill { background: linear-gradient(90deg, #6f4d8f, #c44dff); }
-#rsSkills .skill-name { color: #222; }
-#rsSkills .skill-pct { color: #555; }
-.rs-skill-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-.rs-skill-tags .mini-tag { background: #f2eef7; color: #7a3f9e; border-color: #e2d8ee; }
+/* 专业技能：两列清单 + 熟练度标注（简历惯例，不用进度条/百分比） */
+.rs-skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 34px; }
+.rs-skill-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-width: 0; }
+.rs-skill-name { font-size: 12.5px; font-weight: 700; color: #141414; display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.rs-skill-name i { font-style: normal; font-weight: 400; font-size: 11px; color: #8a8496; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rs-skill-lv { flex-shrink: 0; font-size: 11px; line-height: 1; color: #6f4d8f; background: #f5f0fb; border: 1px solid #ddd0ee; padding: 4px 10px; border-radius: 10px; font-weight: 600; }
 
 /* ============ 打印：只输出 A4 简历纸 ============ */
 @page { size: A4; margin: 12mm; }
@@ -1332,20 +1340,22 @@ body.dark #rsSkills .skill-fill { background: linear-gradient(90deg, #6f4d8f, #c
     .rs-item { margin-bottom: 5px !important; }
     .rs-sec { margin-bottom: 8px !important; }
     .rs-sec-title { font-size: 13px !important; margin-bottom: 4px !important; padding-bottom: 3px !important; }
-    .rs-eval { font-size: 11.5px !important; line-height: 1.42 !important; }
-    .rs-eval li { margin-bottom: 2px !important; }
+    .rs-eval { font-size: 11px !important; line-height: 1.45 !important; }
+    .rs-eval + .rs-eval { margin-top: 2px !important; }
+    .rs-bullets li { font-size: 11px !important; line-height: 1.45 !important; }
+    .rs-bullets { gap: 2px !important; }
     .rs-honor-name, .rs-item-head b { font-size: 12.5px !important; }
     .rs-item-head { margin-bottom: 2px !important; }
     .rs-tags { margin-top: 3px !important; }
-    .rs-skill-item { margin-bottom: 3px !important; }
-    .rs-skill-pct { font-size: 11px !important; }
-    .rs-skill-bar { height: 5px !important; margin-top: 3px !important; }
+    .rs-skill-grid { gap: 5px 24px !important; }
+    .rs-skill-row { gap: 8px !important; }
+    .rs-skill-name { font-size: 11.5px !important; }
+    .rs-skill-name i { font-size: 10px !important; }
+    .rs-skill-lv { font-size: 10px !important; padding: 2px 7px !important; }
     .rs-head { border-bottom-color: #333 !important; }
-    .rs-photo { border: 2px dashed #666 !important; background: #fff !important; color: #666 !important; }
+    .rs-photo { border: 1.5px solid #666 !important; background: #fff !important; color: #666 !important; }
     .rs-sec-title { border-bottom-color: #444 !important; }
     .rs-sec-title::before { background: #444 !important; }
-    #rsSkills .skill-track { background: #ddd !important; }
-    #rsSkills .skill-fill { background: #444 !important; width: var(--fw, 0%) !important; }
-    .rs-skill-tags { display: none !important; }
+    .rs-honor-name::before { background: #444 !important; }
     .anim-in { opacity: 1 !important; transform: none !important; animation: none !important; }
 }

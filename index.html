@@ -396,7 +396,6 @@ body.dark ::placeholder{color:#888;}
                     </section>
                     <section class="rs-sec">
                         <h2 class="rs-sec-title">专业技能</h2>
-                        <div class="rs-skill-tags" id="rsSkillTags"></div>
                         <div id="rsSkills"></div>
                     </section>
                     <section class="rs-sec">
@@ -966,6 +965,51 @@ body.dark ::placeholder{color:#888;}
         function escAttr(s) { return esc(s).replace(/"/g, '&quot;'); }
         function nl2br(s) { return esc(s).replace(/\n/g, '<br>'); }
 
+        /* ========= 简历专用渲染辅助（A4 求职版式，与首页可爱风区分） ========= */
+        /* 简历条目文案 → bullet 行数组：按换行/分号/逗号拆分，
+           并修复历史编辑时把换行弄丢造成的粘连（如「…二等奖作品：…」「…竞赛主修课程…」） */
+        function rsDescLines(desc) {
+            var s = String(desc || '').trim();
+            if (!s) return [];
+            var parts = s.split(/\r?\n|；|;|，|,/).map(function (x) { return x.trim(); }).filter(Boolean);
+            var MARKS = ['作品：', '主修课程', '参与全国', '求职意向'];   /* 只做低风险粘连断行 */
+            var segs = parts.slice();
+            MARKS.forEach(function (m) {
+                var next = [];
+                segs.forEach(function (t) {
+                    var i = t.indexOf(m);
+                    if (i > 2) { next.push(t.slice(0, i).replace(/[、,，;；]$/, '')); next.push(t.slice(i)); }
+                    else next.push(t);
+                });
+                segs = next;
+            });
+            /* 去重（防止拆分后产生重复行） */
+            var seen = {}, out = [];
+            segs.forEach(function (t) { if (!seen[t]) { seen[t] = 1; out.push(t); } });
+            return out;
+        }
+        /* 单行 → 段落；多行 → bullet 列表（比一坨文字清晰得多） */
+        function rsDescHtml(desc) {
+            var lines = rsDescLines(desc);
+            if (!lines.length) return '';
+            if (lines.length === 1) return '<div class="rs-item-desc">' + esc(lines[0]) + '</div>';
+            return '<ul class="rs-bullets">' + lines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('') + '</ul>';
+        }
+        /* 熟练度：简历里用「精通/熟练/了解」文字标注（招聘方更认可），不画进度条 */
+        function rsSkillLv(pct) {
+            var p = parseInt(pct) || 0;
+            return p >= 85 ? '精通' : (p >= 70 ? '熟练' : '了解');
+        }
+        /* 简历空节隐藏：没有内容的板块连标题一起收起，不留空洞 */
+        function rsHideEmptySec(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var sec = el.closest ? el.closest('.rs-sec') : null;
+            if (!sec) return;
+            var has = el.innerHTML.replace(/<[^>]*>/g, '').trim() !== '';
+            sec.style.display = has ? '' : 'none';
+        }
+
         function renderSkills(sel, list) {
             var el = document.querySelector(sel);
             if (!el) return;
@@ -1063,7 +1107,7 @@ body.dark ::placeholder{color:#888;}
             if (rsE) rsE.innerHTML = c.education.map(function (t) {
                 return '<div class="rs-item"><div class="rs-item-head"><b>' + esc(t.role) + '</b><span class="rs-time">' + esc(t.time) + '</span></div>' +
                     (t.sub ? '<div class="rs-item-sub">' + esc(t.sub) + '</div>' : '') +
-                    (t.desc ? '<div class="rs-item-desc">' + nl2br(t.desc) + '</div>' : '') + '</div>';
+                    rsDescHtml(t.desc) + '</div>';
             }).join('');
             var rsH = document.getElementById('rsHonors');
             if (rsH) rsH.innerHTML = c.honors.map(function (h) {
@@ -1073,21 +1117,30 @@ body.dark ::placeholder{color:#888;}
             if (rsP) rsP.innerHTML = (c.resumeProjects || []).map(function (x) {
                 var tags = String(x.tags || '').split(',').map(function (t) { return t.trim() ? '<span class="rs-chip">' + esc(t.trim()) + '</span>' : ''; }).join('');
                 return '<div class="rs-item"><div class="rs-item-head"><b>' + esc(x.title) + '</b></div>' +
-                    '<div class="rs-item-desc">' + esc(x.desc) + '</div>' + (tags ? '<div class="rs-chips">' + tags + '</div>' : '') + '</div>';
+                    rsDescHtml(x.desc) + (tags ? '<div class="rs-chips">' + tags + '</div>' : '') + '</div>';
             }).join('');
             var rsX = document.getElementById('rsExp');
             if (rsX) rsX.innerHTML = c.experience.map(function (w) {
                 return '<div class="rs-item"><div class="rs-item-head"><b>' + esc(w.company) + '</b><span class="rs-time">' + esc(w.time) + '</span></div>' +
                     (w.role ? '<div class="rs-item-sub">' + esc(w.role) + '</div>' : '') +
-                    (w.desc ? '<div class="rs-item-desc">' + nl2br(w.desc) + '</div>' : '') + '</div>';
+                    rsDescHtml(w.desc) + '</div>';
             }).join('');
-            renderSkills('#rsSkills', c.skills);
-            var rsT = document.getElementById('rsSkillTags');
-            if (rsT) rsT.innerHTML = c.skills.map(function (s, i) { return '<span class="mini-tag skill-jump" data-idx="' + i + '">' + esc(s.name) + '</span>'; }).join('');
+            /* 专业技能：两列清单 + 熟练度标注（不用进度条，符合简历惯例） */
+            var rsK = document.getElementById('rsSkills');
+            if (rsK) rsK.innerHTML = '<div class="rs-skill-grid">' + c.skills.map(function (s) {
+                return '<div class="rs-skill-row"><span class="rs-skill-name">' + esc(s.name) +
+                    (s.sub ? '<i class="rs-skill-sub">' + esc(s.sub) + '</i>' : '') + '</span>' +
+                    '<span class="rs-skill-lv">' + rsSkillLv(s.pct) + '</span></div>';
+            }).join('') + '</div>';
+            /* 自我评价：「标签：内容」格式加粗标签，更易扫读 */
             var rsS2 = document.getElementById('rsSelfEval');
             if (rsS2) rsS2.innerHTML = (c.selfEval || []).map(function (s) {
-                return '<div class="rs-eval">· ' + esc(s) + '</div>';
+                var m = String(s).trim().match(/^([^：:]{2,8})[：:]\s*(.+)$/);
+                if (m) return '<div class="rs-eval"><b>' + esc(m[1]) + '</b><span>' + esc(m[2]) + '</span></div>';
+                return '<div class="rs-eval"><span>' + esc(s) + '</span></div>';
             }).join('');
+            /* 空板块（如未填的项目/工作经历）整体收起，不留空洞标题 */
+            ['rsIntro', 'rsEducation', 'rsHonors', 'rsProjects', 'rsExp', 'rsSkills', 'rsSelfEval'].forEach(rsHideEmptySec);
 
             /* 项目 */
             var pg = document.getElementById('projectGrid');

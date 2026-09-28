@@ -12,6 +12,7 @@ window.PolarisSite = (function () {
         profile: {
             name: 'Polaris',
             avatar: '',
+            intent: '大模型应用 / AI 数据挖掘方向',
             bio: '在代码与山海之间寻找平衡',
             greet: '每一条留言我都会认真看~',
             phone: '15112318680',
@@ -94,7 +95,16 @@ window.PolarisSite = (function () {
                 // 浅合并：新版本字段缺失时回退默认
                 var merged = clone(DEFAULTS);
                 for (var k in parsed) {
-                    if (parsed.hasOwnProperty(k) && merged.hasOwnProperty(k)) merged[k] = parsed[k];
+                    if (!parsed.hasOwnProperty(k) || !merged.hasOwnProperty(k)) continue;
+                    if (k === 'profile' && parsed[k] && typeof parsed[k] === 'object') {
+                        var pp = clone(DEFAULTS.profile);
+                        for (var p in parsed[k]) {
+                            if (parsed[k].hasOwnProperty(p)) pp[p] = parsed[k][p];
+                        }
+                        merged.profile = pp;
+                    } else {
+                        merged[k] = parsed[k];
+                    }
                 }
                 return merged;
             }
@@ -133,7 +143,16 @@ window.PolarisSite = (function () {
         if (!data || typeof data !== 'object') return clone(DEFAULTS);
         var merged = clone(DEFAULTS);
         for (var k in data) {
-            if (data.hasOwnProperty(k) && merged.hasOwnProperty(k)) merged[k] = data[k];
+            if (!data.hasOwnProperty(k) || !merged.hasOwnProperty(k)) continue;
+            if (k === 'profile' && data[k] && typeof data[k] === 'object') {
+                var pp = clone(DEFAULTS.profile);
+                for (var p in data[k]) {
+                    if (data[k].hasOwnProperty(p)) pp[p] = data[k][p];
+                }
+                merged.profile = pp;
+            } else {
+                merged[k] = data[k];
+            }
         }
         return merged;
     }

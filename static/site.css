@@ -1219,6 +1219,8 @@ body.dark .resume-sheet { background: #fff; color: #2b2b2b; box-shadow: 0 10px 4
 body.dark .rs-photo { background: #fff; border-color: #b9a8c8; }
 .rs-name { font-size: 30px; font-weight: 800; letter-spacing: 2px; color: #111; line-height: 1.2; }
 .rs-title { font-size: 15px; color: #444; margin-top: 4px; }
+.rs-intent { margin-top: 6px; font-size: 14px; color: #111; font-weight: 600; }
+.rs-intent span { color: #888; font-weight: 400; margin-right: 4px; }
 .rs-contact { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 10px; font-size: 12.5px; color: #333; }
 .rs-contact span { white-space: nowrap; }
 
@@ -1283,7 +1285,24 @@ body.dark #rsSkills .skill-fill { background: linear-gradient(90deg, #6f4d8f, #c
         background: transparent !important; color: #222 !important; box-shadow: none !important;
         border-color: #999 !important;
     }
-    .rs-name { font-size: 26px !important; }
+    .rs-name { font-size: 24px !important; letter-spacing: 1px !important; }
+    .rs-title { font-size: 13px !important; margin-top: 2px !important; }
+    .rs-intent { font-size: 13px !important; margin-top: 4px !important; }
+    .rs-contact { font-size: 11.5px !important; margin-top: 6px !important; }
+    .rs-para { font-size: 12px !important; line-height: 1.42 !important; }
+    .rs-item-desc { font-size: 11.5px !important; line-height: 1.4 !important; }
+    .rs-item-sub { font-size: 11.5px !important; }
+    .rs-item { margin-bottom: 5px !important; }
+    .rs-sec { margin-bottom: 8px !important; }
+    .rs-sec-title { font-size: 13px !important; margin-bottom: 4px !important; padding-bottom: 3px !important; }
+    .rs-eval { font-size: 11.5px !important; line-height: 1.42 !important; }
+    .rs-eval li { margin-bottom: 2px !important; }
+    .rs-honor-name, .rs-item-head b { font-size: 12.5px !important; }
+    .rs-item-head { margin-bottom: 2px !important; }
+    .rs-tags { margin-top: 3px !important; }
+    .rs-skill-item { margin-bottom: 3px !important; }
+    .rs-skill-pct { font-size: 11px !important; }
+    .rs-skill-bar { height: 5px !important; margin-top: 3px !important; }
     .rs-head { border-bottom-color: #333 !important; }
     .rs-photo { border: 2px dashed #666 !important; background: #fff !important; color: #666 !important; }
     .rs-sec-title { border-bottom-color: #444 !important; }

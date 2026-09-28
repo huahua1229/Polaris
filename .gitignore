@@ -1,0 +1,5 @@
+# 验证截图 / 临时产物
+_shots/
+*.bak_*
+_fix_*.py
+_check_*.py

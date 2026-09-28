@@ -153,7 +153,7 @@ box-shadow:0 8px 24px rgba(196,77,255,.4);text-align:center;}
 <style>
 .mini-tag.skill-jump{cursor:pointer;}
 .mini-tag.skill-jump:hover{background:rgba(255,107,157,.35);transform:translateY(-2px);}
-#resumeSkills .skill-row.hl{animation:skillFlash 1.4s ease;}
+#rsSkills .skill-row.hl{animation:skillFlash 1.4s ease;}
 @keyframes skillFlash{0%,100%{background:transparent;}30%{background:rgba(255,158,199,.35);border-radius:10px;}}
 </style>
 
@@ -346,70 +346,49 @@ body.dark ::placeholder{color:#888;}
             </div>
         </section>
 
-        <!-- ===== 视图：简历 ===== -->
+        <!-- ===== 视图：简历（A4 整页版式，可直接打印） ===== -->
         <section id="view-resume" class="view">
-            <div class="layout-inner">
-                <main class="main-content">
-                    <section class="panel anim-in">
-                        <div class="resume-head">
-                            <div class="resume-avatar"><img src="static/avatar.png" alt="Polaris 头像"></div>
-                            <div class="resume-id">
-                                <h1 id="resumeName"></h1>
-                                <div class="jobline" id="resumeSchool"></div>
-                                <div class="resume-contact" id="resumeContactTop"></div>
-                            </div>
-                        </div>
+            <div class="resume-toolbar">
+                <span class="resume-toolbar-title">📄 个人简历 · A4 整页版式</span>
+                <button type="button" class="resume-print-btn" id="printResumeBtn">🖨 打印 / 保存 PDF</button>
+            </div>
+            <div class="resume-sheet" id="resumeSheet">
+                <header class="rs-head">
+                    <div class="rs-name" id="rsName"></div>
+                    <div class="rs-title" id="rsSchool"></div>
+                    <div class="rs-contact" id="rsContact"></div>
+                </header>
+                <div class="rs-body">
+                    <section class="rs-sec">
+                        <h2 class="rs-sec-title">个人简介</h2>
+                        <p class="rs-para" id="rsIntro"></p>
                     </section>
-                    <section class="panel anim-in" data-delay="1">
-                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg></span>个人简介<span class="t-sub">Summary</span></h2>
-                        <p class="para" id="resumeIntro"></p>
+                    <section class="rs-sec">
+                        <h2 class="rs-sec-title">教育背景</h2>
+                        <div class="rs-list" id="rsEducation"></div>
                     </section>
-                    <section class="panel anim-in" data-delay="2">
-                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span>教育背景<span class="t-sub">Education</span></h2>
-                        <div class="timeline" id="resumeEducation"></div>
+                    <section class="rs-sec">
+                        <h2 class="rs-sec-title">荣誉奖项</h2>
+                        <div class="rs-list" id="rsHonors"></div>
                     </section>
-                    <section class="panel anim-in" data-delay="3">
-                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8m-4-4v4M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M17 5h3a1 1 0 011 1c0 3-2 5-4 5M7 5H4a1 1 0 00-1 1c0 3 2 5 4 5"/></svg></span>荣誉证书<span class="t-sub">Awards</span></h2>
-                        <div class="honor-grid" id="resumeHonors"></div>
+                    <section class="rs-sec">
+                        <h2 class="rs-sec-title">项目经历</h2>
+                        <div class="rs-list" id="rsProjects"></div>
                     </section>
-                    <section class="panel anim-in" data-delay="4">
-                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></span>工作经历<span class="t-sub">Experience</span></h2>
-                        <div id="resumeExp"></div>
+                    <section class="rs-sec">
+                        <h2 class="rs-sec-title">工作与实践经历</h2>
+                        <div class="rs-list" id="rsExp"></div>
                     </section>
-                    <section class="panel anim-in" data-delay="5">
-                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>技能专长<span class="t-sub">Skills</span></h2>
-                        <div id="resumeSkills"></div>
+                    <section class="rs-sec">
+                        <h2 class="rs-sec-title">专业技能</h2>
+                        <div class="rs-skill-tags" id="rsSkillTags"></div>
+                        <div id="rsSkills"></div>
                     </section>
-                    <section class="panel anim-in" data-delay="7">
-                        <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>自我评价<span class="t-sub">Self-Evaluation</span></h2>
-                        <div class="self-eval" id="resumeSelfEval"></div>
+                    <section class="rs-sec">
+                        <h2 class="rs-sec-title">自我评价</h2>
+                        <div class="rs-list" id="rsSelfEval"></div>
                     </section>
-                </main>
-
-                <aside class="right-rail">
-                    <div class="rail-card profile-mini">
-                        <div class="mini-avatar"><img src="static/avatar.png" alt="Polaris 头像"></div>
-                        <div class="mini-name"></div>
-                        <div class="mini-bio"></div>
-                        <div class="mini-stats">
-                            <div class="mini-stat"><div class="num count-num" data-target="2">0</div><div class="label">竞赛获奖</div></div>
-                            <div class="mini-stat"><div class="num count-num" data-target="8">0</div><div class="label">技能掌握</div></div>
-                            <div class="mini-stat"><div class="num">∞</div><div class="label">学习热情</div></div>
-                        </div>
-                    </div>
-                    <div class="rail-card">
-                        <div class="rail-card-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 3h6v7l3 4H6l3-4V3z"/></svg></span>联系方式</div>
-                        <ul class="rail-list" id="resumeContact"></ul>
-                    </div>
-                    <div class="rail-card">
-                        <div class="rail-card-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>技能概要</div>
-                        <div class="tag-list" id="resumeSkillsTags"></div>
-                    </div>
-                    <div class="rail-card">
-                        <div class="rail-card-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8m-4-4v4M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M17 5h3a1 1 0 011 1c0 3-2 5-4 5M7 5H4a1 1 0 00-1 1c0 3 2 5 4 5"/></svg></span>荣誉成就</div>
-                        <ul class="rail-list" id="resumeAwards"></ul>
-                    </div>
-                </aside>
+                </div>
             </div>
         </section>
 
@@ -759,15 +738,16 @@ body.dark ::placeholder{color:#888;}
             <button class="admin-close" id="adminClose" type="button" aria-label="关闭">✕</button>
         </div>
         <div class="admin-tabs" id="adminTabs">
-            <button type="button" class="admin-tab active" data-tab="base">基础</button>
+            <button type="button" class="admin-tab active" data-tab="base">个人信息</button>
             <button type="button" class="admin-tab" data-tab="skills">技能</button>
-            <button type="button" class="admin-tab" data-tab="projects">项目</button>
+            <button type="button" class="admin-tab" data-tab="projects">项目作品</button>
+            <button type="button" class="admin-tab" data-tab="resume">简历内容</button>
             <button type="button" class="admin-tab" data-tab="life">经历荣誉</button>
             <button type="button" class="admin-tab" data-tab="blog">博客</button>
-            <button type="button" class="admin-tab" data-tab="data">数据</button>
-            <button type="button" class="admin-tab" data-tab="music">音乐</button>
+            <button type="button" class="admin-tab" data-tab="music">音乐库</button>
             <button type="button" class="admin-tab" data-tab="album">相册</button>
             <button type="button" class="admin-tab" data-tab="moments">动态</button>
+            <button type="button" class="admin-tab" data-tab="data">站点设置</button>
         </div>
         <div class="admin-body">
             <!-- 基础 -->
@@ -788,10 +768,6 @@ body.dark ::placeholder{color:#888;}
                 <div class="af-section">
                     <div class="af-title">首页「关于我」简介</div>
                     <textarea id="af_about" class="af-textarea"></textarea>
-                </div>
-                <div class="af-section">
-                    <div class="af-title">简历「个人简介」</div>
-                    <textarea id="af_resumeIntro" class="af-textarea"></textarea>
                 </div>
                 <div class="af-section">
                     <div class="af-title">兴趣爱好（用逗号分隔）</div>
@@ -819,22 +795,38 @@ body.dark ::placeholder{color:#888;}
                 </div>
                 <div class="af-hint">分类取值：frontend / ai / ui / course（多分类用空格，如 frontend course）；标签用逗号分隔；图标可填任意 emoji 或文字。</div>
             </div>
+            <!-- 简历内容 -->
+            <div class="admin-tabpage" data-page="resume" style="display:none;">
+                <div class="af-section">
+                    <div class="af-title">简历「个人简介」（A4 简历首栏）</div>
+                    <textarea id="af_resumeIntro" class="af-textarea"></textarea>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">教育背景（A4 简历）</div>
+                    <div id="adminEducation"></div>
+                    <button type="button" class="af-add" id="addEducation">＋ 添加教育</button>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">工作与实践经历（A4 简历）</div>
+                    <div id="adminExp"></div>
+                    <button type="button" class="af-add" id="addExp">＋ 添加经历</button>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">简历项目（A4 简历「项目经历」）</div>
+                    <div id="adminResumeProjects"></div>
+                    <button type="button" class="af-add" id="addResumeProject">＋ 添加项目</button>
+                </div>
+                <div class="af-section">
+                    <div class="af-title">自我评价（每行一条，A4 简历）</div>
+                    <textarea id="af_selfEval" class="af-textarea"></textarea>
+                </div>
+            </div>
             <!-- 经历荣誉 -->
             <div class="admin-tabpage" data-page="life" style="display:none;">
                 <div class="af-section">
                     <div class="af-title">校园经历（首页时间线）</div>
                     <div id="adminTimeline"></div>
                     <button type="button" class="af-add" id="addTimeline">＋ 添加经历</button>
-                </div>
-                <div class="af-section">
-                    <div class="af-title">教育背景（简历）</div>
-                    <div id="adminEducation"></div>
-                    <button type="button" class="af-add" id="addEducation">＋ 添加教育</button>
-                </div>
-                <div class="af-section">
-                    <div class="af-title">工作经历（简历）</div>
-                    <div id="adminExp"></div>
-                    <button type="button" class="af-add" id="addExp">＋ 添加经历</button>
                 </div>
                 <div class="af-section">
                     <div class="af-title">荣誉证书（首页 / 简历共用，图片放在 static 目录）</div>
@@ -845,10 +837,6 @@ body.dark ::placeholder{color:#888;}
                     <div class="af-title">友情链接（友链页展示）</div>
                     <div id="adminFriends"></div>
                     <button type="button" class="af-add" id="addFriend">＋ 添加友链</button>
-                </div>
-                <div class="af-section">
-                    <div class="af-title">自我评价（每行一条）</div>
-                    <textarea id="af_selfEval" class="af-textarea"></textarea>
                 </div>
             </div>
             <!-- 博客 -->
@@ -1019,34 +1007,48 @@ body.dark ::placeholder{color:#888;}
             renderTimeline('#homeTimeline', c.timeline);
             renderHonors('#homeHonors', c.honors);
 
-            /* 简历 */
-            var rn = document.getElementById('resumeName');
-            if (rn) rn.textContent = p.name;
-            var rs = document.getElementById('resumeSchool');
-            if (rs) rs.textContent = p.school;
-            var rct = document.getElementById('resumeContactTop');
-            if (rct) rct.innerHTML =
-                '<span>电话：' + esc(p.phone) + '</span><span>邮箱：' + esc(p.email) + '</span>' +
-                '<span>城市：' + esc(p.location) + '</span><span>年龄：' + esc(p.age) + '</span><span>身份：' + esc(p.status) + '</span>';
-            var ri = document.getElementById('resumeIntro');
-            if (ri) ri.innerHTML = nl2br(c.resumeIntro);
-            renderTimeline('#resumeEducation', c.education);
-            renderHonors('#resumeHonors', c.honors);
-            var rx = document.getElementById('resumeExp');
-            if (rx) rx.innerHTML = c.experience.map(function (w) {
-                return '<div class="work-line"><div class="w-head"><span class="w-role">' + esc(w.company) + '</span><span class="w-time">' + esc(w.time) + '</span></div>' +
-                    '<div class="w-desc" style="margin-bottom:6px;">' + esc(w.role) + '</div><div class="w-desc">' + nl2br(w.desc) + '</div></div>';
+            /* 简历（A4 打印版） */
+            var rsN = document.getElementById('rsName');
+            if (rsN) rsN.textContent = p.name;
+            var rsS = document.getElementById('rsSchool');
+            if (rsS) rsS.textContent = (p.status ? esc(p.status) + ' · ' : '') + esc(p.school);
+            var rsC = document.getElementById('rsContact');
+            if (rsC) rsC.innerHTML =
+                (p.phone ? '<span>电话：' + esc(p.phone) + '</span>' : '') +
+                (p.email ? '<span>邮箱：' + esc(p.email) + '</span>' : '') +
+                (p.location ? '<span>城市：' + esc(p.location) + '</span>' : '') +
+                (p.age ? '<span>年龄：' + esc(p.age) + '</span>' : '') +
+                (p.status ? '<span>身份：' + esc(p.status) + '</span>' : '');
+            var rsI = document.getElementById('rsIntro');
+            if (rsI) rsI.innerHTML = nl2br(c.resumeIntro);
+            var rsE = document.getElementById('rsEducation');
+            if (rsE) rsE.innerHTML = c.education.map(function (t) {
+                return '<div class="rs-item"><div class="rs-item-head"><b>' + esc(t.role) + '</b><span class="rs-time">' + esc(t.time) + '</span></div>' +
+                    (t.sub ? '<div class="rs-item-sub">' + esc(t.sub) + '</div>' : '') +
+                    (t.desc ? '<div class="rs-item-desc">' + nl2br(t.desc) + '</div>' : '') + '</div>';
             }).join('');
-            renderSkills('#resumeSkills', c.skills);
-            var rp = document.getElementById('resumeProjects');
-            if (rp) rp.innerHTML = c.resumeProjects.map(function (x) {
-                var tags = x.tags.split(',').map(function (t) { return '<span class="pc-tag">' + esc(t.trim()) + '</span>'; }).join('');
-                return '<div class="project-card tilt"><div class="pc-top"><span class="pc-ico">' + esc(x.ico) + '</span><div class="pc-tags">' + tags + '</div></div>' +
-                    '<div class="pc-title">' + esc(x.title) + '</div><div class="pc-desc">' + esc(x.desc) + '</div></div>';
+            var rsH = document.getElementById('rsHonors');
+            if (rsH) rsH.innerHTML = c.honors.map(function (h) {
+                return '<div class="rs-item rs-honor"><span class="rs-honor-name">' + esc(h.name) + '</span><span class="rs-honor-tag">' + esc(h.tag) + '</span></div>';
             }).join('');
-            var se = document.getElementById('resumeSelfEval');
-            if (se) se.innerHTML = c.selfEval.map(function (s) {
-                return '<div class="se-item"><span class="se-ico">🌸</span><span>' + esc(s) + '</span></div>';
+            var rsP = document.getElementById('rsProjects');
+            if (rsP) rsP.innerHTML = (c.resumeProjects || []).map(function (x) {
+                var tags = String(x.tags || '').split(',').map(function (t) { return t.trim() ? '<span class="rs-chip">' + esc(t.trim()) + '</span>' : ''; }).join('');
+                return '<div class="rs-item"><div class="rs-item-head"><b>' + esc(x.title) + '</b></div>' +
+                    '<div class="rs-item-desc">' + esc(x.desc) + '</div>' + (tags ? '<div class="rs-chips">' + tags + '</div>' : '') + '</div>';
+            }).join('');
+            var rsX = document.getElementById('rsExp');
+            if (rsX) rsX.innerHTML = c.experience.map(function (w) {
+                return '<div class="rs-item"><div class="rs-item-head"><b>' + esc(w.company) + '</b><span class="rs-time">' + esc(w.time) + '</span></div>' +
+                    (w.role ? '<div class="rs-item-sub">' + esc(w.role) + '</div>' : '') +
+                    (w.desc ? '<div class="rs-item-desc">' + nl2br(w.desc) + '</div>' : '') + '</div>';
+            }).join('');
+            renderSkills('#rsSkills', c.skills);
+            var rsT = document.getElementById('rsSkillTags');
+            if (rsT) rsT.innerHTML = c.skills.map(function (s, i) { return '<span class="mini-tag skill-jump" data-idx="' + i + '">' + esc(s.name) + '</span>'; }).join('');
+            var rsS2 = document.getElementById('rsSelfEval');
+            if (rsS2) rsS2.innerHTML = (c.selfEval || []).map(function (s) {
+                return '<div class="rs-eval">· ' + esc(s) + '</div>';
             }).join('');
 
             /* 项目 */
@@ -2229,7 +2231,7 @@ body.dark ::placeholder{color:#888;}
     var el = e.target.closest('.skill-jump');
     if(!el) return;
     var idx = el.getAttribute('data-idx');
-    var target = document.querySelector('#resumeSkills .skill-row[data-skill-idx="' + idx + '"]');
+    var target = document.querySelector('#rsSkills .skill-row[data-skill-idx="' + idx + '"]');
     if(!target) return;
     target.scrollIntoView({ behavior:'smooth', block:'center' });
     target.classList.remove('hl');
@@ -2616,6 +2618,15 @@ body.dark ::placeholder{color:#888;}
       ml.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;">动态加载失败</div>';
     });
   }
+})();
+</script>
+<script>
+(function () {
+    function init() {
+        var pb = document.getElementById('printResumeBtn');
+        if (pb) pb.addEventListener('click', function () { window.print(); });
+    }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();
 </script>
 </body>

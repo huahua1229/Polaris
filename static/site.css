@@ -1139,9 +1139,11 @@ body.dark #backTop { background: linear-gradient(135deg,#9b4dff,#e05a8e); }
 .copyable .copy-ico { margin-left: 6px; opacity: 0.4; font-size: 12px; transition: opacity 0.2s; }
 .copyable:hover .copy-ico { opacity: 1; }
 .copyable:active { color: var(--c-purple); }
-#toast.success { color: #2ea86b; border-color: rgba(46, 168, 107, 0.5); }
-#toast.error { color: #e0533f; border-color: rgba(224, 83, 63, 0.5); }
+#toast.success { color: #1e9257; background: rgba(236, 253, 244, 0.97); border-color: rgba(46, 168, 107, 0.45); }
+#toast.error { color: #d9432f; background: rgba(254, 242, 240, 0.97); border-color: rgba(224, 83, 63, 0.45); }
 body.dark #toast { background: rgba(40, 32, 46, 0.96); color: #f3c7e6; border-color: rgba(255, 182, 193, 0.35); }
+body.dark #toast.success { color: #7fe0ae; background: rgba(24, 48, 36, 0.96); border-color: rgba(46, 168, 107, 0.5); }
+body.dark #toast.error { color: #ff9d8f; background: rgba(52, 30, 27, 0.96); border-color: rgba(224, 83, 63, 0.5); }
 @media (max-width: 640px) { #toast { bottom: 78px; font-size: 13px; padding: 9px 18px; } }
 
 

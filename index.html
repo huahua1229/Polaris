@@ -8,7 +8,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Polaris 的个人网站">
     <meta property="og:description" content="在代码与山海之间寻找平衡">
-    <meta property="og:image" content="https://huahua1229.github.io/Polaris/static/avatar.png">
+    <meta property="og:image" content="https://huahua1229.github.io/Polaris/static/avatar.webp">
     <meta property="og:url" content="https://huahua1229.github.io/Polaris/">
     <meta name="theme-color" content="#ff6b9d">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c44dff' d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z'/%3E%3C/svg%3E">
@@ -188,7 +188,7 @@ body.dark ::placeholder{color:#888;}
 <body>
 <script>try{if(localStorage.getItem("polaris_dark")==="1")document.body.classList.add("dark");}catch(e){}</script>
     <div id="splash"><div class="splash-inner">
-<img src="static/avatar.png" class="splash-avatar" alt="">
+<img src="static/avatar.webp" class="splash-avatar" alt="">
 <div class="splash-text">Polaris</div>
 <div class="splash-bar"><i></i></div>
 <div class="splash-tip">正在加载小站…</div>
@@ -319,7 +319,7 @@ body.dark ::placeholder{color:#888;}
 
                 <aside class="right-rail">
                     <div class="rail-card profile-mini">
-                        <div class="mini-avatar"><img src="static/avatar.png" alt="Polaris 头像"></div>
+                        <div class="mini-avatar"><img src="static/avatar.webp" alt="Polaris 头像"></div>
                         <div class="mini-name"></div>
                         <div class="mini-bio"></div>
                         <div class="mini-stats">
@@ -425,7 +425,7 @@ body.dark ::placeholder{color:#888;}
 
                 <aside class="right-rail">
                     <div class="rail-card profile-mini">
-                        <div class="mini-avatar"><img src="static/avatar.png" alt="Polaris 头像"></div>
+                        <div class="mini-avatar"><img src="static/avatar.webp" alt="Polaris 头像"></div>
                         <div class="mini-name"></div>
                         <div class="mini-bio"></div>
                         <div class="mini-stats">
@@ -524,7 +524,7 @@ body.dark ::placeholder{color:#888;}
 
                 <aside class="right-rail">
                     <div class="rail-card profile-mini">
-                        <div class="mini-avatar"><img src="static/avatar.png" alt="Polaris 头像"></div>
+                        <div class="mini-avatar"><img src="static/avatar.webp" alt="Polaris 头像"></div>
                         <div class="mini-name"></div>
                         <div class="mini-bio"></div>
                         <div class="mini-stats">
@@ -700,12 +700,12 @@ body.dark ::placeholder{color:#888;}
     <!-- ===== 底部常驻播放条（全局唯一，切换视图不断音） ===== -->
 <button class="player-fab" id="playerFab" type="button" title="背景音乐">
         <img src="static/duck_icon_transparent.png" alt="音乐" id="fabDuck">
-        <img src="static/avatar.png" alt="封面" id="fabCover" style="display:none;">
+        <img src="static/avatar.webp" alt="封面" id="fabCover" style="display:none;">
         <span class="fab-badge" id="fabBadge">♪</span>
     </button>
     <div class="player-bar" id="playerBar">
         <button class="player-close" id="playerClose" aria-label="收起音乐条">✕</button>
-        <div class="player-cover"><img src="static/avatar.png" alt="专辑封面" id="barCover"></div>
+        <div class="player-cover"><img src="static/avatar.webp" alt="专辑封面" id="barCover"></div>
         <div class="player-info">
             <div class="player-title" id="barTitle">花之舞 · 钢琴版</div>
             <div class="player-artist" id="barArtist">DJ Okawari</div>
@@ -2337,7 +2337,7 @@ body.dark ::placeholder{color:#888;}
   /* ===== 关键资源预载（立即开始，不等 load 事件）=====
      两张壁纸都预载：当前模式壁纸参与进站等待；
      另一张后台缓存，游客切夜间/白天时秒显不闪白 */
-  var WALLS = ['static/erii_wallpaper5.jpg', 'static/dark_wallpaper_raw.jpg'];
+  var WALLS = ['static/erii_wallpaper5.webp', 'static/dark_wallpaper_raw.jpg'];
   var curBG = document.body.classList.contains('dark') ? WALLS[1] : WALLS[0];
   var wallDone = {};
   WALLS.forEach(function(u){

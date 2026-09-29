@@ -80,7 +80,7 @@
     barTitle.textContent = m.title;
     barArtist.textContent = m.artist || '';
     var bc = document.getElementById('barCover');
-    if(bc){ bc.src = m.cover ? STORAGE + m.cover : 'static/avatar.png'; }
+    if(bc){ bc.src = m.cover ? STORAGE + m.cover : 'static/avatar.webp'; }
   }
   function nextTrack(){
     if(playlist.length > 1) loadTrack(currentIdx + 1);

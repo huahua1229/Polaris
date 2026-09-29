@@ -2346,16 +2346,23 @@ body.dark ::placeholder{color:#888;}
     im.src = u;
   });
   function waitAllReady(cb){
-    var imgs=[].slice.call(document.images).filter(function(i){ return i && !i.complete; });
-    var pending = 1 + imgs.length;   /* 1 = 当前模式壁纸 */
+    /* 只等真正参与首屏的图：非懒加载、非隐藏(display:none)；
+       懒加载/隐藏板块的图不阻塞进站，滚动到后自然加载。
+       完成检测用轮询 complete（浏览器自动维护，不依赖事件，不会卡死） */
+    var imgs=[].slice.call(document.images).filter(function(i){
+      return i && !i.complete
+        && i.getAttribute('loading') !== 'lazy'
+        && i.offsetParent !== null;
+    });
+    if (imgs.length > 8) imgs = imgs.slice(0, 8);   /* 防御：异常时不等太多 */
     var finished = false;
     function finish(){ if(finished) return; finished=true; clearTimeout(timer); cb(); }
-    function oneLess(){ if(--pending <= 0) finish(); }
     var timer = setTimeout(finish, 10000);   /* 兜底：最多等 10 秒 */
-    imgs.forEach(function(im){ im.addEventListener('load', oneLess); im.addEventListener('error', oneLess); });
-    (function pollWall(){
-      if(wallDone[curBG]) oneLess();
-      else setTimeout(pollWall, 150);
+    (function poll(){
+      var wallOK = wallDone[curBG];
+      var imgsOK = imgs.every(function(i){ return i.complete; });
+      if (wallOK && imgsOK) finish();
+      else setTimeout(poll, 150);
     })();
   }
   function boot(){ waitAllReady(function(){ setTimeout(hide, 200); }); }

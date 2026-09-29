@@ -93,15 +93,20 @@ window.PolarisAuth = (function(){
     img.onerror=function(){ URL.revokeObjectURL(url); toast('图片读取失败', 'error'); };
     img.src=url;
   }
+    /* 注册：调用云端注册接口，成功后保存登录态并广播界面刷新 */
   function register(e,p,n,av){ return PolarisCloud.registerAsync(e,p,n,av).then(function(r){ if(r&&r.ok&&r.token) afterAuth(r); return r;}); }
+    /* 登录：调用云端登录接口，成功后保存登录态 */
   function login(e,p){ return PolarisCloud.loginAsync(e,p).then(function(r){ if(r&&r.ok&&r.token) afterAuth(r); return r;}); }
+    /* 开发者登录：成功后额外把管理口令写入会话，用于内容管理/审核 */
   function developerLogin(p){ return PolarisCloud.developerLoginAsync(p).then(function(r){ if(r&&r.ok&&r.token) afterAuth(r,p); return r;}); }
+    /* 更新账号资料（昵称 / 头像 / 密码）：云端成功后同步本地登录态 */
   function updateProfile(patch){
     return PolarisCloud.updateProfileAsync(patch).then(function(r){
       if(r&&r.ok&&r.token){ var u=getUser(); u.nickname=r.nickname||u.nickname; u.avatar=(r.avatar!==undefined?r.avatar:u.avatar); u.token=r.token; setUser(u); }
       return r;
     });
   }
+    /* 退出登录：清除本地登录态与所有管理员口令，界面回到游客态 */
   function logout(){
     try{
       localStorage.removeItem(KEY);
@@ -113,6 +118,7 @@ window.PolarisAuth = (function(){
     emit(null);
     if((location.hash||'').indexOf('review')>=0) location.hash='#home';
   }
+    /* 错误码 → 用户可读的中文提示文案 */
   function errText(c){
     return ({'exists':'该邮箱已注册，请直接登录','not-found':'账号不存在，请先注册','bad-pw':'密码错误',
       'weak':'密码至少需要 6 位','bad-email':'请填写正确的邮箱地址（例如 name@example.com）','bad-nick':'请填写昵称',
@@ -121,6 +127,7 @@ window.PolarisAuth = (function(){
 
   /* ---------- 弹窗 DOM ---------- */
   var mask, loginCard, settingCard, busy=false;
+    /* 首次调用时构建「登录 / 注册 / 账号设置」弹窗的 DOM 并绑定事件 */
   function ensureDom(){
     if(mask) return;
     mask=document.createElement('div'); mask.id='authMask';
@@ -181,6 +188,7 @@ window.PolarisAuth = (function(){
     }
   }
   var curTab='login';
+    /* 切换登录 / 注册 / 开发者三个标签页：显示对应输入项与切换链接 */
   function switchTab(tab){
     curTab=tab;
     var tabs=mask.querySelectorAll('.auth-tab');
@@ -193,6 +201,7 @@ window.PolarisAuth = (function(){
     else { show('dev',['devpw']); btn.textContent='开发者登录'; sw.innerHTML='普通访客请使用<a id="swLogin2">登录 / 注册</a>'; document.getElementById('swLogin2').onclick=function(){switchTab('login');}; }
   }
   function setErr(s){ document.getElementById('auErr').textContent=s||''; }
+    /* 提交登录 / 注册 / 开发者验证表单：前端校验 → 云端调用 → 反馈结果 */
   function submitLogin(){
     if(busy) return;
     var errEl=document.getElementById('auErr'), btn=document.getElementById('auSubmit');
@@ -231,6 +240,7 @@ window.PolarisAuth = (function(){
       }).catch(function(){ busy=false; btn.disabled=false; btn.textContent='登 录'; errEl.textContent=errText('network'); });
     }
   }
+    /* 打开账号设置弹窗：展示当前昵称 / 邮箱 / 头像，支持修改与退出登录 */
   function openSettings(){
     ensureDom();
     var u=getUser(); if(!u){ openLogin('login'); return; }
@@ -254,6 +264,7 @@ window.PolarisAuth = (function(){
       }
     },0);
   }
+    /* 保存新昵称 */
   function saveNick(){
     var nick=document.getElementById('setNick').value.trim(), errEl=document.getElementById('setErr');
     if(!nick){ errEl.textContent='昵称不能为空'; return; }
@@ -264,6 +275,7 @@ window.PolarisAuth = (function(){
       else errEl.textContent=errText(r&&r.error);
     }).catch(function(){ btn.disabled=false; btn.textContent='保存昵称'; errEl.textContent=errText('network'); });
   }
+    /* 修改密码：校验新密码长度并调用云端 */
   function savePw(){
     var o=document.getElementById('setOldPw').value, n=document.getElementById('setNewPw').value, errEl=document.getElementById('setErr');
     if(n.length<6){ errEl.textContent=errText('weak'); return; }
@@ -274,6 +286,7 @@ window.PolarisAuth = (function(){
       else errEl.textContent=errText(r&&r.error);
     }).catch(function(){ btn.disabled=false; btn.textContent='保存密码'; errEl.textContent=errText('network'); });
   }
+    /* 打开登录弹窗（指定标签页），自动聚焦邮箱输入框 */
   function openLogin(tab){ ensureDom(); settingCard.style.display='none'; loginCard.style.display=''; mask.classList.add('show'); switchTab(tab||'login'); setTimeout(function(){ var el=document.getElementById('auEmail'); if(el&&curTab!=='dev') el.focus(); },80); }
   function closeAll(){ if(mask) mask.classList.remove('show'); }
 
@@ -291,6 +304,7 @@ window.PolarisAuth = (function(){
     }
     return bar;
   }
+    /* 根据登录态刷新界面：导航按钮文案、审核/管理入口显隐、留言/投稿/友链的登录提示条 */
   function applyAuthUI(){
     var u=getUser(), in_=!!(u&&u.token)&&!isExpired(u), dev=isDeveloper();
     var navR=document.getElementById('navReview'); if(navR) navR.style.display=dev?'':'none';

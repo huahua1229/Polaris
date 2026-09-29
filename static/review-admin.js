@@ -1,3 +1,13 @@
+/* ============================================================
+   Polaris 小站 · 审核台脚本（仅开发者可见）
+   ------------------------------------------------------------
+   作用：开发者登录后进入「审核」页面，集中处理——
+   - 用户投稿：通过并发布 / 拒绝删除
+   - 友链申请：通过添加 / 拒绝
+   - 密码重置申请：批准并设新密码 / 拒绝
+   - 留言管理：查看并删除违规留言
+   游客看不到审核台入口；本文件仅在开发者登录后生效。
+   ============================================================ */
 (function(){
   var loginBox = document.getElementById('reviewLogin');
   var contentBox = document.getElementById('reviewContent');
@@ -7,6 +17,7 @@
 
   function esc(s){ var d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
 
+    /* 待审投稿列表：「通过并发布」或「拒绝」，均带二次确认防止误操作 */
   function loadPosts(pw){
     var tip=document.getElementById('adminPostTip');
     var box=document.getElementById('adminPostList');
@@ -49,6 +60,7 @@
     });
   }
 
+    /* 待审友链申请：「通过并添加」或「拒绝」，通过后自动加入友链 */
   function loadFr(pw){
     var tip=document.getElementById('adminFrTip');
     var box=document.getElementById('adminFrList');
@@ -88,6 +100,7 @@
     });
   }
 
+    /* 密码重置申请：批准时输入新密码（至少 6 位）立即生效 */
   function loadResets(pw){
     var tip=document.getElementById('adminResetTip');
     var box=document.getElementById('adminResetList');
@@ -131,6 +144,7 @@
       });
     });
   }
+    /* 留言管理：列出全部留言，可删除违规内容（二次确认） */
   function loadMsgs(pw){
     var tip=document.getElementById('adminMsgTip');
     var box=document.getElementById('adminMsgList');
@@ -162,7 +176,9 @@
     });
   }
 
+    /* 读取会话中的开发者口令 */
   function adminPw(){ try{ return sessionStorage.getItem('polaris_admin_pw')||sessionStorage.getItem('polaris_pw')||localStorage.getItem('polaris_pw')||''; }catch(e){ return ''; } }
+    /* 进入审核台：隐藏登录框、显示内容区并加载各分类待审列表 */
   function enterReview(pw){
     loginBox.style.display='none';
     contentBox.style.display='block';

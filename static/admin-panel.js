@@ -1,7 +1,18 @@
+/* ============================================================
+   Polaris 小站 · 内容管理面板脚本（仅开发者可见）
+   ------------------------------------------------------------
+   作用：作者在「内容管理」面板中管理——
+   - 音乐库：查看 / 上传 / 删除背景音乐
+   - 相册：创建相册、删除相册、管理相册内照片
+   - 最近动态：发布 / 删除首页动态
+   游客在页面上看不到这些管理入口；本文件仅开发者登录后生效。
+   ============================================================ */
 // ===== 音乐库管理 =====
 (function(){
   function getPw(){ return localStorage.getItem('polaris_pw') || ''; }
+    /* 读取本地保存的开发者口令（登录成功时写入） */
   function listMusic(){
+      /* 音乐库列表：从云端拉取并渲染，每行带「删除」按钮（二次确认后删除） */
     var box = document.getElementById('muList');
     if(!box) return;
     box.innerHTML = '<div style="color:#aaa;font-size:13px;">加载中...</div>';
@@ -32,6 +43,7 @@
 
   var MUS_OBJ='https://ldprlyzawsgwjtgdwexz.supabase.co/storage/v1/object/music/';
   var MUS_AUTH='Bearer sb_publishable_vVhLivALBiNuxHUVRzfDmg_uDzYXlnr';
+    /* 上传音乐：读取本地文件转 base64 → 上传云端存储 → 写入音乐库记录 */
   function uploadMusic(){
     var title = document.getElementById('mu_title').value.trim();
     var artist = document.getElementById('mu_artist').value.trim();
@@ -66,6 +78,7 @@
 
   /* 相册下拉加载 */
   var alSel = document.getElementById('al_albumId');
+    /* 相册下拉框：填充全部相册选项（含公开/私密标记） */
   function loadAlbumOptions() {
     if (!alSel || !window.PolarisCloud || !window.PolarisCloud.enabled()) return;
     window.PolarisCloud.call('list_albums', {}).then(function (r) {
@@ -82,6 +95,7 @@
   loadAlbumOptions();
 
   /* 相册管理列表 */
+    /* 相册管理列表：列出所有相册，支持「删除相册」「管理照片」 */
   function loadAlbumManage() {
     var box = document.getElementById('alManage');
     if (!box) return;
@@ -117,6 +131,7 @@
       });
     });
   }
+    /* 打开某相册的照片管理区：缩略图网格 + 单张删除（二次确认） */
   function openPhotosAdmin(albumId, rootBox){
     window.PolarisCloud.call('list_photos',{albumId:albumId, password:getPw()}).then(function(r){
       if(!r||!r.ok){ toast('加载照片失败：'+(r&&r.error||''), 'error'); return; }
@@ -150,6 +165,7 @@
   loadAlbumManage();
 
   /* 创建相册 */
+    /* 创建新相册：标题 / 描述 / 公开或私密（私密需设访问密码） */
   var alCreate = document.getElementById('alCreate');
   if (alCreate) {
     alCreate.onclick = function () {
@@ -171,6 +187,7 @@
 // ===== 最近动态管理 =====
 (function(){
   function getPw(){ return localStorage.getItem('polaris_pw') || ''; }
+    /* 最近动态列表：展示历史动态并支持删除 */
   function listMoments(){
     var box=document.getElementById('moList');
     if(!box) return;
@@ -202,6 +219,7 @@
   document.addEventListener('DOMContentLoaded',function(){
     var add=document.getElementById('moAdd');
     if(add){
+        /* 发布新动态：日期 + 内容 → 云端保存并刷新首页动态 */
       add.onclick=function(){
         var date=document.getElementById('mo_date').value.trim();
         var content=document.getElementById('mo_content').value.trim();

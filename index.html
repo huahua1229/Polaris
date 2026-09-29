@@ -18,6 +18,11 @@
     <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=ZCOOL+KuaiLe&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=ZCOOL+KuaiLe&display=swap"></noscript>
     <link rel="stylesheet" href="static/site.css">
+<!-- ===== 全局工具函数（游客可见）=====
+   toast：底部轻提示，2.2 秒后自动消失（登录 / 操作反馈用）
+   forgotPassword：忘记密码 → 提交邮箱申请重置，站长审核通过后生效
+   customConfirm：二次确认弹窗，返回 Promise（确定 true / 取消 false），防止误删误改
+-->
 <script>
 function toast(msg, type) {
     var el = document.getElementById('toast');
@@ -54,6 +59,8 @@ function customConfirm(msg, title) {
 }
 </script>
 
+<!-- ===== 加载动画样式（splash）：
+   等当前壁纸 / 首屏图片 / 云端内容数据全部就绪后，加载动画才淡出放行进站 ===== -->
 <style>
 #splash{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
 background:linear-gradient(160deg,#ffd6e8 0%,#f3c4ff 55%,#d9c2ff 100%);

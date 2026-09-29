@@ -2334,19 +2334,27 @@ body.dark ::placeholder{color:#888;}
 (function(){
   var s=document.getElementById('splash');
   function hide(){ if(!s) return; s.classList.add('done'); setTimeout(function(){ if(s&&s.parentNode) s.parentNode.removeChild(s); }, 700); }
-  function waitFirstImages(cb){
-    var imgs=[].slice.call(document.images).filter(function(i){ return i && !i.complete && !i.dataset.splashWait; });
-    if(!imgs.length){ cb(); return; }
-    imgs.forEach(function(i){ i.dataset.splashWait='1'; });
-    var doneN=0, finished=false;
-    var timer=setTimeout(finish, 2500);
+  /* 关键资源预载：页面里的 <img> + 当前模式 CSS 背景壁纸，全部就绪再进站 */
+  var BG = document.body.classList.contains('dark')
+    ? 'static/dark_wallpaper_raw.jpg'
+    : 'static/erii_wallpaper5.jpg';
+  function waitAllReady(cb){
+    var imgs=[].slice.call(document.images).filter(function(i){ return i && !i.complete; });
+    var pending = 1 + imgs.length;   /* 1 = 壁纸预载 */
+    var finished = false;
     function finish(){ if(finished) return; finished=true; clearTimeout(timer); cb(); }
-    imgs.forEach(function(im){ im.addEventListener('load', finish); im.addEventListener('error', finish); });
+    function oneLess(){ if(--pending <= 0) finish(); }
+    var timer = setTimeout(finish, 5000);   /* 兜底：最多等 5 秒 */
+    imgs.forEach(function(im){ im.addEventListener('load', oneLess); im.addEventListener('error', oneLess); });
+    var w = new Image();
+    w.onload = oneLess;
+    w.onerror = oneLess;   /* 壁纸 404 也不卡住进站 */
+    w.src = BG;
   }
   window.addEventListener('load', function(){
-    waitFirstImages(function(){ setTimeout(hide, 200); });
+    waitAllReady(function(){ setTimeout(hide, 200); });
   });
-  setTimeout(hide, 6000);
+  setTimeout(hide, 7000);   /* 最终兜底：最多 7 秒强制进入 */
 })();
 </script>
 <div class="reader-overlay" id="readerOverlay">

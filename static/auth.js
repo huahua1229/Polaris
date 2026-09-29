@@ -58,16 +58,23 @@ window.PolarisAuth = (function(){
   }
   /* ===== 头像系统 ===== */
   var AVATAR_POOL=[
-    {src:'static/avatars/erii.jpg',name:'绘梨衣'},
-    {src:'static/avatars/mingfei.jpg',name:'路明非'},
-    {src:'static/avatars/zihang.jpg',name:'楚子航'},
-    {src:'static/avatars/caesar.jpg',name:'恺撒'},
-    {src:'static/avatars/nuonuo.jpg',name:'诺诺'},
-    {src:'static/avatars/ling.jpg',name:'零'},
-    {src:'static/avatars/zhisheng.jpg',name:'源稚生'},
-    {src:'static/avatars/angre.jpg',name:'昂热'}
+    {src:'static/avatars/erii.webp',name:'绘梨衣'},
+    {src:'static/avatars/mingfei.webp',name:'路明非'},
+    {src:'static/avatars/zihang.webp',name:'楚子航'},
+    {src:'static/avatars/caesar.webp',name:'恺撒'},
+    {src:'static/avatars/nuonuo.webp',name:'诺诺'},
+    {src:'static/avatars/ling.webp',name:'零'},
+    {src:'static/avatars/zhisheng.webp',name:'源稚生'},
+    {src:'static/avatars/angre.webp',name:'昂热'}
   ];
   var regAvatarSel=AVATAR_POOL[0].src;
+  /* 预加载头像池：页面加载完成后空闲时预热 8 张预设头像，注册/设置弹窗打开即秒显 */
+  function preloadAvatars(){
+    AVATAR_POOL.forEach(function(a){ var im=new Image(); im.src=a.src; });
+  }
+  if(document.readyState==='complete'){ preloadAvatars(); }
+  else { window.addEventListener('load', preloadAvatars); }
+
   function curAv(){ var u=getUser(); return (u&&u.avatar)||''; }
   function avUrl(a){ if(!a) return ''; if(a.charAt(0)==='<') return ''; return a; }
   function buildAvatarGrid(container, current, onPick){

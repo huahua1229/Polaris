@@ -12,11 +12,11 @@
     <meta property="og:url" content="https://huahua1229.github.io/Polaris/">
     <meta name="theme-color" content="#ff6b9d">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c44dff' d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z'/%3E%3C/svg%3E">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://miaoda.feishu.cn">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- 字体异步加载：Google Fonts 在大陆可能较慢甚至超时，用 media=print 技巧避免阻塞首屏渲染，加载完再应用 -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap"></noscript>
+    <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=ZCOOL+KuaiLe&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=ZCOOL+KuaiLe&display=swap"></noscript>
     <link rel="stylesheet" href="static/site.css">
 <script>
 function toast(msg, type) {
@@ -2358,9 +2358,10 @@ body.dark ::placeholder{color:#888;}
       else setTimeout(pollWall, 150);
     })();
   }
-  window.addEventListener('load', function(){
-    waitAllReady(function(){ setTimeout(hide, 200); });
-  });
+  function boot(){ waitAllReady(function(){ setTimeout(hide, 200); }); }
+  /* 不等 window load：慢资源不会拖住进站 */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
   setTimeout(hide, 12000);   /* 最终兜底：最多 12 秒强制进入 */
 })();
 </script>

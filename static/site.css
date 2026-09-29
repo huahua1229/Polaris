@@ -52,8 +52,10 @@ body {
     z-index: 1;
 }
 body.dark .wallpaper-layer {
-    background-image: url('dark_wallpaper_raw.png');
+    background-image: url('dark_wallpaper_raw.jpg');
     opacity: 0.7;
+    background-color: #1a1228; /* 图片加载完成前先落深色底，避免白屏跳图 */
+    transition: opacity 0.6s ease;
 }
 body.dark .wallpaper-overlay {
     background: linear-gradient(180deg, rgba(20,16,36,.30) 0%, rgba(40,24,68,.40) 100%);

@@ -1039,7 +1039,8 @@ body.dark ::placeholder{color:#888;}
             PolarisSite.loadAsync().then(function (c) {
                 renderWith(c);
                 if (window.PolarisFx) { try { window.PolarisFx.refresh(); } catch (e) { } }
-            }).catch(function () {});
+                try { window.PolarisContentReady = true; } catch (e) { }
+            }).catch(function () { try { window.PolarisContentReady = true; } catch (e) { } });
         }
         /* 刷新「动态类」板块：首页最近动态 / 留言板 / 相册。
            这些板块各自异步拉取云端数据，保存内容后统一刷新，避免必须手动刷新页面 */
@@ -2025,6 +2026,22 @@ body.dark ::placeholder{color:#888;}
                     '</div>';
                 }).join('');
 
+                // 头像加载失败降级为字母（避免破图）
+                messageList.querySelectorAll('.bubble-avatar img').forEach(function (im) {
+                    if (im.complete && im.naturalWidth > 0) return;
+                    im.addEventListener('error', function () {
+                        var card = im.closest('.message-card');
+                        var nmEl = card ? card.querySelector('.bubble-name') : null;
+                        var letter = nmEl ? (nmEl.textContent || '客').trim().charAt(0) : '客';
+                        var sp = document.createElement('span');
+                        sp.className = 'avatar-letter';
+                        sp.textContent = letter.toUpperCase();
+                        var p = im.parentNode;
+                        if (p) p.insertBefore(sp, im);
+                        im.style.display = 'none';
+                    });
+                });
+
                 // 事件委托：只绑一次
                 if (!messageList.dataset.delegated) {
                     messageList.dataset.delegated = '1';
@@ -2359,9 +2376,10 @@ body.dark ::placeholder{color:#888;}
     function finish(){ if(finished) return; finished=true; clearTimeout(timer); cb(); }
     var timer = setTimeout(finish, 10000);   /* 兜底：最多等 10 秒 */
     (function poll(){
+      var dataOK = !!window.PolarisContentReady;   /* 云端内容渲染完成 */
       var wallOK = wallDone[curBG];
       var imgsOK = imgs.every(function(i){ return i.complete; });
-      if (wallOK && imgsOK) finish();
+      if (dataOK && wallOK && imgsOK) finish();
       else setTimeout(poll, 150);
     })();
   }

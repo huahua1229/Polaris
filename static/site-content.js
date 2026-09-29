@@ -43,8 +43,8 @@ window.PolarisSite = (function () {
             { time: '20XX.XX', role: '学生会 / 社团经历（待补充）', desc: '担任职务、组织活动、取得成果等经历描述，等你来补充~' }
         ],
         honors: [
-            { name: '泰迪杯 全国专科组 三等奖', tag: '2026 年（第 14 届）数据挖掘挑战赛', img: 'static/award_teddy_national.png' },
-            { name: '泰迪杯 广东省专科组 二等奖', tag: '2026 年（第 14 届）数据挖掘挑战赛', img: 'static/award_teddy_guangdong.png' }
+            { name: '泰迪杯 全国专科组 三等奖', tag: '2026 年（第 14 届）数据挖掘挑战赛', img: 'static/award_teddy_national.webp' },
+            { name: '泰迪杯 广东省专科组 二等奖', tag: '2026 年（第 14 届）数据挖掘挑战赛', img: 'static/award_teddy_guangdong.webp' }
         ],
         resumeIntro: '大模型应用专业在校生，方向为 AI 与数据挖掘。获 2026 年泰迪杯数据挖掘挑战赛全国专科组三等奖、广东省二等奖（作品：「秦直道」路线规划），参与全国大学生数学建模竞赛。熟练 Python 数据分析与大模型应用，目标岗位：大模型应用 / AI 数据挖掘方向。',
         education: [

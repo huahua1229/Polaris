@@ -44,12 +44,13 @@ body {
     background-size: cover; background-position: center;
     opacity: 0.4; z-index: 0;
     animation: wallpaper-zoom 40s ease-in-out infinite alternate;
+    display: none; /* 内容页不再放背景图，壁纸只用于封面页 */
 }
 @keyframes wallpaper-zoom { from { transform: scale(1); } to { transform: scale(1.08); } }
 .wallpaper-overlay {
     position: fixed; inset: 0;
     background: linear-gradient(180deg, rgba(255, 243, 248, 0.30) 0%, rgba(255, 227, 239, 0.44) 100%);
-    z-index: 1;
+    z-index: 1; display: none; /* 同上：遮罩只用于封面页 */
 }
 body.dark .wallpaper-layer {
     background-image: url('dark_wallpaper_raw.jpg');
@@ -1378,4 +1379,63 @@ body.dark .rs-chip { background: #f2eef7; color: #555; }
     #view-home .hero-panel { grid-column: 1 / -1; }
     #view-home .panel { margin-bottom: 0; }
     #view-home .hero-panel { margin-bottom: 0; }
+}
+
+/* ============ 封面页（进站展示，下滑/按钮进入主页） ============ */
+body.cover-lock, html.cover-lock { overflow: hidden; }
+#coverPage {
+    position: fixed; inset: 0; z-index: 8000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: transform .65s cubic-bezier(.4,0,.2,1), opacity .65s ease;
+}
+#coverPage.gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+.cover-wall {
+    position: absolute; inset: 0; z-index: -2;
+    background-image: url('erii_wallpaper5.webp');
+    background-size: cover; background-position: center;
+    animation: wallpaper-zoom 40s ease-in-out infinite alternate;
+}
+body.dark .cover-wall { background-image: url('dark_wallpaper_raw.jpg'); }
+.cover-overlay {
+    position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(255, 241, 247, 0.34) 0%, rgba(255, 223, 237, 0.46) 100%);
+}
+body.dark .cover-overlay {
+    background: linear-gradient(180deg, rgba(14, 9, 24, 0.44) 0%, rgba(46, 28, 76, 0.52) 100%);
+}
+.cover-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 0 24px; }
+.cover-logo svg { width: 74px; height: 74px; filter: drop-shadow(0 6px 24px rgba(244,161,196,.6)); animation: coverLogo 3s ease-in-out infinite; }
+@keyframes coverLogo { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(8deg); } }
+.cover-title {
+    font-family: 'ZCOOL KuaiLe', cursive; font-size: clamp(44px, 8vw, 76px); font-weight: 700; letter-spacing: 12px;
+    background: linear-gradient(120deg, #ef7ca6, #a77bdd);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 18px rgba(244,161,196,.45));
+}
+body.dark .cover-title { background: linear-gradient(120deg, #f79cc0, #b48ae8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.cover-sub { font-size: 17px; color: #a05a86; letter-spacing: 4px; }
+body.dark .cover-sub { color: #c9a8e8; }
+.cover-welcome { font-size: 14px; color: #b0789a; letter-spacing: 2px; }
+body.dark .cover-welcome { color: #9a86c0; }
+.cover-enter {
+    margin-top: 14px; padding: 12px 34px; border: none; border-radius: 999px; cursor: pointer;
+    background: linear-gradient(135deg, #ef7ca6, #a77bdd); color: #fff; font-size: 15px; letter-spacing: 2px; font-weight: 600;
+    box-shadow: 0 8px 26px rgba(167,123,221,.45); transition: transform .2s, box-shadow .2s;
+}
+.cover-enter:hover { transform: translateY(-3px); box-shadow: 0 12px 34px rgba(167,123,221,.6); }
+.cover-scroll {
+    position: absolute; bottom: 34px; left: 0; right: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-size: 12px; color: #a05a86; letter-spacing: 4px;
+}
+body.dark .cover-scroll { color: #c9a8e8; }
+.cover-mouse { width: 22px; height: 36px; border: 2px solid currentColor; border-radius: 12px; position: relative; opacity: .75; }
+.cover-mouse i { position: absolute; left: 50%; top: 6px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 3px; background: currentColor; animation: coverWheel 1.6s ease-in-out infinite; }
+@keyframes coverWheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(10px); opacity: 0; } 100% { opacity: 0; } }
+.layout-enter { animation: layoutIn .65s ease; }
+@keyframes layoutIn { from { opacity: .3; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@media (max-width: 640px) {
+    .cover-title { letter-spacing: 6px; }
+    .cover-sub { font-size: 14px; letter-spacing: 2px; }
+    .cover-scroll { bottom: 22px; }
 }

@@ -219,6 +219,27 @@ body.dark ::placeholder{color:#888;}
 <div class="splash-tip">正在点亮北极星…</div>
 </div></div>
 
+    <!-- ===== 封面页：进站展示，下滑/按钮进入主页（壁纸只在此页，内容页纯色） ===== -->
+    <div id="coverPage">
+        <div class="cover-wall"></div>
+        <div class="cover-overlay"></div>
+        <div class="cover-inner">
+            <div class="cover-logo">
+                <svg viewBox="0 0 24 24" width="74" height="74" fill="none">
+                    <path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z" fill="url(#coverStarGrad)"/>
+                    <defs><linearGradient id="coverStarGrad" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#ef7ca6"/><stop offset="1" stop-color="#a77bdd"/></linearGradient></defs>
+                </svg>
+            </div>
+            <h1 class="cover-title">Polaris</h1>
+            <p class="cover-sub">一名热爱AI与数据挖掘的探索者</p>
+            <p class="cover-welcome">你好，欢迎来到我的小站，下滑或点击按钮进入</p>
+            <button class="cover-enter" id="coverEnter" type="button">进入小站</button>
+        </div>
+        <div class="cover-scroll">
+            <div class="cover-mouse"><i></i></div>
+            <span>向下滑动探索</span>
+        </div>
+    </div>
     <div class="wallpaper-layer"></div>
     <div class="wallpaper-overlay"></div>
     <div id="sakuraContainer"></div>
@@ -2424,6 +2445,32 @@ body.dark ::placeholder{color:#888;}
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
   setTimeout(hide, 12000);   /* 最终兜底：最多 12 秒强制进入 */
+})();
+</script>
+<script>
+/* ===== 封面页交互：下滑 / 上滑 / 点击按钮 / 键盘 进入主页 ===== */
+(function(){
+  var cover = document.getElementById('coverPage');
+  if (!cover) return;
+  document.body.classList.add('cover-lock');
+  document.documentElement.classList.add('cover-lock');
+  function close(){
+    if (cover.classList.contains('gone')) return;
+    cover.classList.add('gone');
+    document.body.classList.remove('cover-lock');
+    document.documentElement.classList.remove('cover-lock');
+    var layout = document.querySelector('.layout');
+    if (layout) layout.classList.add('layout-enter');
+    setTimeout(function(){ cover.style.display = 'none'; }, 700);
+  }
+  var startY = 0;
+  window.addEventListener('wheel', function(e){ if (e.deltaY > 8) close(); }, { passive: true });
+  window.addEventListener('touchstart', function(e){ startY = e.touches[0].clientY; }, { passive: true });
+  window.addEventListener('touchmove', function(e){ if (startY && e.touches[0].clientY - startY < -30) close(); }, { passive: true });
+  var enterBtn = document.getElementById('coverEnter');
+  if (enterBtn) enterBtn.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if (e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') close(); });
+  window.coverEnterSite = close;
 })();
 </script>
 <div class="reader-overlay" id="readerOverlay">

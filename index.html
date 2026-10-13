@@ -2466,6 +2466,36 @@ body.dark ::placeholder{color:#888;}
 })();
 </script>
 <script>
+/* ===== 3D 立体交互：hero 立绘与内容卡片鼠标跟随倾斜 ===== */
+(function(){
+  /* hero 立绘：鼠标在 hero 区域内移动时立体倾斜 */
+  var hero = document.querySelector('.hero-art');
+  if (hero) {
+    var hp = hero.closest('.hero-panel');
+    if (hp) {
+      hp.addEventListener('mousemove', function (e) {
+        var r = hp.getBoundingClientRect();
+        var rx = ((e.clientY - r.top) / r.height - 0.5) * -8;
+        var ry = ((e.clientX - r.left) / r.width - 0.5) * 12;
+        hero.style.transform = 'perspective(900px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateZ(16px)';
+      });
+      hp.addEventListener('mouseleave', function () { hero.style.transform = ''; });
+    }
+  }
+  /* 内容面板：hover 时轻微 3D 倾斜，制造立体层次 */
+  var cards = document.querySelectorAll('.panel:not(.hero-panel)');
+  cards.forEach(function (card) {
+    card.addEventListener('mousemove', function (e) {
+      var r = card.getBoundingClientRect();
+      var rx = ((e.clientY - r.top) / r.height - 0.5) * -5;
+      var ry = ((e.clientX - r.left) / r.width - 0.5) * 7;
+      card.style.transform = 'perspective(900px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateZ(6px)';
+    });
+    card.addEventListener('mouseleave', function () { card.style.transform = ''; });
+  });
+})();
+</script>
+<script>
 /* ===== hero 花瓣粒子：纯 CSS 动画渲染，不加载任何外部资源，不阻塞进站 ===== */
 (function(){
   var box = document.querySelector('.hero-petals');

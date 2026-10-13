@@ -192,14 +192,16 @@ body.dark .wallpaper-overlay {
 /* ============ 右侧信息栏 ============ */
 .right-rail { width: var(--rail-w); flex-shrink: 0; position: sticky; top: calc(var(--top-h) + 20px); display: flex; flex-direction: column; gap: 16px; }
 .rail-card {
-    background: var(--glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1.5px solid var(--glass-border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-card);
+    background: rgba(255, 255, 255, 0.93);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 182, 193, 0.5);
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(244, 143, 177, 0.14);
     padding: 18px 20px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+.rail-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(244,143,177,.20); }
 .rail-card-title {
     font-family: 'ZCOOL KuaiLe', cursive; font-size: 16px; color: var(--c-purple);
     display: flex; align-items: center; gap: 7px;
@@ -249,15 +251,15 @@ body.dark .wallpaper-overlay {
 
 /* ============ 主区面板 ============ */
 .panel {
-    background: var(--glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1.5px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--shadow-card);
+    background: rgba(255, 255, 255, 0.93);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 182, 193, 0.5);
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(244, 143, 177, 0.14);
     padding: 22px 26px;
     margin-bottom: 18px;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, transform 0.25s ease;
 }
 .panel:hover { box-shadow: var(--shadow-hover); }
 .panel-title {
@@ -711,8 +713,9 @@ body.dark .wallpaper-overlay {
     .brand-sub { display: none; }
     .brand-name { font-size: 19px; }
     .nav-menu { flex-direction: row; flex: 1; justify-content: center; gap: 1px; }
-    .nav-item { padding: 8px 10px; font-size: 14px; gap: 6px; border-radius: 10px; white-space: nowrap; }
-    .nav-item:hover { transform: none; }
+    .nav-item { padding: 7px 15px; font-size: 14px; gap: 6px; border-radius: 999px; white-space: nowrap; }
+    .nav-item:hover { transform: none; background: rgba(255, 182, 193, 0.32); color: var(--c-pink); }
+    .nav-item.active { background: var(--grad-main); color: #fff; box-shadow: 0 4px 14px rgba(255, 107, 157, 0.4); }
     .nav-item::before { display: none; }
     .nav-footer { margin: 0; padding: 0; border-top: none; display: flex; flex-direction: row; align-items: center; gap: 8px; }
     .nav-footer .pet-line, .nav-footer .copy-line { display: none; }
@@ -725,7 +728,7 @@ body.dark .wallpaper-overlay {
     .layout { padding: calc(var(--top-h) + 18px) 18px 28px; }
     .right-rail { top: calc(var(--top-h) + 18px); }
 }
-@media (max-width: 1366px) {
+@media (max-width: 1180px) {
     .right-rail { display: none; }
     .layout-inner { grid-template-columns: 1fr; max-width: 1060px; }
     .project-mini-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1362,4 +1365,17 @@ body.dark .rs-chip { background: #f2eef7; color: #555; }
     .rs-sec-title::before { background: #444 !important; }
     .rs-honor-name::before { background: #444 !important; }
     .anim-in { opacity: 1 !important; transform: none !important; animation: none !important; }
+}
+
+/* ============ 借鉴三丽鸥布局：首页宽屏双列卡片 ============ */
+@media (min-width: 901px) {
+    #view-home .main-content {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        align-items: start;
+    }
+    #view-home .hero-panel { grid-column: 1 / -1; }
+    #view-home .panel { margin-bottom: 0; }
+    #view-home .hero-panel { margin-bottom: 0; }
 }

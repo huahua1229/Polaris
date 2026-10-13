@@ -64,13 +64,16 @@ function customConfirm(msg, title) {
 <style>
 #splash{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
 background:linear-gradient(160deg,#fff0f6 0%,#ffd9e8 52%,#ece0fb 100%);
-transition:opacity .6s ease;}
+transition:opacity .7s ease .15s;}
 body.dark #splash{background:linear-gradient(160deg,#140e1e 0%,#1d1329 55%,#2a1a3c 100%);}
 #splash.done{opacity:0;pointer-events:none;}
-.splash-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+/* 参考加载页参考：进度走满后 logo 缓慢缩小消失，再整体淡出 */
+.splash-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;transition:opacity .5s ease;}
+#splash.done .splash-stars{opacity:0;}
 .splash-stars i{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.9);opacity:0;animation:starTw 2.2s ease-in-out infinite;}
 @keyframes starTw{0%,100%{opacity:0;transform:scale(.6) rotate(0deg);}50%{opacity:.95;transform:scale(1.15) rotate(45deg);}}
-.splash-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:15px;}
+.splash-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:15px;transition:transform .7s ease,opacity .7s ease;}
+#splash.done .splash-inner{transform:scale(.9);opacity:0;}
 .splash-halo{position:relative;}
 .splash-halo::before{content:"";position:absolute;inset:-11px;border-radius:50%;
 background:conic-gradient(from 0deg,#f4a1c4,#a77bdd,#f4a1c4);filter:blur(1px);
@@ -210,7 +213,7 @@ body.dark ::placeholder{color:#888;}
 </style>
 </head>
 <body>
-<script>try{if(localStorage.getItem("polaris_dark")==="1"||new URLSearchParams(location.search).get("dark")==="1")document.body.classList.add("dark");}catch(e){}</script>
+<script>try{if(localStorage.getItem("polaris_dark")==="1")document.body.classList.add("dark");}catch(e){}try{if(new URLSearchParams(location.search).get("dark")==="1")document.body.classList.add("dark");}catch(e){}</script>
     <div id="splash"><div class="splash-stars"></div><div class="splash-inner">
 <div class="splash-halo"><img src="static/avatar.webp" class="splash-avatar" alt=""></div>
 <div class="splash-text">Polaris</div>
@@ -2585,7 +2588,12 @@ body.dark ::placeholder{color:#888;}
   ov.addEventListener('click', function(e){ if(e.target===ov){ ov.classList.remove('show'); document.body.style.overflow=''; } });
   var btn = document.getElementById('themeToggle');
   function apply(dark){ document.body.classList.toggle('dark', dark); btn.textContent = dark ? '☀ 日间模式' : '🌙 夜间模式'; }
-  try { apply(localStorage.getItem('polaris_dark')==='1'); } catch(e){}
+  /* 初始化按钮状态：URL 的 dark 参数优先（调试/直达夜间），否则取本地记忆 */
+  try {
+    var uDark = new URLSearchParams(location.search).get('dark') === '1';
+    var sDark = localStorage.getItem('polaris_dark') === '1';
+    apply(uDark || sDark);
+  } catch(e){}
   btn.addEventListener('click', function(){
     var dark = !document.body.classList.contains('dark');
     apply(dark);

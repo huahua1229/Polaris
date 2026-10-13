@@ -1402,9 +1402,12 @@ body.cover-lock, html.cover-lock { overflow: hidden; }
 #coverPage {
     position: fixed; inset: 0; z-index: 8000;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    transition: transform .65s cubic-bezier(.4,0,.2,1), opacity .65s ease;
+    transition: transform .7s cubic-bezier(.65,0,.35,1), opacity .7s ease;
 }
-#coverPage.gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+/* 收起时：标题内容先淡出，壁纸画面轻微推进后整体卷走（沉浸式进入主页） */
+#coverPage.gone { transform: translateY(-100%) scale(1.045); opacity: 0; pointer-events: none; }
+#coverPage .cover-inner { transition: opacity .38s ease; }
+#coverPage.gone .cover-inner { opacity: 0; }
 .cover-wall {
     position: absolute; inset: 0; z-index: -2;
     background-image: url('erii_wallpaper5.webp');
@@ -1448,8 +1451,8 @@ body.dark .cover-scroll { color: #c9a8e8; }
 .cover-mouse { width: 22px; height: 36px; border: 2px solid currentColor; border-radius: 12px; position: relative; opacity: .75; }
 .cover-mouse i { position: absolute; left: 50%; top: 6px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 3px; background: currentColor; animation: coverWheel 1.6s ease-in-out infinite; }
 @keyframes coverWheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(10px); opacity: 0; } 100% { opacity: 0; } }
-.layout-enter { animation: layoutIn .65s ease; }
-@keyframes layoutIn { from { opacity: .3; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.layout-enter { animation: layoutIn .8s cubic-bezier(.22,1,.36,1); }
+@keyframes layoutIn { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 @media (max-width: 640px) {
     .cover-title { letter-spacing: 6px; }
     .cover-sub { font-size: 14px; letter-spacing: 2px; }

@@ -184,8 +184,8 @@ box-shadow:0 8px 24px rgba(167,123,221,.4);text-align:center;}
 </style>
 
 <style>
-body.dark{--c-ink:#ece8f2;--c-sub:#b4acc4;--c-faint:#8e86a0;--glass:rgba(38,29,54,.94);--glass-border:rgba(196,158,230,.22);--shadow-card:0 4px 18px rgba(0,0,0,.35);--shadow-hover:0 10px 30px rgba(0,0,0,.5);}
-body.dark{background:linear-gradient(150deg,#140e1e 0%,#221633 55%,#2a1a3c 100%) fixed;}
+body.dark{--c-ink:#ece8f2;--c-sub:#b7aec8;--c-faint:#8e86a0;--glass:rgba(32,23,50,.9);--glass-border:rgba(174,132,224,.25);--shadow-card:0 4px 20px rgba(0,0,0,.4);--shadow-hover:0 12px 34px rgba(0,0,0,.55);}
+body.dark{background:linear-gradient(150deg,#0e0a18 0%,#1a1128 45%,#241636 72%,#150d22 100%) fixed;}
 body.dark .wallpaper-layer{opacity:.22;}
 body.dark .panel,body.dark .rail-card,body.dark .article-item,body.dark .project-card,body.dark .admin-item{background:var(--glass);}
 body.dark input,body.dark textarea{background:rgba(255,255,255,.08);color:var(--c-ink);border-color:var(--glass-border);}
@@ -299,6 +299,7 @@ body.dark ::placeholder{color:#888;}
                     <h1 class="sr-only">Polaris 的个人网站</h1>
                     <!-- Hero -->
                     <section class="panel hero-panel anim-in">
+                        <div class="hero-petals" aria-hidden="true"></div>
                         <div class="hero-main">
                             <div class="hero-greet">你好，欢迎来到</div>
                             <h1 class="hero-name">Polaris<span class="hero-caret">|</span></h1>
@@ -316,7 +317,10 @@ body.dark ::placeholder{color:#888;}
                     <!-- 关于我 -->
                     <section class="panel anim-in">
                         <h2 class="panel-title"><span class="t-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg></span>关于我<span class="t-sub">About Me</span></h2>
-                        <p class="about-text" id="aboutText"></p>
+                        <div class="about-wrap">
+                            <p class="about-text" id="aboutText"></p>
+                            <div class="about-art" aria-hidden="true"><img src="static/decor/about.webp" alt=""></div>
+                        </div>
                     </section>
 
                     <!-- 技能专长 -->
@@ -2459,6 +2463,22 @@ body.dark ::placeholder{color:#888;}
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
   setTimeout(hide, 12000);   /* 最终兜底：最多 12 秒强制进入 */
+})();
+</script>
+<script>
+/* ===== hero 花瓣粒子：纯 CSS 动画渲染，不加载任何外部资源，不阻塞进站 ===== */
+(function(){
+  var box = document.querySelector('.hero-petals');
+  if (!box) return;
+  for (var k = 0; k < 12; k++){
+    var p = document.createElement('i');
+    var sz = 7 + Math.random() * 6;
+    p.style.left = (Math.random() * 100) + '%';
+    p.style.width = p.style.height = sz + 'px';
+    p.style.animationDuration = (7 + Math.random() * 6) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    box.appendChild(p);
+  }
 })();
 </script>
 <script>

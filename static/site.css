@@ -378,7 +378,7 @@ body.dark .wallpaper-overlay {
 .about-text .hl { color: var(--c-purple); font-family: 'ZCOOL KuaiLe', cursive; font-size: 15px; }
 .about-art { width: 128px; height: 172px; flex-shrink: 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: var(--shadow-card); position: relative; }
 .about-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(242,163,194,.14), transparent 35%, transparent 70%, rgba(157,123,216,.16)); pointer-events: none; }
-.about-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; display: block; }
+.about-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 50%; display: block; }
 @media (max-width: 640px) { .about-wrap { flex-direction: column; } .about-art { width: 120px; height: 160px; } }
 
 .skill-row { margin-bottom: 14px; }
@@ -700,10 +700,6 @@ body.dark .wallpaper-overlay {
 }
 .footer-text { color: #a77bdd; text-shadow: none; }
 body.dark .footer-text { color: rgba(255, 255, 255, 0.92); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); }
-.footer-banner { width: min(620px, 100%); margin: 0 auto 16px; border-radius: 16px; overflow: hidden; border: 1.5px solid rgba(239,124,166,.35); box-shadow: 0 8px 24px rgba(167,123,221,.18); }
-.footer-banner img { display: block; width: 100%; height: 150px; object-fit: cover; object-position: center 62%; }
-body.dark .footer-banner { border-color: rgba(122,75,184,.5); box-shadow: 0 8px 24px rgba(20,10,35,.4); }
-@media (max-width: 640px) { .footer-banner img { height: 90px; } }
 
 /* ============ 单页应用视图路由 ============ */
 .view { display: none; scroll-margin-top: calc(var(--top-h, 56px) + 14px); }

@@ -2635,7 +2635,14 @@ body.dark ::placeholder{color:#888;}
   });
   ov.addEventListener('click', function(e){ if(e.target===ov){ ov.classList.remove('show'); document.body.style.overflow=''; } });
   var btn = document.getElementById('themeToggle');
-  function apply(dark){ document.body.classList.toggle('dark', dark); btn.textContent = dark ? '☀ 日间模式' : '🌙 夜间模式'; }
+  var ICON_SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+  var ICON_MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  /* 图标 + 文字：桌面端胶囊里文字被 CSS 隐藏（纯图标圆钮），移动端侧栏保留文字 */
+  function apply(dark){
+    document.body.classList.toggle('dark', dark);
+    btn.innerHTML = (dark ? ICON_SUN : ICON_MOON) + '<span class="tt-label">' + (dark ? '日间模式' : '夜间模式') + '</span>';
+    btn.title = dark ? '切换日间模式' : '切换夜间模式';
+  }
   /* 初始化按钮状态：URL 的 dark 参数优先（调试/直达夜间），否则取本地记忆 */
   try {
     var uDark = new URLSearchParams(location.search).get('dark') === '1';

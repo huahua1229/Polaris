@@ -1575,7 +1575,7 @@ body.dark .cover-scroll { color: #c9a8e8; }
         background: linear-gradient(100deg, rgba(255,244,250,.42) 0%, rgba(255,240,247,.55) 34%, rgba(255,238,246,.78) 62%, rgba(250,232,244,.86) 100%);
     }
     body.dark .hero-panel::before {
-        background: linear-gradient(100deg, rgba(16,9,28,.52) 0%, rgba(24,12,42,.46) 45%, rgba(14,7,24,.62) 100%);
+        background: linear-gradient(100deg, rgba(16,9,28,.30) 0%, rgba(24,12,42,.34) 45%, rgba(14,7,24,.52) 100%);
     }
     body.dark .hero-main::before {
         background: rgba(28, 16, 48, 0.42);
@@ -1584,11 +1584,10 @@ body.dark .cover-scroll { color: #c9a8e8; }
     }
     .hero-panel::after { z-index: 1; }
     .hero-panel .hero-petals { z-index: 1; }
-    /* 夜间沿用横版壁纸（竖版 hero_night 放大后会糊），靠加深遮罩区分昼夜
-       注意：body.dark .panel 的纯色底特异性更高，必须在此用完整 shorthand 覆盖 */
+    /* 夜间专用横版壁纸（night_src 镜像裁剪版，人物在左、文字区在右）
+       注意：index.html 内联样式的 body.dark .panel(--glass) 晚于本表加载，需 !important 压回 */
     body.dark .hero-panel {
-        /* index.html 内联样式的 body.dark .panel(--glass) 晚于本表加载，需 !important 压回 */
-        background: url('erii_wallpaper5.webp') center 30% / cover no-repeat !important;
+        background: url('decor/hero_night_wide.webp') center 38% / cover no-repeat !important;
     }
     .hero-art { display: none; }
     .hero-main { transform: translateX(24%); max-width: 500px; }

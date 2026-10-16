@@ -1475,3 +1475,94 @@ body.dark .cover-scroll { color: #c9a8e8; }
     .cover-sub { font-size: 14px; letter-spacing: 2px; }
     .cover-scroll { bottom: 22px; }
 }
+
+/* ============================================================
+   2026-10-16 视觉升级（对齐视频参考：悬浮胶囊导航 + 全屏壁纸 Hero）
+   ============================================================ */
+
+/* --- 桌面端(>900px)：侧边栏改为顶部悬浮毛玻璃胶囊导航 --- */
+@media (min-width: 901px) {
+    :root { --side-w: 0px; --top-h: 64px; }
+    .side-nav {
+        left: 50%; right: auto; top: 10px; bottom: auto;
+        transform: translateX(-50%);
+        width: min(1180px, calc(100% - 36px));
+        flex-direction: row; align-items: center; gap: 10px;
+        height: auto; padding: 9px 20px;
+        border-radius: 999px;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 10px 34px rgba(157, 123, 216, 0.16);
+    }
+    .side-nav.open { transform: translateX(-50%); }
+    .nav-brand { padding: 0; margin: 0; border-bottom: none; gap: 8px; }
+    .brand-sub { display: none; }
+    .brand-name { font-size: 19px; }
+    .nav-menu { flex-direction: row; flex: 1; justify-content: center; gap: 2px; }
+    .nav-item { padding: 8px 15px; font-size: 14px; gap: 6px; border-radius: 999px; white-space: nowrap; }
+    .nav-item:hover { transform: none; background: rgba(255, 196, 216, 0.32); color: var(--c-pink); }
+    .nav-item.active { background: var(--grad-main); color: #fff; box-shadow: 0 4px 14px rgba(239, 124, 166, 0.4); }
+    .nav-item::before { display: none; }
+    .nav-footer { margin: 0; padding: 0; border-top: none; display: flex; flex-direction: row; align-items: center; gap: 8px; }
+    .nav-footer .pet-line, .nav-footer .copy-line { display: none; }
+    .nav-footer .auth-entry, .nav-footer .admin-entry {
+        display: inline-flex; align-items: center; width: auto; margin: 0;
+        padding: 6px 12px; font-size: 13px;
+    }
+    .top-bar { display: none; }
+    .scroll-progress { left: 0; top: 0; border-radius: 0 0 3px 3px; }
+    .layout { padding: calc(var(--top-h) + 26px) 22px 28px; }
+    .right-rail { top: calc(var(--top-h) + 26px); }
+    .panel { border-radius: 20px; }
+}
+
+/* --- 首页 Hero：全屏动漫壁纸大图 --- */
+@media (min-width: 901px) {
+    .hero-panel {
+        margin: 0 calc(50% - 50vw);
+        min-height: calc(100vh - var(--top-h) - 46px);
+        padding: 70px 34px 84px;
+        border-radius: 0; border: none;
+        background: url('decor/hero_day.webp') center 32% / cover no-repeat;
+        box-shadow: none;
+    }
+    .hero-panel::before {
+        content: ''; position: absolute; inset: 0;
+        width: auto; height: auto; border-radius: 0; filter: none;
+        background: linear-gradient(180deg, rgba(255,245,250,.78) 0%, rgba(255,240,247,.52) 42%, rgba(250,233,244,.60) 100%);
+    }
+    body.dark .hero-panel::before {
+        background: linear-gradient(180deg, rgba(18,10,30,.72) 0%, rgba(28,14,48,.66) 45%, rgba(16,8,28,.85) 100%);
+    }
+    .hero-panel::after { z-index: 1; }
+    .hero-panel .hero-petals { z-index: 1; }
+    body.dark .hero-panel {
+        background-image: url('decor/hero_night.webp');
+    }
+    .hero-art { display: none; }
+    .hero-greet { font-size: 14px; color: #a24a78; letter-spacing: 4px; }
+    body.dark .hero-greet { color: #f2a3c2; }
+    .hero-name { font-size: clamp(44px, 6vw, 72px); filter: drop-shadow(0 3px 14px rgba(255,255,255,.55)); }
+    body.dark .hero-name { filter: drop-shadow(0 3px 14px rgba(0,0,0,.45)); }
+    .hero-tag { font-size: 17px; color: #8d5577; }
+    body.dark .hero-tag { color: #d9b8d0; }
+}
+/* 桌面端 Hero 文案保持渐变，移动端维持原布局不变 */
+
+/* Hero 下滑箭头（随内容流式排布，避免与按钮重叠） */
+.hero-scroll {
+    margin: 30px auto 0; width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.75); color: #ec7ba3;
+    font-size: 20px; line-height: 1; text-decoration: none;
+    box-shadow: 0 4px 14px rgba(236,123,163,.32);
+    animation: heroScrollBob 1.8s ease-in-out infinite;
+}
+.hero-scroll:hover { background: var(--grad-main); color: #fff; }
+@keyframes heroScrollBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(7px); }
+}
+
+/* --- 卡片质感微调 --- */
+.panel { box-shadow: 0 8px 26px rgba(200, 150, 210, 0.10); }
+body.dark .panel { box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35); }
